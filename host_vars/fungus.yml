@@ -1,5 +1,5 @@
 instances:
-  - name: "local"
+  - name: "fungus"
     difficulty: "easy"
     is_whitelist: "true"
     gamemode: "survival"

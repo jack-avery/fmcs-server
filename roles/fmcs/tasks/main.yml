@@ -5,12 +5,12 @@
 - name: Delete old build data
   ansible.builtin.file:
     state: absent
-    path: ~/build/fmcs/{{ item.name }}
+    path: ~/build/{{ item.name }}
   loop: "{{ instances }}"
 
 - name: Create build directory
   ansible.builtin.file:
-    path: ~/build/fmcs/{{ item.name }}
+    path: ~/build/{{ item.name }}
     state: directory
     mode: 0755
   loop: "{{ instances }}"
@@ -18,30 +18,30 @@
 # - name: Copy files
 #   ansible.posix.synchronize:
 #     src: "{{ role_path }}/files/"
-#     dest: ~/build/fmcs/{{ item.name }}
+#     dest: ~/build/{{ item.name }}
 #     recursive: true
 #   loop: "{{ instances }}"
 
 - name: Accept EULA
-  shell: echo eula=true > ~/build/fmcs/{{ item.name }}/eula.txt
+  shell: echo eula=true > ~/build/{{ item.name }}/eula.txt
   loop: "{{ instances }}"
 
 - name: Generate whitelist.json
   copy:
-    dest: ~/build/fmcs/{{ item.name }}/whitelist.json
+    dest: ~/build/{{ item.name }}/whitelist.json
     content: "{{ item.whitelist | to_json }}"
   loop: "{{ instances_secrets }}"
 
 - name: Generate ops.json
   copy:
-    dest: ~/build/fmcs/{{ item.name }}/ops.json
+    dest: ~/build/{{ item.name }}/ops.json
     content: "{{ ops | to_json }}"
   loop: "{{ instances }}"
 
 - name: /server.properties
   ansible.builtin.template:
     src: server.properties.j2
-    dest: ~/build/fmcs/{{ item.0.name }}/server.properties
+    dest: ~/build/{{ item.0.name }}/server.properties
     mode: 0755
   loop: "{{ instances|zip(instances_secrets) }}"
   loop_control:
@@ -50,14 +50,14 @@
 - name: /Dockerfile
   ansible.builtin.template:
     src: Dockerfile.j2
-    dest: ~/build/fmcs/{{ item.name }}/Dockerfile
+    dest: ~/build/{{ item.name }}/Dockerfile
     mode: 0755
   loop: "{{ instances }}"
 
 - name: /run.sh
   ansible.builtin.template:
     src: run.sh.j2
-    dest: ~/build/fmcs/{{ item.name }}/run.sh
+    dest: ~/build/{{ item.name }}/run.sh
     mode: 0755
   loop: "{{ instances }}"
 
@@ -72,7 +72,7 @@
     tag: "{{ item.name }}-latest"
     source: build
     build:
-      path: ~/build/fmcs/{{ item.name }}
+      path: ~/build/{{ item.name }}
       pull: true
     state: present
     force_source: true
@@ -87,7 +87,7 @@
     restart: true
     volumes:
       - "~/worlds/{{ item.name }}:/fmcs/world"
-      - "~/fmcs-logs/{{ item.name }}:/fmcs/logs"
+      - "~/logs/{{ item.name }}:/fmcs/logs"
     ports:
       - "{{ mcs_base_port + (loop0 * 10) }}:{{ mcs_base_port + (loop0 * 10) }}"
       - "{{ mcs_base_port + (loop0 * 10) }}:{{ mcs_base_port + (loop0 * 10) }}/udp"
