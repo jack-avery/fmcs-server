@@ -1,6 +1,7 @@
-import os
-import yaml
 import json
+import os
+import shutil
+import yaml
 
 AUTHOR = "raspy"
 
@@ -52,12 +53,13 @@ def main():
     for host in host_vars:
         for instance in host_vars[host]["instances"]:
             mods = instance["mods"]
-            name = instance["name"]
+            name = f"{host}-{instance['name']}"
             manifest = make_atlauncher_manifest(
                 minecraft_ver, forge_ver, name, AUTHOR, mods
             )
-            with open(f"out/{host}-{name}_manifest.json", "w") as file:
+            with open(f"out/manifest/manifest.json", "w") as file:
                 file.write(json.dumps(manifest, indent=4))
+            shutil.make_archive(f"out/{name}", "zip", "out/manifest")
 
     return 0
 
