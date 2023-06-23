@@ -87,6 +87,7 @@
     restart: true
     volumes:
       - "~/worlds/{{ item.name }}:/fmcs/world"
+      - "~/fmcs-logs/{{ item.name }}:/fmcs/logs"
     ports:
       - "{{ mcs_base_port + (loop0 * 10) }}:{{ mcs_base_port + (loop0 * 10) }}"
       - "{{ mcs_base_port + (loop0 * 10) }}:{{ mcs_base_port + (loop0 * 10) }}/udp"
