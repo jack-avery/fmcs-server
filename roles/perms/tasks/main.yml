@@ -32,7 +32,7 @@
 
 - name: Tell servers to reload whitelist
   rcon:
-    address: "{{ ansible_host }}"
+    address: "{{ inventory_hostname }}"
     port: "{{ mcs_base_port + (loop0 * 10) + 1 }}"
     password: "{{ item.rcon_pass }}"
     command: "whitelist reload"

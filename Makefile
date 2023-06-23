@@ -7,3 +7,6 @@ fmcs:
 
 perms:
 	@ansible-playbook playbooks/perms.yml
+
+atl:
+	@python atl_manis.py
