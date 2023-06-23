@@ -22,7 +22,7 @@ Ansible requires Linux. If you're running Windows, consider setting up WSL.
 -- Define ops in `mc.secret.yml`<br/>
 -- Define whitelists in `{host}.secret.yml`
 
-### Creating ATLauncher manifests
+### Creating ATLauncher instance .zip
 1. Trigger `make atl`.<br/>
 -- The manifests are put into the `out` folder
 
