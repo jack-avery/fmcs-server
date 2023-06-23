@@ -1,6 +1,6 @@
 # fmcs-server
 
-Basic Ansible playbooks for Forge Minecraft servers
+Automatic set-up [Forge](https://files.minecraftforge.net/) modded Minecraft dedicated servers, supporting identical exports for use with [ATLauncher](https://atlauncher.com/)
 
 Found the playbooks useful? [Buy me a coffee ☕](https://ko-fi.com/raspy)!
 
