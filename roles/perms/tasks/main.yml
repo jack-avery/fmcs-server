@@ -1,0 +1,42 @@
+---
+- name: Load secrets
+  ansible.builtin.include_tasks: secrets.yml
+
+- name: Generate whitelist.json
+  copy:
+    dest: ~/build/fmcs/{{ item.name }}/whitelist.json
+    content: "{{ item.whitelist | to_json }}"
+  loop: "{{ instances_secrets }}"
+
+- name: Generate ops.json
+  copy:
+    dest: ~/build/fmcs/{{ item.name }}/ops.json
+    content: "{{ ops | to_json }}"
+  loop: "{{ instances }}"
+
+- name: Move whitelist.json into container
+  community.docker.docker_container_copy_into:
+    container: "fmcs-{{ item.name }}"
+    path: ~/build/fmcs/{{ item.name }}/whitelist.json
+    container_path: /fmcs/whitelist.json
+  loop: "{{ instances_secrets }}"
+  delegate_to: "{{ inventory_hostname }}"
+
+- name: Move ops.json into container
+  community.docker.docker_container_copy_into:
+    container: "fmcs-{{ item.name }}"
+    path: ~/build/fmcs/{{ item.name }}/ops.json
+    container_path: /fmcs/ops.json
+  loop: "{{ instances_secrets }}"
+  delegate_to: "{{ inventory_hostname }}"
+
+- name: Tell servers to reload whitelist
+  rcon:
+    address: "{{ ansible_host }}"
+    port: "{{ mcs_base_port + (loop0 * 10) + 1 }}"
+    password: "{{ item.rcon_pass }}"
+    command: "whitelist reload"
+  loop: "{{ instances_secrets }}"
+  loop_control:
+    index_var: loop0
+  delegate_to: localhost

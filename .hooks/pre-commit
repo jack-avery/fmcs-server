@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+# Get all secret files
+SECRET_FILES=()
+if test -f "inventory.yml"; then
+    SECRET_FILES+=( "inventory.yml" )
+fi
+for file in $(ls group_vars/); do
+    if [[ "$file" == *.secret.yml ]]; then
+        SECRET_FILES+=( "group_vars/$file" )
+    fi
+done
+for file in $(ls host_vars/); do
+    if [[ "$file" == *.secret.yml ]]; then
+        SECRET_FILES+=( "host_vars/$file" )
+    fi
+done
+
+# Check for vault status
+if [[ -n "$SECRET_FILES" ]]
+then
+    for file in "${SECRET_FILES[@]}"; do
+        line=$(head -n 1 $file)
+        if [[ $line != \$ANSIBLE_VAULT* ]]; then
+            echo "$file is not encrypted!"
+            exit 1
+        fi
+        echo "$file is encrypted"
+    done
+    echo "All secrets encrypted!"
+    exit 0
+fi

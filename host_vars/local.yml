@@ -1,0 +1,17 @@
+instances:
+  - name: "local"
+    difficulty: "easy"
+    is_whitelist: "true"
+    gamemode: "survival"
+    maxplayers: 20
+    motd: "An Ansible-configured Minecraft server"
+    pvp: "false"
+    simdist: 10
+    viewdist: 16
+    mods:
+      - name: "balm"
+        project: 531761
+        file: 4584620
+      - name: "waystones"
+        project: 245755
+        file: 4584510

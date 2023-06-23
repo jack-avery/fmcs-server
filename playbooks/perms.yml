@@ -1,0 +1,5 @@
+---
+- name: Reload whitelist and ops
+  hosts: mc
+  roles:
+    - perms

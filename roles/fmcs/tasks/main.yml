@@ -1,0 +1,96 @@
+---
+- name: Load secrets
+  ansible.builtin.include_tasks: secrets.yml
+
+- name: Delete old build data
+  ansible.builtin.file:
+    state: absent
+    path: ~/build/fmcs/{{ item.name }}
+  loop: "{{ instances }}"
+
+- name: Create build directory
+  ansible.builtin.file:
+    path: ~/build/fmcs/{{ item.name }}
+    state: directory
+    mode: 0755
+  loop: "{{ instances }}"
+
+# - name: Copy files
+#   ansible.posix.synchronize:
+#     src: "{{ role_path }}/files/"
+#     dest: ~/build/fmcs/{{ item.name }}
+#     recursive: true
+#   loop: "{{ instances }}"
+
+- name: Accept EULA
+  shell: echo eula=true > ~/build/fmcs/{{ item.name }}/eula.txt
+  loop: "{{ instances }}"
+
+- name: Generate whitelist.json
+  copy:
+    dest: ~/build/fmcs/{{ item.name }}/whitelist.json
+    content: "{{ item.whitelist | to_json }}"
+  loop: "{{ instances_secrets }}"
+
+- name: Generate ops.json
+  copy:
+    dest: ~/build/fmcs/{{ item.name }}/ops.json
+    content: "{{ ops | to_json }}"
+  loop: "{{ instances }}"
+
+- name: /server.properties
+  ansible.builtin.template:
+    src: server.properties.j2
+    dest: ~/build/fmcs/{{ item.0.name }}/server.properties
+    mode: 0755
+  loop: "{{ instances|zip(instances_secrets) }}"
+  loop_control:
+    index_var: loop0
+
+- name: /Dockerfile
+  ansible.builtin.template:
+    src: Dockerfile.j2
+    dest: ~/build/fmcs/{{ item.name }}/Dockerfile
+    mode: 0755
+  loop: "{{ instances }}"
+
+- name: /run.sh
+  ansible.builtin.template:
+    src: run.sh.j2
+    dest: ~/build/fmcs/{{ item.name }}/run.sh
+    mode: 0755
+  loop: "{{ instances }}"
+
+- name: Prune space before building
+  community.docker.docker_prune:
+    images: true
+    containers: true
+
+- name: Build images
+  community.docker.docker_image:
+    name: "fmcs-{{ item.name }}"
+    tag: "{{ item.name }}-latest"
+    source: build
+    build:
+      path: ~/build/fmcs/{{ item.name }}
+      pull: true
+    state: present
+    force_source: true
+    force_tag: true
+  loop: "{{ instances }}"
+
+- name: Start
+  community.docker.docker_container:
+    name: "fmcs-{{ item.name }}"
+    image: "fmcs-{{ item.name }}:{{ item.name }}-latest"
+    state: started
+    restart: true
+    volumes:
+      - "~/worlds/{{ item.name }}:/fmcs/world"
+    ports:
+      - "{{ mcs_base_port + (loop0 * 10) }}:{{ mcs_base_port + (loop0 * 10) }}"
+      - "{{ mcs_base_port + (loop0 * 10) }}:{{ mcs_base_port + (loop0 * 10) }}/udp"
+      - "{{ mcs_base_port + (loop0 * 10) + 1 }}:{{ mcs_base_port + (loop0 * 10) + 1 }}"
+  loop: "{{ instances }}"
+  loop_control:
+    index_var: loop0
