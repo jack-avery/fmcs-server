@@ -15,3 +15,6 @@ instances:
       - name: "waystones"
         project: 245755
         file: 4584510
+      - name: "ore-excavation"
+        project: 250898
+        file: 4511507
