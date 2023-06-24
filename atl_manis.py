@@ -1,9 +1,13 @@
 import json
+import logging
 import os
 import shutil
 import yaml
 
 AUTHOR = "raspy"
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s"
+)
 
 
 def make_atlauncher_manifest(
@@ -36,9 +40,12 @@ def make_atlauncher_manifest(
 def main():
     with open("group_vars/mc.yml") as group_yml:
         group_vars = yaml.safe_load(group_yml)
-
     minecraft_ver = group_vars["minecraft_ver"]
     forge_ver = group_vars["forge_ver"]
+    logging.info(
+        "group_vars loaded w/ settings:\n -- "
+        + f"MC version {minecraft_ver}, Forge version {forge_ver}"
+    )
 
     host_vars = {}
     for file in os.listdir("host_vars"):
@@ -49,18 +56,39 @@ def main():
 
         with open(f"host_vars/{file}") as host_yml:
             host_vars[hostname] = yaml.safe_load(host_yml)
+    logging.info(
+        f"host_vars loaded w/ {len(host_vars)} host(s):\n -- "
+        + ", ".join(host_vars.keys())
+    )
+
+    # verify file structure
+    if not os.path.exists("out"):
+        os.mkdir("out")
+    if not os.path.exists("out/tmp"):
+        os.mkdir("out/tmp")
 
     for host in host_vars:
-        for instance in host_vars[host]["instances"]:
+        instances = host_vars[host]["instances"]
+        logging.info(
+            f"{host} has {len(instances)} instance(s):\n -- "
+            + ", ".join([i["name"] for i in instances])
+        )
+        for instance in instances:
             mods = instance["mods"]
             name = f"{host}-{instance['name']}"
             manifest = make_atlauncher_manifest(
                 minecraft_ver, forge_ver, name, AUTHOR, mods
             )
-            with open(f"out/manifest/manifest.json", "w") as file:
+            with open(f"out/tmp/manifest.json", "w") as file:
                 file.write(json.dumps(manifest, indent=4))
-            shutil.make_archive(f"out/{name}", "zip", "out/manifest")
+            shutil.make_archive(f"out/{name}", "zip", "out/tmp")
+            logging.info(f"{name} completed")
 
+    # clean up
+    os.remove("out/tmp/manifest.json")
+    os.rmdir("out/tmp")
+
+    logging.info(f"Done")
     return 0
 
 
