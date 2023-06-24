@@ -1,24 +1,17 @@
-FROM amazoncorretto:20-alpine
+FROM amazoncorretto:20
 
 WORKDIR /fmcs
 # Install Forge Server
-RUN wget -O forge-{{ minecraft_ver }}-{{ forge_ver }}-installer.jar https://maven.minecraftforge.net/net/minecraftforge/forge/{{ minecraft_ver }}-{{ forge_ver }}/forge-{{ minecraft_ver }}-{{ forge_ver }}-installer.jar
+RUN curl --output forge-{{ minecraft_ver }}-{{ forge_ver }}-installer.jar https://maven.minecraftforge.net/net/minecraftforge/forge/{{ minecraft_ver }}-{{ forge_ver }}/forge-{{ minecraft_ver }}-{{ forge_ver }}-installer.jar
 RUN java -jar forge-{{ minecraft_ver }}-{{ forge_ver }}-installer.jar --installServer
 RUN rm forge-{{ minecraft_ver }}-{{ forge_ver }}-installer.jar
 
 WORKDIR /fmcs/mods
 # Install Mods
 {% for mod in item.mods %}
-RUN wget -O "{{ mod.name }}.jar" https://www.curseforge.com/api/v1/mods/{{ mod.project }}/files/{{ mod.file }}/download
+RUN curl --output "{{ mod.name }}.jar" -L https://www.curseforge.com/api/v1/mods/{{ mod.project }}/files/{{ mod.file }}/download
 {% endfor %}
 
-# Copy in generated items
 WORKDIR /fmcs
 COPY . .
-
-# Jail in user
-RUN adduser -D fmcs
-RUN chown -R fmcs:fmcs /fmcs
-
-USER fmcs
-ENTRYPOINT [ "./run.sh" ]
+ENTRYPOINT [ "/bin/bash", "./run.sh" ]
