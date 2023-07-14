@@ -34,6 +34,9 @@
 #     recursive: true
 #   loop: "{{ instances }}"
 
+##
+# Basic config
+
 - name: Accept EULA
   shell: echo eula=true > ~/build/{{ item.name }}/eula.txt
   loop: "{{ instances }}"
@@ -73,6 +76,31 @@
     mode: 0755
   loop: "{{ instances }}"
 
+##
+# Mod stuff
+
+- name: /config/voicechat
+  file:
+    path: ~/build/{{ item.name }}/config/voicechat/
+    state: directory
+  loop: "{{ instances }}"
+  loop_control:
+    index_var: loop0
+  when: '"simple-voice-chat" in item.mods'
+
+- name: /config/voicechat/voicechat-server.properties.properties
+  ansible.builtin.template:
+    src: voicechat-server.properties.j2
+    dest: ~/build/{{ item.name }}/config/voicechat/voicechat-server.properties
+    mode: 0755
+  loop: "{{ instances }}"
+  loop_control:
+    index_var: loop0
+  when: '"simple-voice-chat" in item.mods'
+
+##
+# Build and run
+
 - name: Prune space before building
   community.docker.docker_prune:
     images: true
@@ -109,15 +137,19 @@
     image: "fmcs-{{ item.name }}:latest"
     state: started
     restart: true
-    network_mode: host
     volumes:
       - "~/worlds/{{ item.name }}:/fmcs/world"
       - "~/logs/{{ item.name }}:/fmcs/logs"
+    ports:
+      - "{{ mcs_base_port + (loop0 * 10) }}:{{ mcs_base_port + (loop0 * 10) }}"
+      - "{{ mcs_base_port + (loop0 * 10) }}:{{ mcs_base_port + (loop0 * 10) }}/udp"
+      - "{{ mcs_base_port + (loop0 * 10) + 1 }}:{{ mcs_base_port + (loop0 * 10) + 1 }}"
+      - "{{ mcs_base_port + (loop0 * 10) + 2 }}:{{ mcs_base_port + (loop0 * 10) + 2 }}/udp"
   loop: "{{ instances }}"
   loop_control:
     index_var: loop0
 
-- name: Set up restart cronjob (6AM UTC)
+- name: Set up restart cronjob (10AM UTC)
   become: true
   become_method: su
   become_user: root
