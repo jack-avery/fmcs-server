@@ -11,8 +11,8 @@
 - name: Generate ops.json
   copy:
     dest: ~/build/{{ item.name }}/ops.json
-    content: "{{ ops | to_json }}"
-  loop: "{{ instances }}"
+    content: "{{ item.operators | to_json }}"
+  loop: "{{ instances_secrets }}"
 
 - name: Move whitelist.json into container
   community.docker.docker_container_copy_into:

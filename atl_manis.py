@@ -26,7 +26,7 @@ def make_atlauncher_manifest(
         "overrides": "overrides",
     }
 
-    for mod in mods:
+    for mod in mods.values():
         mod_manifest = {
             "projectID": mod["project"],
             "fileID": mod["file"],
@@ -38,15 +38,6 @@ def make_atlauncher_manifest(
 
 
 def main():
-    with open("group_vars/mc.yml") as group_yml:
-        group_vars = yaml.safe_load(group_yml)
-    minecraft_ver = group_vars["minecraft_ver"]
-    forge_ver = group_vars["forge_ver"]
-    logging.info(
-        "group_vars loaded w/ settings:\n -- "
-        + f"MC version {minecraft_ver}, Forge version {forge_ver}"
-    )
-
     host_vars = {}
     for file in os.listdir("host_vars"):
         if ".secret." in file:
@@ -74,8 +65,11 @@ def main():
             + ", ".join([i["name"] for i in instances])
         )
         for instance in instances:
+            minecraft_ver = instance["minecraft_ver"]
+            forge_ver = instance["forge_ver"]
             mods = instance["mods"]
             name = f"{host}-{instance['name']}"
+
             manifest = make_atlauncher_manifest(
                 minecraft_ver, forge_ver, name, AUTHOR, mods
             )

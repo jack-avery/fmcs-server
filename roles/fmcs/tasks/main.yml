@@ -3,6 +3,7 @@
   ansible.builtin.include_tasks: secrets.yml
 
 - name: Warn update
+  ignore_errors: true
   rcon:
     address: "{{ inventory_hostname }}"
     port: "{{ mcs_base_port + (loop0 * 10) + 1 }}"
@@ -46,8 +47,8 @@
 - name: Generate ops.json
   copy:
     dest: ~/build/{{ item.name }}/ops.json
-    content: "{{ ops | to_json }}"
-  loop: "{{ instances }}"
+    content: "{{ item.operators | to_json }}"
+  loop: "{{ instances_secrets }}"
 
 - name: /server.properties
   ansible.builtin.template:
@@ -80,7 +81,7 @@
 - name: Build images
   community.docker.docker_image:
     name: "fmcs-{{ item.name }}"
-    tag: "{{ item.name }}-latest"
+    tag: "latest"
     source: build
     build:
       path: ~/build/{{ item.name }}
@@ -91,6 +92,7 @@
   loop: "{{ instances }}"
 
 - name: Announce update now!!
+  ignore_errors: true
   rcon:
     address: "{{ inventory_hostname }}"
     port: "{{ mcs_base_port + (loop0 * 10) + 1 }}"
@@ -104,16 +106,13 @@
 - name: Start
   community.docker.docker_container:
     name: "fmcs-{{ item.name }}"
-    image: "fmcs-{{ item.name }}:{{ item.name }}-latest"
+    image: "fmcs-{{ item.name }}:latest"
     state: started
     restart: true
+    network_mode: host
     volumes:
       - "~/worlds/{{ item.name }}:/fmcs/world"
       - "~/logs/{{ item.name }}:/fmcs/logs"
-    ports:
-      - "{{ mcs_base_port + (loop0 * 10) }}:{{ mcs_base_port + (loop0 * 10) }}"
-      - "{{ mcs_base_port + (loop0 * 10) }}:{{ mcs_base_port + (loop0 * 10) }}/udp"
-      - "{{ mcs_base_port + (loop0 * 10) + 1 }}:{{ mcs_base_port + (loop0 * 10) + 1 }}"
   loop: "{{ instances }}"
   loop_control:
     index_var: loop0
@@ -126,7 +125,7 @@
     name: "fmcs-restart-{{ item.name }}"
     weekday: "*"
     minute: "0"
-    hour: "6"
+    hour: "10"
     job: "docker restart fmcs-{{ item.name }}"
   loop: "{{ instances }}"
   loop_control:
