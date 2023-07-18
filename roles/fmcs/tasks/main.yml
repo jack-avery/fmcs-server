@@ -62,6 +62,14 @@
   loop_control:
     index_var: loop0
 
+- name: /server-icon.png
+  ignore_errors: true
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/{{ inventory_hostname }}/icons/{{ item.name }}.png"
+    dest: ~/build/{{ item.name }}/server-icon.png
+    mode: 0755
+  loop: "{{ instances }}"
+
 - name: /Dockerfile
   ansible.builtin.template:
     src: Dockerfile.j2

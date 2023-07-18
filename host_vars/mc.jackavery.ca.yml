@@ -41,4 +41,29 @@ instances:
         file: 4578181
       simple-voice-chat:
         project: 416089
-        file: 4619127
+        file: 4645805
+
+  - name: "chili-smp"
+    minecraft_ver: "1.20.1"
+    forge_ver: "47.1.0"
+    difficulty: "hard"
+    is_whitelist: "true"
+    gamemode: "survival"
+    maxplayers: 20
+    motd: "Chiliverse SMP"
+    pvp: "true"
+    simdist: 10
+    viewdist: 16
+    mods:
+      xaeros-minimap:
+        project: 263420
+        file: 4593190
+      xaeros-world-map:
+        project: 317780
+        file: 4594991
+      inventory-sorter:
+        project: 240633
+        file: 4578181
+      simple-voice-chat:
+        project: 416089
+        file: 4645805
