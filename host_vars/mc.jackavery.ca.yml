@@ -87,3 +87,9 @@ instances:
       sound-physics-remastered:
         project: 535489
         file: 4584319
+      fabric-language-kotlin:
+        project: 308769
+        file: 4628045
+      ledger:
+        project: 491137
+        file: 4572696
