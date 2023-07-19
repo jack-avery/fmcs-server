@@ -40,6 +40,7 @@ instances:
       xaeros-world-map: https://www.curseforge.com/api/v1/mods/317780/files/4594989/download
       simple-voice-chat: https://www.curseforge.com/api/v1/mods/416089/files/4645807/download
       sound-physics-remastered: https://www.curseforge.com/api/v1/mods/535489/files/4584319/download
+      lithium: https://cdn.modrinth.com/data/gvQqBUqZ/versions/ZSNsJrPI/lithium-fabric-mc1.20.1-0.11.2.jar
 
   - name: "chili-smp"
     minecraft_ver: "1.20.1"
