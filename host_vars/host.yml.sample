@@ -1,0 +1,20 @@
+instances:
+  - name: "unique-internal-name"
+    minecraft_ver: "1.20.1"
+    fabric_ver: "0.14.21"
+    fabric_inst_ver: "0.11.2"
+    difficulty: "easy"
+    is_whitelist: "true" # define whitelist in secret
+    gamemode: "survival"
+    maxplayers: 20
+    motd: "An Ansible-configured Minecraft server"
+    pvp: "false"
+    simdist: 10
+    viewdist: 12
+    mods: # list of mods; visible in "network" tab of inspect element on curseforge; "download"
+      - name: "balm"
+        project: 531761
+        file: 4584620
+      - name: "waystones"
+        project: 245755
+        file: 4584510
