@@ -37,6 +37,9 @@ instances:
       fabric-api:
         project: 306612
         file: 4622908
+      inventory-sorting:
+        project: 325471
+        file: 4597704
       xaeros-minimap:
         project: 263420
         file: 4593188
@@ -69,6 +72,9 @@ instances:
       fabric-api:
         project: 306612
         file: 4622908
+      inventory-sorting:
+        project: 325471
+        file: 4597704
       xaeros-minimap:
         project: 263420
         file: 4593188
