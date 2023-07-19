@@ -21,7 +21,9 @@ instances:
   - name: "chili"
     minecraft_ver: "1.20.1"
     forge_ver: "47.1.0"
+    seed: ""
     difficulty: "hard"
+    hardcore: "false"
     is_whitelist: "true"
     gamemode: "survival"
     maxplayers: 20
@@ -46,7 +48,9 @@ instances:
   - name: "chili-smp"
     minecraft_ver: "1.20.1"
     forge_ver: "47.1.0"
+    seed: ""
     difficulty: "hard"
+    hardcore: "false"
     is_whitelist: "true"
     gamemode: "survival"
     maxplayers: 20
