@@ -11,10 +11,7 @@ instances:
     pvp: "false"
     simdist: 10
     viewdist: 12
-    mods: # list of mods; visible in "network" tab of inspect element on curseforge; "download"
-      - name: "balm"
-        project: 531761
-        file: 4584620
-      - name: "waystones"
-        project: 245755
-        file: 4584510
+    mods: # list of mods; direct download link from website
+      balm: https://www.curseforge.com/api/v1/mods/500525/files/4597439/download
+      waystones: https://www.curseforge.com/api/v1/mods/500087/files/4635403/download
+      lithium: https://cdn.modrinth.com/data/gvQqBUqZ/versions/ZSNsJrPI/lithium-fabric-mc1.20.1-0.11.2.jar

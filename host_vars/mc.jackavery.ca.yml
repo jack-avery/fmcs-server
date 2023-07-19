@@ -1,7 +1,8 @@
 instances:
   # - name: "fungus"
   #   minecraft_ver: "1.20.1"
-  #   forge_ver: "47.1.0"
+  #   fabric_ver: "0.14.21"
+  #   fabric_inst_ver: "0.11.2"
   #   difficulty: "easy"
   #   is_whitelist: "true"
   #   gamemode: "survival"
@@ -11,12 +12,8 @@ instances:
   #   simdist: 10
   #   viewdist: 12
   #   mods:
-  #     - name: "balm"
-  #       project: 531761
-  #       file: 4584620
-  #     - name: "waystones"
-  #       project: 245755
-  #       file: 4584510
+  #     balm: https://www.curseforge.com/api/v1/mods/500525/files/4597439/download
+  #     waystones: https://www.curseforge.com/api/v1/mods/500087/files/4635403/download
 
   - name: "chili"
     minecraft_ver: "1.20.1"
