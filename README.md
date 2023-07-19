@@ -14,14 +14,13 @@ Ansible requires Linux. If you're running Windows, consider setting up WSL.
 
 ### Creating servers
 1. Build your Ansible inventory and global/host variables using the samples:
-> host_vars/host.secret.yml.sample
-> host_vars/host.yml.sample
+> * host_vars/host.secret.yml.sample
+> * host_vars/host.yml.sample
 2. Trigger `make fmcs` to build images and run servers.
 
 ### Updating ops/whitelist
 1. Trigger `make perms`.<br/>
--- Define ops in `mc.secret.yml`<br/>
--- Define whitelists in `{host}.secret.yml`
+-- Define ops/whitelist in `{host}.secret.yml`
 
 ### Creating ATLauncher instance .zip
 1. Trigger `make atl`.<br/>
