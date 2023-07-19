@@ -6,8 +6,8 @@ RUN wget -O fabric-server-mc.{{ item.minecraft_ver }}-loader.{{ item.fabric_ver 
 
 WORKDIR /fmcs/mods
 # Install Mods
-{% for mod, v in item.mods.items() %}
-RUN wget -O "{{ mod }}.jar" https://www.curseforge.com/api/v1/mods/{{ v.project }}/files/{{ v.file }}/download
+{% for mod, link in item.mods.items() %}
+RUN wget -O "{{ mod }}.jar" {{ link }}
 {% endfor %}
 
 # Copy in generated items
