@@ -20,7 +20,9 @@ instances:
 
   - name: "chili"
     minecraft_ver: "1.20.1"
-    forge_ver: "47.1.0"
+    fabric_ver: "0.14.21"
+    fabric_inst_ver: "0.11.2"
+    ram: "3G"
     seed: ""
     difficulty: "hard"
     hardcore: "false"
@@ -32,22 +34,24 @@ instances:
     simdist: 10
     viewdist: 16
     mods:
+      fabric-api:
+        project: 306612
+        file: 4622908
       xaeros-minimap:
         project: 263420
-        file: 4593190
+        file: 4593188
       xaeros-world-map:
         project: 317780
-        file: 4594991
-      inventory-sorter:
-        project: 240633
-        file: 4578181
+        file: 4594989
       simple-voice-chat:
         project: 416089
-        file: 4645805
+        file: 4645807
 
   - name: "chili-smp"
     minecraft_ver: "1.20.1"
-    forge_ver: "47.1.0"
+    fabric_ver: "0.14.21"
+    fabric_inst_ver: "0.11.2"
+    ram: "3G"
     seed: ""
     difficulty: "hard"
     hardcore: "false"
@@ -59,15 +63,15 @@ instances:
     simdist: 10
     viewdist: 16
     mods:
+      fabric-api:
+        project: 306612
+        file: 4622908
       xaeros-minimap:
         project: 263420
-        file: 4593190
+        file: 4593188
       xaeros-world-map:
         project: 317780
-        file: 4594991
-      inventory-sorter:
-        project: 240633
-        file: 4578181
+        file: 4594989
       simple-voice-chat:
         project: 416089
-        file: 4645805
+        file: 4645807

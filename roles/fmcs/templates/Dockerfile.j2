@@ -1,10 +1,8 @@
 FROM amazoncorretto:20-alpine
 
 WORKDIR /fmcs
-# Install Forge Server
-RUN wget -O forge-{{ item.minecraft_ver }}-{{ item.forge_ver }}-installer.jar https://maven.minecraftforge.net/net/minecraftforge/forge/{{ item.minecraft_ver }}-{{ item.forge_ver }}/forge-{{ item.minecraft_ver }}-{{ item.forge_ver }}-installer.jar
-RUN java -jar forge-{{ item.minecraft_ver }}-{{ item.forge_ver }}-installer.jar --installServer
-RUN rm forge-{{ item.minecraft_ver }}-{{ item.forge_ver }}-installer.jar
+# Install Fabric Server
+RUN wget -O fabric-server-mc.{{ item.minecraft_ver }}-loader.{{ item.fabric_ver }}-launcher.{{ item.fabric_inst_ver }}.jar https://meta.fabricmc.net/v2/versions/loader/{{ item.minecraft_ver }}/{{ item.fabric_ver }}/{{ item.fabric_inst_ver }}/server/jar
 
 WORKDIR /fmcs/mods
 # Install Mods
