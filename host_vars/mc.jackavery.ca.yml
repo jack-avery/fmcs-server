@@ -44,7 +44,7 @@ instances:
     fabric_ver: "0.14.21"
     fabric_inst_ver: "0.11.2"
     ram: "3G"
-    seed: ""
+    seed: "4888621265641200900"
     difficulty: "hard"
     hardcore: "false"
     is_whitelist: "true"
