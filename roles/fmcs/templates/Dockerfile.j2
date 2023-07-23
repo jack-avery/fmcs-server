@@ -6,8 +6,10 @@ RUN wget -O fabric-server-mc.{{ item.minecraft_ver }}-loader.{{ item.fabric_ver 
 
 WORKDIR /fmcs/mods
 # Install Mods
-{% for mod, link in item.mods.items() %}
-RUN wget -O "{{ mod }}.jar" {{ link }}
+{% for name, mod in item.mods.items() %}
+{% if mod.mode != "client" %}
+RUN wget -O "{{ mod }}.jar" {{ mod.source }}
+{% endif %}
 {% endfor %}
 
 # Copy in generated items

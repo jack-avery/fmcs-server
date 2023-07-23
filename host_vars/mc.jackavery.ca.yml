@@ -15,6 +15,8 @@ instances:
   #     balm: https://www.curseforge.com/api/v1/mods/500525/files/4597439/download
   #     waystones: https://www.curseforge.com/api/v1/mods/500087/files/4635403/download
 
+
+
   - name: "chili"
     minecraft_ver: "1.20.1"
     fabric_ver: "0.14.21"
@@ -31,13 +33,30 @@ instances:
     simdist: 10
     viewdist: 16
     mods:
-      fabric-api: https://www.curseforge.com/api/v1/mods/306612/files/4622908/download
-      inventory-sorting: https://www.curseforge.com/api/v1/mods/325471/files/4597704/download
-      xaeros-minimap: https://www.curseforge.com/api/v1/mods/263420/files/4593188/download
-      xaeros-world-map: https://www.curseforge.com/api/v1/mods/317780/files/4594989/download
-      simple-voice-chat: https://www.curseforge.com/api/v1/mods/416089/files/4645807/download
-      sound-physics-remastered: https://www.curseforge.com/api/v1/mods/535489/files/4584319/download
-      lithium: https://cdn.modrinth.com/data/gvQqBUqZ/versions/ZSNsJrPI/lithium-fabric-mc1.20.1-0.11.2.jar
+      fabric-api: 
+        source: https://www.curseforge.com/api/v1/mods/306612/files/4622908/download
+        mode: both
+      inventory-sorting: 
+        source: https://www.curseforge.com/api/v1/mods/325471/files/4597704/download
+        mode: both
+      xaeros-minimap: 
+        source: https://www.curseforge.com/api/v1/mods/263420/files/4593188/download
+        mode: both
+      xaeros-world-map: 
+        source: https://www.curseforge.com/api/v1/mods/317780/files/4594989/download
+        mode: both
+      simple-voice-chat: 
+        source: https://www.curseforge.com/api/v1/mods/416089/files/4645807/download
+        mode: both
+      sound-physics-remastered: 
+        source: https://www.curseforge.com/api/v1/mods/535489/files/4584319/download
+        mode: both
+
+      lithium: 
+        source: https://cdn.modrinth.com/data/gvQqBUqZ/versions/ZSNsJrPI/lithium-fabric-mc1.20.1-0.11.2.jar
+        mode: server
+
+
 
   - name: "chili-smp"
     minecraft_ver: "1.20.1"
@@ -55,12 +74,31 @@ instances:
     simdist: 10
     viewdist: 16
     mods:
-      fabric-api: https://www.curseforge.com/api/v1/mods/306612/files/4622908/download
-      inventory-sorting: https://www.curseforge.com/api/v1/mods/325471/files/4597704/download
-      xaeros-minimap: https://www.curseforge.com/api/v1/mods/263420/files/4593188/download
-      xaeros-world-map: https://www.curseforge.com/api/v1/mods/317780/files/4594989/download
-      simple-voice-chat: https://www.curseforge.com/api/v1/mods/416089/files/4645807/download
-      sound-physics-remastered: https://www.curseforge.com/api/v1/mods/535489/files/4584319/download
-      fabric-language-kotlin: https://www.curseforge.com/api/v1/mods/308769/files/4628045/download
-      ledger: https://www.curseforge.com/api/v1/mods/491137/files/4572696/download
-      lithium: https://cdn.modrinth.com/data/gvQqBUqZ/versions/ZSNsJrPI/lithium-fabric-mc1.20.1-0.11.2.jar
+      fabric-api:
+        source: https://www.curseforge.com/api/v1/mods/306612/files/4622908/download
+        mode: both
+      inventory-sorting: 
+        source: https://www.curseforge.com/api/v1/mods/325471/files/4597704/download
+        mode: both
+      xaeros-minimap: 
+        source: https://www.curseforge.com/api/v1/mods/263420/files/4593188/download
+        mode: both
+      xaeros-world-map: 
+        source: https://www.curseforge.com/api/v1/mods/317780/files/4594989/download
+        mode: both
+      simple-voice-chat: 
+        source: https://www.curseforge.com/api/v1/mods/416089/files/4645807/download
+        mode: both
+      sound-physics-remastered: 
+        source: https://www.curseforge.com/api/v1/mods/535489/files/4584319/download
+        mode: both
+
+      fabric-language-kotlin: 
+        source: https://www.curseforge.com/api/v1/mods/308769/files/4628045/download
+        mode: server
+      ledger:
+        source: https://www.curseforge.com/api/v1/mods/491137/files/4572696/download
+        mode: server
+      lithium: 
+        source: https://cdn.modrinth.com/data/gvQqBUqZ/versions/ZSNsJrPI/lithium-fabric-mc1.20.1-0.11.2.jar
+        mode: server

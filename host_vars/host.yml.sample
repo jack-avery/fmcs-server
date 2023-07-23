@@ -12,6 +12,13 @@ instances:
     simdist: 10
     viewdist: 12
     mods: # list of mods; direct download link from website
-      balm: https://www.curseforge.com/api/v1/mods/500525/files/4597439/download
-      waystones: https://www.curseforge.com/api/v1/mods/500087/files/4635403/download
-      lithium: https://cdn.modrinth.com/data/gvQqBUqZ/versions/ZSNsJrPI/lithium-fabric-mc1.20.1-0.11.2.jar
+      balm:
+        source: https://www.curseforge.com/api/v1/mods/500525/files/4597439/download
+        mode: both
+      waystones:
+        source: https://www.curseforge.com/api/v1/mods/500087/files/4635403/download
+        mode: both
+
+      lithium:
+        source: https://cdn.modrinth.com/data/gvQqBUqZ/versions/ZSNsJrPI/lithium-fabric-mc1.20.1-0.11.2.jar
+        mode: server

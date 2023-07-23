@@ -1,8 +1,13 @@
 import json
 import logging
 import os
+import re
 import shutil
 import yaml
+
+CURSEFORGE_RE = re.compile(
+    r"https://www\.curseforge\.com/api/v1/mods/(\d+)/files/(\d+)/download"
+)
 
 AUTHOR = "raspy"
 logging.basicConfig(
@@ -27,9 +32,14 @@ def make_atlauncher_manifest(
     }
 
     for mod in mods.values():
+        if mod["mode"] == "server":
+            continue
+
+        project, file = CURSEFORGE_RE.findall(mod["source"])[0]
+
         mod_manifest = {
-            "projectID": mod["project"],
-            "fileID": mod["file"],
+            "projectID": project,
+            "fileID": file,
             "required": True,
         }
         manifest["files"].append(mod_manifest)
@@ -41,6 +51,9 @@ def main():
     host_vars = {}
     for file in os.listdir("host_vars"):
         if ".secret." in file:
+            continue
+
+        if ".sample" in file:
             continue
 
         hostname = file[: -len(".yml")]
