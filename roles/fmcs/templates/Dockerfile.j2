@@ -8,7 +8,7 @@ WORKDIR /fmcs/mods
 # Install Mods
 {% for name, mod in item.mods.items() %}
 {% if mod.mode != "client" %}
-RUN wget -O "{{ mod }}.jar" {{ mod.source }}
+RUN wget -O "{{ name }}.jar" {{ mod.source }}
 {% endif %}
 {% endfor %}
 
