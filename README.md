@@ -22,6 +22,10 @@ Ansible requires Linux. If you're running Windows, consider setting up WSL.
 1. Trigger `make perms`.<br/>
 -- Define ops/whitelist in `{host}.secret.yml`
 
+### Backing up worlds
+1. Trigger `make backup`.<br/>
+-- Backups will appear in `roles/backup/files/{host}`
+
 ### Creating ATLauncher instance .zip
 1. Trigger `make atl`.<br/>
 -- The manifests are put into the `out` folder
