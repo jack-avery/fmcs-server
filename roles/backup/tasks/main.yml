@@ -20,12 +20,19 @@
     state: directory
     mode: 0755
 
-- name: Create backup directories
+- name: Create remote backup directories
   ansible.builtin.file:
     path: ~/backups/{{ item.name }}
     state: directory
     mode: 0755
   loop: "{{ instances }}"
+
+- name: Create local backup directories
+  ansible.builtin.file:
+    path: "{{ role_path }}/files/{{ inventory_hostname }}"
+    state: directory
+    mode: 0755
+  delegate_to: localhost
 
 - name: Get date for file
   shell: date +%d-%m-%y_%H-%M
@@ -40,8 +47,8 @@
 - name: Copy backups to local
   ansible.posix.synchronize:
     mode: pull
-    src: ~/backups
-    dest: "{{ role_path }}/files/"
+    src: ~/backups/
+    dest: "{{ role_path }}/files/{{ inventory_hostname }}"
 
 - name: Delete backups on remote for space
   ansible.builtin.file:
