@@ -1,0 +1,5 @@
+---
+- name: Create backups of current worlds
+  hosts: mc
+  roles:
+    - backup

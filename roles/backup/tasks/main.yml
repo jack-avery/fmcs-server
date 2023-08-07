@@ -1,0 +1,62 @@
+---
+- name: Load secrets
+  ansible.builtin.include_tasks: secrets.yml
+
+- name: Inform backup (might lag)
+  ignore_errors: true
+  rcon:
+    address: "{{ inventory_hostname }}"
+    port: "{{ mcs_base_port + (loop0 * 10) + 1 }}"
+    password: "{{ item.rcon_pass }}"
+    command: "say Backup triggered, server might lag."
+  loop: "{{ instances_secrets }}"
+  loop_control:
+    index_var: loop0
+  delegate_to: localhost
+
+- name: Create root backup directory
+  ansible.builtin.file:
+    path: ~/backups
+    state: directory
+    mode: 0755
+
+- name: Create backup directories
+  ansible.builtin.file:
+    path: ~/backups/{{ item.name }}
+    state: directory
+    mode: 0755
+  loop: "{{ instances }}"
+
+- name: Get date for file
+  shell: date +%d-%m-%y_%H-%M
+  register: date
+
+- name: Create backups
+  ansible.builtin.archive:
+    path: ~/worlds/{{ item.name }}
+    dest: ~/backups/{{ item.name }}/{{ date.stdout_lines.0 }}.tar.gz
+  loop: "{{ instances }}"
+
+- name: Copy backups to local
+  ansible.posix.synchronize:
+    mode: pull
+    src: ~/backups
+    dest: "{{ role_path }}/files/"
+
+- name: Delete backups on remote for space
+  ansible.builtin.file:
+    state: absent
+    path: ~/backups/{{ item.name }}
+  loop: "{{ instances }}"
+
+- name: Inform backup (might lag)
+  ignore_errors: true
+  rcon:
+    address: "{{ inventory_hostname }}"
+    port: "{{ mcs_base_port + (loop0 * 10) + 1 }}"
+    password: "{{ item.rcon_pass }}"
+    command: "say Backup completed."
+  loop: "{{ instances_secrets }}"
+  loop_control:
+    index_var: loop0
+  delegate_to: localhost
