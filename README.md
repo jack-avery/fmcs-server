@@ -10,7 +10,7 @@ Ansible requires Linux. If you're running Windows, consider setting up WSL.
 
 1. Run `pip install -r requirements.txt` to install Python requirements.
 2. Ensure you have Ansible and Docker installed on your machine.
-3. Ensure your Ansible Hosts have Docker installed, and a user named `mc` with the `docker` role.
+3. Ensure your Ansible Hosts have Docker installed, and a user named `fmcs` with the `docker` role.
 
 ### Creating servers
 1. Build your Ansible inventory and global/host variables using the samples:
