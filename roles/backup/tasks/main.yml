@@ -2,6 +2,21 @@
 - name: Load secrets
   ansible.builtin.include_tasks: secrets.yml
 
+- name: Find expired backups
+  ansible.builtin.find:
+    paths: "{{ role_path }}/files/{{ inventory_hostname }}"
+    age: "{{ delete_backups_after_days }}d"
+    recurse: yes
+  register: old_backups
+  delegate_to: localhost
+
+- name: Delete expired backups
+  ansible.builtin.file:
+    path: "{{ item.path }}" 
+    state: absent
+  with_items: "{{ old_backups.files }}"
+  delegate_to: localhost
+
 - name: Inform backup (might lag)
   ignore_errors: true
   rcon:
@@ -56,7 +71,7 @@
     path: ~/backups/{{ item.name }}
   loop: "{{ instances }}"
 
-- name: Inform backup (might lag)
+- name: Inform backup complete
   ignore_errors: true
   rcon:
     address: "{{ inventory_hostname }}"

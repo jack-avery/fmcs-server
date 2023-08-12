@@ -1,1 +1,2 @@
 mcs_base_port: 25565
+delete_backups_after_days: 7
