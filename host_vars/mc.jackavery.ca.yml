@@ -17,44 +17,44 @@ instances:
 
 
 
-  - name: "chili"
-    minecraft_ver: "1.20.1"
-    fabric_ver: "0.14.21"
-    fabric_inst_ver: "0.11.2"
-    ram: "3G"
-    seed: ""
-    difficulty: "hard"
-    hardcore: "false"
-    is_whitelist: "true"
-    gamemode: "survival"
-    maxplayers: 20
-    motd: "Chiliverse"
-    pvp: "true"
-    simdist: 10
-    viewdist: 16
-    mods:
-      fabric-api: 
-        source: https://www.curseforge.com/api/v1/mods/306612/files/4622908/download
-        mode: both
-      inventory-sorting: 
-        source: https://www.curseforge.com/api/v1/mods/325471/files/4597704/download
-        mode: both
-      xaeros-minimap: 
-        source: https://www.curseforge.com/api/v1/mods/263420/files/4593188/download
-        mode: both
-      xaeros-world-map: 
-        source: https://www.curseforge.com/api/v1/mods/317780/files/4594989/download
-        mode: both
-      simple-voice-chat: 
-        source: https://www.curseforge.com/api/v1/mods/416089/files/4645807/download
-        mode: both
-      sound-physics-remastered: 
-        source: https://www.curseforge.com/api/v1/mods/535489/files/4584319/download
-        mode: both
+  # - name: "chili"
+  #   minecraft_ver: "1.20.1"
+  #   fabric_ver: "0.14.21"
+  #   fabric_inst_ver: "0.11.2"
+  #   ram: "3G"
+  #   seed: ""
+  #   difficulty: "hard"
+  #   hardcore: "false"
+  #   is_whitelist: "true"
+  #   gamemode: "survival"
+  #   maxplayers: 20
+  #   motd: "Chiliverse"
+  #   pvp: "true"
+  #   simdist: 10
+  #   viewdist: 16
+  #   mods:
+  #     fabric-api: 
+  #       source: https://www.curseforge.com/api/v1/mods/306612/files/4622908/download
+  #       mode: both
+  #     inventory-sorting: 
+  #       source: https://www.curseforge.com/api/v1/mods/325471/files/4597704/download
+  #       mode: both
+  #     xaeros-minimap: 
+  #       source: https://www.curseforge.com/api/v1/mods/263420/files/4593188/download
+  #       mode: both
+  #     xaeros-world-map: 
+  #       source: https://www.curseforge.com/api/v1/mods/317780/files/4594989/download
+  #       mode: both
+  #     simple-voice-chat: 
+  #       source: https://www.curseforge.com/api/v1/mods/416089/files/4645807/download
+  #       mode: both
+  #     sound-physics-remastered: 
+  #       source: https://www.curseforge.com/api/v1/mods/535489/files/4584319/download
+  #       mode: both
 
-      lithium: 
-        source: https://cdn.modrinth.com/data/gvQqBUqZ/versions/ZSNsJrPI/lithium-fabric-mc1.20.1-0.11.2.jar
-        mode: server
+  #     lithium: 
+  #       source: https://cdn.modrinth.com/data/gvQqBUqZ/versions/ZSNsJrPI/lithium-fabric-mc1.20.1-0.11.2.jar
+  #       mode: server
 
 
 
@@ -62,7 +62,7 @@ instances:
     minecraft_ver: "1.20.1"
     fabric_ver: "0.14.21"
     fabric_inst_ver: "0.11.2"
-    ram: "4G"
+    ram: "7G"
     seed: "4888621265641200900"
     difficulty: "hard"
     hardcore: "false"
