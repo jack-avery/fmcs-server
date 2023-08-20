@@ -144,7 +144,7 @@
     name: "fmcs-{{ item.name }}"
     image: "fmcs-{{ item.name }}:latest"
     state: started
-    restart: true
+    restart_policy: "unless-stopped"
     volumes:
       - "~/worlds/{{ item.name }}:/fmcs/world"
       - "~/logs/{{ item.name }}:/fmcs/logs"
