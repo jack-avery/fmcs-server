@@ -139,6 +139,18 @@
     index_var: loop0
   delegate_to: localhost
 
+- name: (Attempt to?) save current world state
+  ignore_errors: true
+  rcon:
+    address: "{{ inventory_hostname }}"
+    port: "{{ mcs_base_port + (loop0 * 10) + 1 }}"
+    password: "{{ item.rcon_pass }}"
+    command: "save-all"
+  loop: "{{ instances_secrets }}"
+  loop_control:
+    index_var: loop0
+  delegate_to: localhost
+
 - name: Start
   community.docker.docker_container:
     name: "fmcs-{{ item.name }}"
