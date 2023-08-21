@@ -96,7 +96,7 @@
     index_var: loop0
   when: '"simple-voice-chat" in item.mods'
 
-- name: /config/voicechat/voicechat-server.properties.properties
+- name: /config/voicechat/voicechat-server.properties
   ansible.builtin.template:
     src: voicechat-server.properties.j2
     dest: ~/build/{{ item.name }}/config/voicechat/voicechat-server.properties
