@@ -6,20 +6,20 @@
   copy:
     dest: ~/build/{{ item.name }}/whitelist.json
     content: "{{ item.whitelist | to_json }}"
-  loop: "{{ instances_secrets }}"
+  loop: "{{ instances }}"
 
 - name: Generate ops.json
   copy:
     dest: ~/build/{{ item.name }}/ops.json
     content: "{{ item.operators | to_json }}"
-  loop: "{{ instances_secrets }}"
+  loop: "{{ instances }}"
 
 - name: Move whitelist.json into container
   community.docker.docker_container_copy_into:
     container: "fmcs-{{ item.name }}"
     path: ~/build/{{ item.name }}/whitelist.json
     container_path: /fmcs/whitelist.json
-  loop: "{{ instances_secrets }}"
+  loop: "{{ instances }}"
   delegate_to: "{{ inventory_hostname }}"
 
 - name: Move ops.json into container
@@ -27,7 +27,7 @@
     container: "fmcs-{{ item.name }}"
     path: ~/build/{{ item.name }}/ops.json
     container_path: /fmcs/ops.json
-  loop: "{{ instances_secrets }}"
+  loop: "{{ instances }}"
   delegate_to: "{{ inventory_hostname }}"
 
 - name: Tell servers to reload whitelist

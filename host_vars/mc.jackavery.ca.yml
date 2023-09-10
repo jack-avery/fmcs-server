@@ -11,9 +11,23 @@ instances:
   #   pvp: "false"
   #   simdist: 10
   #   viewdist: 12
+  #   operators:
+  #     - uuid: 773e05b1-44fe-47be-b61d-95de8e691832
+  #       name: raspy_on_osu
+  #       level: 4
+  #       bypassesPlayerLimit: false
   #   mods:
   #     balm: https://www.curseforge.com/api/v1/mods/500525/files/4597439/download
   #     waystones: https://www.curseforge.com/api/v1/mods/500087/files/4635403/download
+  #   whitelist:
+  #     - uuid: 882e907d-a60e-474f-a0dd-6b2d1572558a
+  #       name: UmberNeno
+  #     - uuid: 14630e8d-fd1e-4195-aeea-72c1525dd041
+  #       name: DJKouta
+  #     - uuid: f55fc8a9-3dab-4718-a8ee-bc90266299b5
+  #       name: coffeekettle
+  #     - uuid: 773e05b1-44fe-47be-b61d-95de8e691832
+  #       name: raspy_on_osu
 
 
 
@@ -32,6 +46,15 @@ instances:
   #   pvp: "true"
   #   simdist: 10
   #   viewdist: 16
+  #   operators:
+  #     - name: raspy_on_osu
+  #       uuid: 773e05b1-44fe-47be-b61d-95de8e691832
+  #       level: 4
+  #       bypassesPlayerLimit: true
+  #     - name: Chili___
+  #       uuid: 3fd45f24-7143-4ef5-af7d-1b6d952ab129
+  #       level: 4
+  #       bypassesPlayerLimit: false
   #   mods:
   #     fabric-api: 
   #       source: https://www.curseforge.com/api/v1/mods/306612/files/4622908/download
@@ -56,6 +79,42 @@ instances:
   #       source: https://cdn.modrinth.com/data/gvQqBUqZ/versions/ZSNsJrPI/lithium-fabric-mc1.20.1-0.11.2.jar
   #       mode: server
 
+  #   whitelist:
+  #     - name: raspy_on_osu
+  #       uuid: 773e05b1-44fe-47be-b61d-95de8e691832
+  #     - name: AFox
+  #       uuid: 541ec34c-a01f-4df8-a63e-07e1867d7148
+  #     - name: camp3r101
+  #       uuid: a3875dc6-73f1-4e84-a6d8-9f507c78df80
+  #     - name: Chili___
+  #       uuid: 3fd45f24-7143-4ef5-af7d-1b6d952ab129
+  #     - name: DavidAndrewGee
+  #       uuid: 479d1d70-651b-485e-afea-da9640a6414b
+  #     - name: Durazorn
+  #       uuid: 3f66933b-fdf1-4960-856e-22c701d90073
+  #     - name: edwr
+  #       uuid: a9d9fc38-234b-4a34-83ce-b18ce09c36ad
+  #     - name: Killrpanda15
+  #       uuid: f5800261-64f7-4092-9fc0-c14cf85668a5
+  #     - name: Megamosquitoast
+  #       uuid: a99033f9-9572-4e02-911b-830dda8ef429
+  #     - name: n0tloc
+  #       uuid: 8a76e1e5-3a14-44ac-8f5c-abcb552b0320
+  #     - name: NEBUL4
+  #       uuid: e7991140-8652-40e5-9666-5353ebeeb921
+  #     - name: ohpapper
+  #       uuid: 9a39e61e-4abb-4e73-9c0f-4e304ca94f87
+  #     - name: retecer
+  #       uuid: 10679261-cd4e-4c46-b235-ca30a2ae19b1
+  #     - name: Thunder_Prophet
+  #       uuid: 8e47971f-1c7d-4fc5-9e24-60aca0f2972f
+  #     - name: TriBeam17
+  #       uuid: 483a75e4-8614-4cd8-8d1c-b4c3bf30fdc2
+  #     - name: Vulcanator
+  #       uuid: ee674f01-82b3-415c-8820-0ae02053b00e
+  #     - name: Xenagoose
+  #       uuid: 99bed82c-f203-4de7-a466-c048ab752b89
+
 
 
   - name: "chili-smp"
@@ -73,6 +132,11 @@ instances:
     pvp: "true"
     simdist: 10
     viewdist: 16
+    operators:
+      - name: raspy_on_osu
+        uuid: 773e05b1-44fe-47be-b61d-95de8e691832
+        level: 4
+        bypassesPlayerLimit: true
     mods:
       fabric-api:
         source: https://www.curseforge.com/api/v1/mods/306612/files/4622908/download
@@ -102,3 +166,65 @@ instances:
       lithium: 
         source: https://cdn.modrinth.com/data/gvQqBUqZ/versions/ZSNsJrPI/lithium-fabric-mc1.20.1-0.11.2.jar
         mode: server
+
+    whitelist:
+      - name: raspy_on_osu
+        uuid: 773e05b1-44fe-47be-b61d-95de8e691832
+      - name: AFox
+        uuid: 541ec34c-a01f-4df8-a63e-07e1867d7148
+      - name: camp3r101
+        uuid: a3875dc6-73f1-4e84-a6d8-9f507c78df80
+      - name: Chili___
+        uuid: 3fd45f24-7143-4ef5-af7d-1b6d952ab129
+      - name: DavidAndrewGee
+        uuid: 479d1d70-651b-485e-afea-da9640a6414b
+      - name: Durazorn
+        uuid: 3f66933b-fdf1-4960-856e-22c701d90073
+      - name: edwr
+        uuid: a9d9fc38-234b-4a34-83ce-b18ce09c36ad
+      - name: Killrpanda15
+        uuid: f5800261-64f7-4092-9fc0-c14cf85668a5
+      - name: Megamosquitoast
+        uuid: a99033f9-9572-4e02-911b-830dda8ef429
+      - name: n0tloc
+        uuid: 8a76e1e5-3a14-44ac-8f5c-abcb552b0320
+      - name: NEBUL4
+        uuid: e7991140-8652-40e5-9666-5353ebeeb921
+      - name: ohpapper
+        uuid: 9a39e61e-4abb-4e73-9c0f-4e304ca94f87
+      - name: retecer
+        uuid: 10679261-cd4e-4c46-b235-ca30a2ae19b1
+      - name: Thunder_Prophet
+        uuid: 8e47971f-1c7d-4fc5-9e24-60aca0f2972f
+      - name: TriBeam17
+        uuid: 483a75e4-8614-4cd8-8d1c-b4c3bf30fdc2
+      - name: Vulcanator
+        uuid: ee674f01-82b3-415c-8820-0ae02053b00e
+      - name: Xenagoose
+        uuid: 99bed82c-f203-4de7-a466-c048ab752b89
+      - name: Theaveragefreak
+        uuid: c0c888d2-780c-40f7-84f2-50d610e9b597
+      - name: Morgan1372
+        uuid: cc869079-8c17-4cef-b191-117fd7d9c3dc
+      - name: aprimdal
+        uuid: fd413877-be2f-4966-8693-76a4fcc043a9
+      - name: JONTTM
+        uuid: a3a4d226-dca3-465e-a906-9302633833a4
+      - name: PositiveKICKTV
+        uuid: d2dbf2d3-f984-4267-b72b-952488092211
+      - name: DaddyxAshley
+        uuid: 4755658a-0016-4563-8e50-aa6e4b319f05
+      - name: Hogman7
+        uuid: fa91e95d-7422-490e-883d-eab0c5337889
+      - name: reclaimmd
+        uuid: baa66154-5599-4995-9974-c84438376cb0
+      - name: A_shorty
+        uuid: 5ca08775-1e83-4ae3-bc51-aecf495a6d57
+      - name: Cheezbeargur
+        uuid: d1404c60-b833-481c-baec-d22a58e61f2f
+      - name: Octopus3535
+        uuid: f9ac419e-7515-4764-89ea-c4575a458293
+      - name: BlueTAO
+        uuid: 3fcc3347-309d-4b5d-ba12-a959bd7a4d04
+      - name: matt8145
+        uuid: 69759d37-6e22-40e3-a9e2-3d03af945283
