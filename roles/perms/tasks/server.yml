@@ -1,7 +1,7 @@
 ---
 - name: Set placeholder names
   set_fact:
-    whitelist: "{{ whitelist | default([]) + [{ 'name': 'placeholder', 'uuid': item.uuid }] }}"
+    whitelist: "{{ whitelist | default([]) + [{ 'name': 'placeholder', 'uuid': item }] }}"
   with_items: "{{ instance.whitelist }}"
 
 - name: Set placeholder names
