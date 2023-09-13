@@ -3,14 +3,14 @@ instances:
     minecraft_ver: "1.20.1"
     fabric_ver: "0.14.21"
     fabric_inst_ver: "0.11.2"
-    difficulty: "easy"
-    is_whitelist: "true" # define whitelist in secret
-    gamemode: "survival"
-    maxplayers: 20
-    motd: "An Ansible-configured Minecraft server"
-    pvp: "false"
-    simdist: 10
-    viewdist: 12
+
+    properties:
+      difficulty: "easy"
+      max-players: 6
+      gamemode: "creative"
+      motd: "My Creative server"
+      pvp: "false"
+      view-distance: 16
 
     operators: # list of server operators, their level and bypassesPlayerLimit value
       - uuid: 773e05b1-44fe-47be-b61d-95de8e691832
