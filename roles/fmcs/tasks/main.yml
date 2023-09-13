@@ -158,9 +158,6 @@
   loop_control:
     index_var: loop0
 
-- name: Set up permissions
-  ansible.builtin.include_tasks: perms.yml
-
 - name: Set up restart cronjob (10AM UTC)
   become: true
   become_method: su
@@ -175,3 +172,12 @@
   loop_control:
     index_var: loop0
   when: ansible_distribution == 'Ubuntu'
+
+- name: Wait 30s for servers to start proper before loading admins
+  ansible.builtin.wait_for:
+    timeout: 30
+  delegate_to: localhost
+
+- name: Set up permissions
+  ansible.builtin.include_role: 
+    name: perms

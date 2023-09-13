@@ -1,0 +1,34 @@
+---
+- name: Set placeholder names
+  set_fact:
+    whitelist: "{{ whitelist | default([]) + [{ 'name': 'placeholder', 'uuid': item.uuid }] }}"
+  with_items: "{{ instance.whitelist }}"
+
+- name: Set placeholder names
+  set_fact:
+    operators: "{{ operators | default([]) + [{ 'name': 'placeholder', 'uuid': item.uuid, 'level': item.level, 'bypassesPlayerLimit': item.bypassesPlayerLimit }] }}"
+  with_items: "{{ instance.operators }}"
+
+- name: Generate whitelist.json
+  copy:
+    dest: ~/build/{{ instance.name }}/whitelist.json
+    content: "{{ whitelist | to_json }}"
+
+- name: Generate ops.json
+  copy:
+    dest: ~/build/{{ instance.name }}/ops.json
+    content: "{{ operators | to_json }}"
+
+- name: Move whitelist.json into container
+  community.docker.docker_container_copy_into:
+    container: "fmcs-{{ instance.name }}"
+    path: ~/build/{{ instance.name }}/whitelist.json
+    container_path: /fmcs/whitelist.json
+  delegate_to: "{{ inventory_hostname }}"
+
+- name: Move ops.json into container
+  community.docker.docker_container_copy_into:
+    container: "fmcs-{{ instance.name }}"
+    path: ~/build/{{ instance.name }}/ops.json
+    container_path: /fmcs/ops.json
+  delegate_to: "{{ inventory_hostname }}"
