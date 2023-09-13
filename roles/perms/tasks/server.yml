@@ -4,11 +4,6 @@
     whitelist: "{{ whitelist | default([]) + [{ 'name': 'placeholder', 'uuid': item }] }}"
   with_items: "{{ instance.whitelist }}"
 
-- name: Set placeholder names
-  set_fact:
-    operators: "{{ operators | default([]) + [{ 'name': 'placeholder', 'uuid': item.uuid, 'level': item.level, 'bypassesPlayerLimit': item.bypassesPlayerLimit }] }}"
-  with_items: "{{ instance.operators }}"
-
 - name: Generate whitelist.json
   copy:
     dest: ~/build/{{ instance.name }}/whitelist.json
@@ -17,7 +12,7 @@
 - name: Generate ops.json
   copy:
     dest: ~/build/{{ instance.name }}/ops.json
-    content: "{{ operators | to_json }}"
+    content: "{{ instance.operators | to_json }}"
 
 - name: Move whitelist.json into container
   community.docker.docker_container_copy_into:

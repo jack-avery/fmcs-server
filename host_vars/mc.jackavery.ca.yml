@@ -122,20 +122,21 @@ instances:
     fabric_ver: "0.14.21"
     fabric_inst_ver: "0.11.2"
     ram: "6G"
-    seed: "4888621265641200900"
-    difficulty: "hard"
-    hardcore: "false"
-    is_whitelist: "true"
-    gamemode: "survival"
-    maxplayers: 20
-    motd: "Chiliverse SMP"
-    pvp: "true"
-    simdist: 10
-    viewdist: 16
+
+    properties:
+      seed: "4888621265641200900"
+      max-players: 20
+      motd: "Chiliverse SMP"
+      view-distance: 16
+      white-list: "true"
+      enforce-whitelist: "true"
+
     operators:
-      - uuid: 773e05b1-44fe-47be-b61d-95de8e691832 # raspy
+      - name: raspy_on_osu
+        uuid: 773e05b1-44fe-47be-b61d-95de8e691832
         level: 4
         bypassesPlayerLimit: true
+
     mods:
       fabric-api:
         source: https://www.curseforge.com/api/v1/mods/306612/files/4622908/download
@@ -152,6 +153,9 @@ instances:
       simple-voice-chat: 
         source: https://www.curseforge.com/api/v1/mods/416089/files/4645807/download
         mode: both
+        settings:
+          spectator_interaction: "true"
+          spectator_player_possession: "true"
       sound-physics-remastered: 
         source: https://www.curseforge.com/api/v1/mods/535489/files/4584319/download
         mode: both

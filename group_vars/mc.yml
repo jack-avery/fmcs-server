@@ -1,2 +1,90 @@
 mcs_base_port: 25565
 delete_backups_after_days: 7
+
+defaults:
+  properties:
+    # Minecraft server properties
+    allow-flight: "true"
+    allow-nether: "true"
+    broadcast-console-to-ops: "true"
+    broadcast-rcon-to-ops: "true"
+    difficulty: "hard"
+    enable-command-block: "true"
+    enable-jmx-monitoring: "false"
+    enable-query: "false"
+    enable-rcon: "true"
+    enable-status: "true"
+    enforce-secure-profile: "true"
+    entity-broadcast-range-percentage: 100
+    force-gamemode: "false"
+    function-permission-level: 2
+    gamemode: "survival"
+    generate-structures: "true"
+    generator-settings: "{}"
+    hardcore: "false"
+    hide-online-players: "false"
+    initial-disabled-packs: 
+    initial-enabled-packs: vanilla
+    level-name: world
+    level-seed: ""
+    level-type: minecraft\:normal
+    max-chained-neighbor-updates: 1000000
+    max-players: 20
+    max-tick-time: 60000
+    max-world-size: 29999984
+    motd: An Ansible-configured Minecraft Server
+    network-compression-threshold: 256
+    online-mode: "true"
+    op-permission-level: 4
+    player-idle-timeout: 0
+    prevent-proxy-connections: "false"
+    pvp: "true"
+    rate-limit: 0
+    require-resource-pack: "false"
+    resource-pack: ""
+    resource-pack-prompt: ""
+    resource-pack-sha1: ""
+    server-ip: ""
+    simulation-distance: 10
+    spawn-animals: "true"
+    spawn-monsters: "true"
+    spawn-npcs: "true"
+    spawn-protection: 0
+    sync-chunk-writes: "true"
+    text-filtering-config: 
+    use-native-transport: "true"
+    view-distance: 12
+    white-list: "false"
+    enforce-whitelist: "false"
+
+  simple-voice-chat:
+    # The distance to where the voice can be heard
+    max_voice_distance: 48.0
+    # The multiplier of the voice distance when crouching
+    crouch_distance_multiplier: 1.0
+    # The multiplier of the voice distance when whispering
+    whisper_distance_multiplier: 0.5
+    # The opus codec
+    # Possible values are 'VOIP', 'AUDIO' and 'RESTRICTED_LOWDELAY'
+    codec: "VOIP"
+    # The maximum size in bytes that voice packets are allowed to have
+    mtu_size: 1024
+    # The frequency at which keep alive packets are sent
+    # Setting this to a higher value may result in timeouts
+    keep_alive: 1000
+    # If group chats are allowed
+    enable_groups: "true"
+    # If players are allowed to record the voice chat
+    allow_recording: "true"
+    # If spectators are allowed to talk to other players
+    spectator_interaction: "false"
+    # If spectators can talk to players they are spectating
+    spectator_player_possession: "false"
+    # If players without the mod should get kicked from the server
+    force_voice_chat: "false"
+    # The amount of milliseconds, the server should wait to check if the player has the mod installed
+    # Only active when force_voice_chat is set to true
+    login_timeout: 10000
+    # The range where the voice chat should broadcast audio to
+    # A value <0 means 'max_voice_distance'
+    broadcast_range: -1.0

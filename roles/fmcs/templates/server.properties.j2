@@ -1,57 +1,16 @@
 # Minecraft server properties
-allow-flight=true
-allow-nether=true
-broadcast-console-to-ops=true
-broadcast-rcon-to-ops=true
-difficulty={{ item.0.difficulty }}
-enable-command-block=true
-enable-jmx-monitoring=false
-enable-query=false
-enable-rcon=true
-enable-status=true
-enforce-secure-profile=true
-enforce-whitelist={{ item.0.is_whitelist }}
-entity-broadcast-range-percentage=100
-force-gamemode=false
-function-permission-level=2
-gamemode={{ item.0.gamemode }}
-generate-structures=true
-generator-settings={}
-hardcore={{ item.0.hardcore }}
-hide-online-players=false
-initial-disabled-packs=
-initial-enabled-packs=vanilla
-level-name=world
-level-seed={{ item.0.seed }}
-level-type=minecraft\:normal
-max-chained-neighbor-updates=1000000
-max-players={{ item.0.maxplayers }}
-max-tick-time=60000
-max-world-size=29999984
-motd={{ item.0.motd }}
-network-compression-threshold=256
-online-mode=true
-op-permission-level=4
-player-idle-timeout=0
-prevent-proxy-connections=false
-pvp={{ item.0.pvp }}
-query.port={{ mcs_base_port + (loop0 * 10) }}
-rate-limit=0
 rcon.password={{ item.1.rcon_pass }}
 rcon.port={{ mcs_base_port + (loop0 * 10) + 1 }}
-require-resource-pack=false
-resource-pack=
-resource-pack-prompt=
-resource-pack-sha1=
-server-ip=
 server-port={{ mcs_base_port + (loop0 * 10) }}
-simulation-distance={{ item.0.simdist }}
-spawn-animals=true
-spawn-monsters=true
-spawn-npcs=true
-spawn-protection=0
-sync-chunk-writes=true
-text-filtering-config=
-use-native-transport=true
-view-distance={{ item.0.viewdist }}
-white-list={{ item.0.is_whitelist }}
+
+{% for k, v in defaults.properties.items() %}
+{% if 'properties' in item.0 %}
+{% if k in item.0.properties %}
+{{ k }}={{ item.0.properties[k] }}
+{% else %}
+{{ k }}={{ v }}
+{% endif %}
+{% else %}
+{{ k }}={{ v }}
+{% endif %}
+{% endfor %}

@@ -7,37 +7,21 @@ port={{ mcs_base_port + (loop0 * 10) + 2 }}
 # Leave empty to use 'server-ip' of server.properties
 # To bind to the wildcard address, use '*'
 bind_address=
-# The distance to where the voice can be heard
-max_voice_distance=48.0
-# The multiplier of the voice distance when crouching
-crouch_distance_multiplier=1.0
-# The multiplier of the voice distance when whispering
-whisper_distance_multiplier=0.5
-# The opus codec
-# Possible values are 'VOIP', 'AUDIO' and 'RESTRICTED_LOWDELAY'
-codec=VOIP
-# The maximum size in bytes that voice packets are allowed to have
-mtu_size=1024
-# The frequency at which keep alive packets are sent
-# Setting this to a higher value may result in timeouts
-keep_alive=1000
-# If group chats are allowed
-enable_groups=true
 # The host name that clients should use to connect to the voice chat
 # This may also include a port, e.g. 'example.com:24454'
 # Don't change this value if you don't know what you are doing
 voice_host=
-# If players are allowed to record the voice chat
-allow_recording=true
-# If spectators are allowed to talk to other players
-spectator_interaction=false
-# If spectators can talk to players they are spectating
-spectator_player_possession=false
-# If players without the mod should get kicked from the server
-force_voice_chat=false
-# The amount of milliseconds, the server should wait to check if the player has the mod installed
-# Only active when force_voice_chat is set to true
-login_timeout=10000
-# The range where the voice chat should broadcast audio to
-# A value <0 means 'max_voice_distance'
-broadcast_range=-1.0
+
+{% for k, v in defaults["simple-voice-chat"].items() %}
+{% if 'simple-voice-chat' in item.mods %}
+{% if 'settings' in item.mods["simple-voice-chat"] %}
+{% if k in item.mods["simple-voice-chat"].settings %}
+{{ k }}={{ item.mods["simple-voice-chat"].settings[k] }}
+{% else %}
+{{ k }}={{ v }}
+{% endif %}
+{% endif %}
+{% else %}
+{{ k }}={{ v }}
+{% endif %}
+{% endfor %}
