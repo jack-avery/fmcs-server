@@ -41,18 +41,6 @@
   shell: echo eula=true > ~/build/{{ item.name }}/eula.txt
   loop: "{{ instances }}"
 
-- name: Generate whitelist.json
-  copy:
-    dest: ~/build/{{ item.name }}/whitelist.json
-    content: "{{ item.whitelist | to_json }}"
-  loop: "{{ instances }}"
-
-- name: Generate ops.json
-  copy:
-    dest: ~/build/{{ item.name }}/ops.json
-    content: "{{ item.operators | to_json }}"
-  loop: "{{ instances }}"
-
 - name: /server.properties
   ansible.builtin.template:
     src: server.properties.j2
@@ -169,6 +157,9 @@
   loop: "{{ instances }}"
   loop_control:
     index_var: loop0
+
+- name: Set up permissions
+  ansible.builtin.include_tasks: perms.yml
 
 - name: Set up restart cronjob (10AM UTC)
   become: true
