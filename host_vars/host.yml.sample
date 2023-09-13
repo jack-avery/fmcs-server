@@ -11,6 +11,12 @@ instances:
     pvp: "false"
     simdist: 10
     viewdist: 12
+
+    operators: # list of server operators, their level and bypassesPlayerLimit value
+      - uuid: 773e05b1-44fe-47be-b61d-95de8e691832
+        level: 4
+        bypassesPlayerLimit: false
+
     mods: # list of mods; direct download link from website
       balm:
         source: https://www.curseforge.com/api/v1/mods/500525/files/4597439/download
@@ -22,3 +28,6 @@ instances:
       lithium:
         source: https://cdn.modrinth.com/data/gvQqBUqZ/versions/ZSNsJrPI/lithium-fabric-mc1.20.1-0.11.2.jar
         mode: server
+
+    whitelist: # list of whitelisted UUIDs
+      - 773e05b1-44fe-47be-b61d-95de8e691832 # raspy_on_osu
