@@ -14,9 +14,9 @@ voice_host=
 
 {% for k, v in defaults["simple-voice-chat"].items() %}
 {% if 'simple-voice-chat' in item.mods %}
-{% if 'settings' in item.mods["simple-voice-chat"] %}
-{% if k in item.mods["simple-voice-chat"].settings %}
-{{ k }}={{ item.mods["simple-voice-chat"].settings[k] }}
+{% if 'properties' in item.mods["simple-voice-chat"] %}
+{% if k in item.mods["simple-voice-chat"].properties %}
+{{ k }}={{ item.mods["simple-voice-chat"].properties[k] }}
 {% else %}
 {{ k }}={{ v }}
 {% endif %}

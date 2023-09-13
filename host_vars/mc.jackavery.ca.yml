@@ -153,7 +153,7 @@ instances:
       simple-voice-chat: 
         source: https://www.curseforge.com/api/v1/mods/416089/files/4645807/download
         mode: both
-        settings:
+        properties:
           spectator_interaction: "true"
           spectator_player_possession: "true"
       sound-physics-remastered: 
