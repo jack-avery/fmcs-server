@@ -11,5 +11,8 @@ perms:
 backup:
 	@ansible-playbook playbooks/backup.yml
 
+relay:
+	@ansible-playbook playbooks/relay.yml
+
 atl:
 	@python atl_manis.py

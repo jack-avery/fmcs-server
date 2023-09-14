@@ -1,0 +1,50 @@
+---
+- name: Delete old build data
+  ansible.builtin.file:
+    state: absent
+    path: ~/build-relay/{{ instance.0.name }}
+
+- name: Create build directory
+  ansible.builtin.file:
+    path: ~/build-relay/{{ instance.0.name }}
+    state: directory
+    mode: 0755
+
+- name: Copy files
+  ansible.posix.synchronize:
+    src: "{{ role_path }}/files/"
+    dest: ~/build-relay/{{ instance.0.name }}
+    recursive: true
+
+- name: Generate config.yml
+  ansible.builtin.template:
+    src: config.yml.j2
+    dest: ~/build-relay/{{ instance.0.name }}/config.yml
+    mode: 0755
+
+- name: Prune space before building
+  community.docker.docker_prune:
+    images: true
+    containers: true
+
+- name: Build image
+  community.docker.docker_image:
+    name: "fmcsr-{{ instance.0.name }}"
+    tag: "latest"
+    source: build
+    build:
+      path: ~/build-relay/{{ instance.0.name }}
+      pull: true
+    state: present
+    force_source: true
+    force_tag: true
+
+- name: Start
+  community.docker.docker_container:
+    name: "fmcsr-{{ instance.0.name }}"
+    image: "fmcsr-{{ instance.0.name }}:latest"
+    state: started
+    restart: true
+    restart_policy: "unless-stopped"
+    volumes:
+      - "~/logs/{{ instance.0.name }}:/bot/logs"

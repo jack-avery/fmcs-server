@@ -1,0 +1,5 @@
+---
+- name: Deploy Discord relay bot
+  hosts: mc
+  roles:
+    - relay

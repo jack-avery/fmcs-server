@@ -123,6 +123,11 @@ instances:
     fabric_inst_ver: "0.11.2"
     ram: "6G"
 
+    relay_bot:
+      enabled: true
+      channel_id: "1151768150510149642"
+      poll_rate: 1
+
     properties:
       seed: "4888621265641200900"
       max-players: 20

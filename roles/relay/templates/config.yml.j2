@@ -1,0 +1,6 @@
+token: {{ relay_bot_token }}
+address: {{ inventory_hostname }}
+rcon_port: {{ mcs_base_port + (loop0 * 10) + 1 }}
+rcon_pass: {{ instance.1.rcon_pass }}
+channel: {{ instance.0.relay_bot.channel_id }}
+poll_rate: {{ instance.0.relay_bot.poll_rate }}

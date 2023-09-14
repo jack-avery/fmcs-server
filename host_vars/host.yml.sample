@@ -4,6 +4,11 @@ instances:
     fabric_ver: "0.14.21"
     fabric_inst_ver: "0.11.2"
 
+    relay_bot:
+      enabled: false
+      channel_id: discord channel ID
+      poll_rate: frequency in seconds
+
     properties:
       difficulty: "easy"
       max-players: 6
