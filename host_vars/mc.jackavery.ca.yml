@@ -132,8 +132,7 @@ instances:
       enforce-whitelist: "true"
 
     operators:
-      - name: raspy_on_osu
-        uuid: 773e05b1-44fe-47be-b61d-95de8e691832
+      - uuid: 773e05b1-44fe-47be-b61d-95de8e691832
         level: 4
         bypassesPlayerLimit: true
 

@@ -24,6 +24,12 @@ instances:
       waystones:
         source: https://www.curseforge.com/api/v1/mods/500087/files/4635403/download
         mode: both
+      simple-voice-chat:
+        source: https://www.curseforge.com/api/v1/mods/416089/files/4645807/download
+        mode: both
+        properties: # mods that support customization have it done under "properties"
+          spectator_interaction: "true"
+          spectator_player_possession: "true"
 
       lithium:
         source: https://cdn.modrinth.com/data/gvQqBUqZ/versions/ZSNsJrPI/lithium-fabric-mc1.20.1-0.11.2.jar
