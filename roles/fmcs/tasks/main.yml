@@ -72,6 +72,12 @@
     mode: 0755
   loop: "{{ instances }}"
 
+- name: Generate perms
+  include_tasks: gen_perms.yml
+  loop: "{{ instances }}"
+  loop_control:
+    loop_var: instance
+
 ##
 # Mod stuff
 
@@ -172,12 +178,3 @@
   loop_control:
     index_var: loop0
   when: ansible_distribution == 'Ubuntu'
-
-- name: Wait 30s for servers to start proper before loading admins
-  ansible.builtin.wait_for:
-    timeout: 30
-  delegate_to: localhost
-
-- name: Set up permissions
-  ansible.builtin.include_role: 
-    name: perms

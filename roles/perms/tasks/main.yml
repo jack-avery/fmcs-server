@@ -1,11 +1,26 @@
 ---
 - name: Load secrets
-  ansible.builtin.include_tasks: secrets.yml
+  include_tasks: secrets.yml
 
-- include_tasks: server.yml
+- name: Generate perms
+  include_tasks: gen_perms.yml
   loop: "{{ instances }}"
   loop_control:
     loop_var: instance
+
+- name: Move whitelist.json into container
+  community.docker.docker_container_copy_into:
+    container: "fmcs-{{ instance.name }}"
+    path: ~/build/{{ instance.name }}/whitelist.json
+    container_path: /fmcs/whitelist.json
+  delegate_to: "{{ inventory_hostname }}"
+
+- name: Move ops.json into container
+  community.docker.docker_container_copy_into:
+    container: "fmcs-{{ instance.name }}"
+    path: ~/build/{{ instance.name }}/ops.json
+    container_path: /fmcs/ops.json
+  delegate_to: "{{ inventory_hostname }}"
 
 - name: Tell servers to reload whitelist
   rcon:
