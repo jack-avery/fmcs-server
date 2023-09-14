@@ -130,7 +130,16 @@ client = DiscordBot()
 @client.tree.command(name="list", description="See online players")
 async def _list(interaction: discord.Interaction) -> None:
     playerlist = rcon("list")
-    await interaction.response.send_message(playerlist)
+    embed = discord.embeds.Embed(color=discord.Color.teal(), description=playerlist)
+    await interaction.response.send_message(embed=embed)
+
+
+@client.tree.command(name="help", description="See available commands")
+async def _help(interaction: discord.Interaction) -> None:
+    commands = await client.tree.fetch_commands()
+    commands = f"Available commands are: {', '.join([c.name for c in commands])}"
+    embed = discord.embeds.Embed(color=discord.Color.teal(), description=commands)
+    await interaction.response.send_message(embed=embed)
 
 
 client.run(CONFIG["token"])
