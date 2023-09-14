@@ -1,6 +1,6 @@
 # fmcs-server
 
-Automatic set-up [Fabric](https://fabricmc.net/) modded Minecraft dedicated servers, supporting identical exports for use with [ATLauncher](https://atlauncher.com/)
+Automatic set-up [Fabric](https://fabricmc.net/) modded Minecraft dedicated servers, supporting identical exports for use with [ATLauncher](https://atlauncher.com/) and a Server <-> Discord relay bot.
 
 Found the playbooks useful? [Buy me a coffee ☕](https://ko-fi.com/raspy)!
 
@@ -22,6 +22,13 @@ Ansible requires Linux. If you're running Windows, consider setting up WSL.
 ### Updating ops/whitelist
 1. Trigger `make perms`.<br/>
 -- Define ops/whitelist in `{host}.yml`
+
+### Running relay bots
+1. Ensure you have the required setup:
+* Discord bot token
+* Guild (Server) and Channel ID
+* Poll rate (recommend 1)
+2. Trigger `make relay`.<br/>
 
 ### Backing up worlds
 1. Trigger `make backup`.<br/>
