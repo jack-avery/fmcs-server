@@ -24,9 +24,6 @@ stdout_handler.setFormatter(formatter)
 log_handlers.append(stdout_handler)
 logging.basicConfig(handlers=log_handlers, level=logging.DEBUG)
 
-# I don't know which to use, so we just do this.
-INTENT = discord.Intents().all()
-
 SERVER_MESSAGE_RE = re.compile(
     r"\[[0-9:]+\] \[Server thread/INFO\]: <([a-zA-Z0-9_]+)> (.+)"
 )
@@ -40,7 +37,8 @@ SERVER_LEAVE_RE = re.compile(
 
 class DiscordBot(discord.Client):
     def __init__(self):
-        discord.Client.__init__(self, intents=INTENT)
+        # I don't know which to use, so we just do this.
+        discord.Client.__init__(self, intents=discord.Intents().all())
 
         self.PREFIX = "r!"
         self.COMMANDS = {
@@ -49,6 +47,8 @@ class DiscordBot(discord.Client):
                 "help": "Show all commands, or help for a specific command.\nUsage: `help <command?>`",
             },
         }
+
+        self.tree = discord.app_commands.CommandTree(self)
 
     async def on_ready(self):
         logging.info("Connected to Discord")
@@ -64,6 +64,10 @@ class DiscordBot(discord.Client):
         asyncio.ensure_future(self.tick(ln))
 
         logging.info("Ready!")
+
+    async def setup_hook(self) -> None:
+        self.tree.copy_global_to(guild=discord.Object(id=CONFIG["guild"]))
+        await self.tree.sync()
 
     async def tick(self, ln):
         with open("logs/latest.log", "r") as log:
@@ -114,7 +118,7 @@ class DiscordBot(discord.Client):
 
         if not msg.startswith(self.PREFIX):
             if message.channel.id == CONFIG["channel"]:
-                send_message(message.author.name, msg)
+                discord_to_server(message.author.name, msg)
 
             return
 
@@ -163,27 +167,29 @@ class ExitCommandWithMessage(Exception):
     pass
 
 
-def rcon(addr: str, port: int, password: str, cmd: str):
-    with Client(addr, port, passwd=password) as client:
+def rcon(cmd: str):
+    with Client(
+        CONFIG["address"], CONFIG["rcon_port"], passwd=CONFIG["rcon_pass"]
+    ) as client:
         response = client.run(cmd)
     return response
 
 
-def send_message(sender: str, msg: str):
+def discord_to_server(sender: str, msg: str):
     rcon(
-        CONFIG["address"],
-        CONFIG["rcon_port"],
-        CONFIG["rcon_pass"],
         'tellraw @a [{"text":"(Discord) ", "color":"blue"}, {"text":"'
         + f"<{sender}> {msg}"
         + '", "color":"white"}]',
     )
 
 
-def main():
-    client = DiscordBot()
-    client.run(CONFIG["token"])
+client = DiscordBot()
 
 
-if __name__ == "__main__":
-    main()
+@client.tree.command(name="list", description="See online players")
+async def _list(interaction: discord.Interaction) -> None:
+    playerlist = rcon("list")
+    await interaction.response.send_message(playerlist)
+
+
+client.run(CONFIG["token"])
