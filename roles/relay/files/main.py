@@ -72,7 +72,7 @@ class DiscordBot(discord.Client):
                         msg = info[1]
 
                         # No.
-                        if "@everyone" or "@here" in msg:
+                        if ("@everyone" in msg) or ("@here" in msg):
                             msg = msg.replace("@", "")
 
                         await self.CHANNEL.send(f"💬 **<{user}>** {msg}")
