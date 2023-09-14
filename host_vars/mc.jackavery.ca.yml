@@ -124,7 +124,6 @@ instances:
     ram: "6G"
 
     relay_bot:
-      enabled: true
       channel_id: "1151768150510149642"
       poll_rate: 1
 

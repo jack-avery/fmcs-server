@@ -1,4 +1,4 @@
-token: {{ relay_bot_token }}
+token: {{ instance.1.relay_bot_token }}
 address: {{ inventory_hostname }}
 rcon_port: {{ mcs_base_port + (loop0 * 10) + 1 }}
 rcon_pass: {{ instance.1.rcon_pass }}

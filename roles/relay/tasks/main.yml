@@ -7,4 +7,4 @@
   loop_control:
     loop_var: instance
     index_var: loop0
-  when: 'instance.0.relay_bot.enabled'
+  when: '"relay_bot" in instance.0'
