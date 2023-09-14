@@ -117,6 +117,7 @@ def rcon(cmd: str):
 
 
 def discord_to_server(sender: str, msg: str):
+    msg = msg.replace('"', "''")
     rcon(
         'tellraw @a [{"text":"(Discord) ", "color":"blue"}, {"text":"'
         + f"<{sender}> {msg}"
