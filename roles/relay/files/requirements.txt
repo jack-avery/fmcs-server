@@ -1,4 +1,5 @@
 asyncio
 discord
-rcon
 pyyaml
+rcon
+requests
