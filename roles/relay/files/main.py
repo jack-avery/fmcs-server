@@ -7,6 +7,7 @@ import yaml
 import logging
 import sys
 import re
+import requests
 
 from rcon.source import Client
 
@@ -40,13 +41,14 @@ class DiscordBot(discord.Client):
         discord.Client.__init__(self, intents=discord.Intents().all())
         self.tree = discord.app_commands.CommandTree(self)
 
-    async def on_ready(self):
+    async def on_ready(self) -> None:
         # record no. lines in log to not send old messages
         with open("logs/latest.log", "r") as log:
             ln = len(log.readlines())
 
         # find relay channel
         self.CHANNEL = self.get_channel(CONFIG["channel"])
+        self.AVATAR_CACHE = dict()
 
         # begin checking log file for changes
         asyncio.ensure_future(self.tick(ln))
@@ -57,7 +59,7 @@ class DiscordBot(discord.Client):
         self.tree.copy_global_to(guild=discord.Object(id=CONFIG["guild"]))
         await self.tree.sync()
 
-    async def tick(self, ln):
+    async def tick(self, ln) -> None:
         with open("logs/latest.log", "r") as log:
             while True:
                 lines = log.readlines()
@@ -75,30 +77,54 @@ class DiscordBot(discord.Client):
                         if ("@everyone" in msg) or ("@here" in msg):
                             msg = msg.replace("@", "")
 
-                        await self.CHANNEL.send(f"💬 **<{user}>** {msg}")
+                        embed = discord.embeds.Embed(
+                            color=discord.Color.teal(), description=msg
+                        )
+                        embed.set_author(
+                            name=user, icon_url=await self.get_player_avatar(user)
+                        )
+
+                        await self.CHANNEL.send(embed=embed)
                         continue
 
                     elif SERVER_JOIN_RE.match(line):
                         user = SERVER_JOIN_RE.findall(line)[0]
 
-                        await self.CHANNEL.send(f"📥 **{user}** joined the server")
+                        embed = discord.embeds.Embed(color=discord.Color.green())
+                        embed.set_author(
+                            name=f"📥 {user} joined the server",
+                            icon_url=await self.get_player_avatar(user),
+                        )
+
+                        await self.CHANNEL.send(embed=embed)
                         continue
 
                     elif SERVER_LEAVE_RE.match(line):
                         user = SERVER_LEAVE_RE.findall(line)[0]
 
-                        await self.CHANNEL.send(f"📤 **{user}** left the server")
+                        embed = discord.embeds.Embed(color=discord.Color.red())
+                        embed.set_author(
+                            name=f"📤 {user} left the server",
+                            icon_url=await self.get_player_avatar(user),
+                        )
+
+                        await self.CHANNEL.send(embed=embed)
                         continue
 
                 await asyncio.sleep(CONFIG["poll_rate"])
 
-    ###
-    #
-    #   Command bootstrap
-    #
-    ##
+    async def get_player_avatar(self, username: str) -> str:
+        if username not in self.AVATAR_CACHE:
+            r = requests.get(f"https://playerdb.co/api/player/minecraft/{username}")
+            if r.status_code != 200:
+                return False
 
-    async def on_message(self, message: discord.Message):
+            r = r.json()
+            self.AVATAR_CACHE[username] = r["data"]["player"]["avatar"]
+
+        return self.AVATAR_CACHE[username]
+
+    async def on_message(self, message: discord.Message) -> None:
         if message.author == self.user:
             return
 
