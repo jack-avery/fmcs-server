@@ -7,7 +7,6 @@ import yaml
 import logging
 import sys
 import re
-import traceback
 
 from rcon.source import Client
 
@@ -39,20 +38,9 @@ class DiscordBot(discord.Client):
     def __init__(self):
         # I don't know which to use, so we just do this.
         discord.Client.__init__(self, intents=discord.Intents().all())
-
-        self.PREFIX = "r!"
-        self.COMMANDS = {
-            "help": {
-                "func": self.help,
-                "help": "Show all commands, or help for a specific command.\nUsage: `help <command?>`",
-            },
-        }
-
         self.tree = discord.app_commands.CommandTree(self)
 
     async def on_ready(self):
-        logging.info("Connected to Discord")
-
         # record no. lines in log to not send old messages
         with open("logs/latest.log", "r") as log:
             ln = len(log.readlines())
@@ -116,55 +104,8 @@ class DiscordBot(discord.Client):
 
         msg = message.content
 
-        if not msg.startswith(self.PREFIX):
-            if message.channel.id == CONFIG["channel"]:
-                discord_to_server(message.author.name, msg)
-
-            return
-
-        msg_cmd = msg[len(self.PREFIX) :].split(" ")
-        args = msg_cmd[1:]
-        cmd = msg_cmd[0]
-
-        if cmd not in self.COMMANDS:
-            return
-
-        result = await self.run_command(cmd, message, args)
-        if result:
-            await message.channel.send(result)
-
-    async def run_command(self, cmd, message: discord.Message, args):
-        try:
-            logging.info(f"Running command {cmd} (args:{args}) from {message.author}")
-            return await self.COMMANDS[cmd]["func"](message, args)
-
-        except ExitCommandWithMessage as msg:
-            return msg
-
-        except Exception:
-            logging.error(traceback.format_exc())
-            return f"Something went wrong! See logs for a stack trace. Raise an issue on the GitHub! <https://github.com/jack-avery/fmcs-server>"
-
-    ###
-    #
-    #   Commands
-    #
-    ###
-
-    async def help(self, message: discord.Message, args):
-        if args:
-            cmd = args[0]
-            if cmd in self.COMMANDS:
-                return self.COMMANDS[cmd]["help"]
-
-        return (
-            f"Available commands: {', '.join(self.COMMANDS)}"
-            + f"\nYou can show help for a specific command using `help <command>`."
-        )
-
-
-class ExitCommandWithMessage(Exception):
-    pass
+        if message.channel.id == CONFIG["channel"]:
+            discord_to_server(message.author.name, msg)
 
 
 def rcon(cmd: str):
