@@ -4,6 +4,7 @@ rcon_port: {{ mcs_base_port + (loop0 * 10) + 1 }}
 rcon_pass: {{ instance.1.rcon_pass }}
 channel: {{ instance.0.relay_bot.channel }}
 poll_rate: {% if 'poll_rate' in instance.0.relay_bot %}{{ instance.0.relay_bot.poll_rate }}{% else %}{{ defaults.relay_bot.poll_rate }}{% endif %}
+
 rcon_users:
 {% for user in instance.0.relay_bot.rcon_users %}
   - {{ user }}
