@@ -145,6 +145,11 @@
     index_var: loop0
   delegate_to: localhost
 
+- name: Create network for relay
+  community.docker.docker_network:
+    name: "fmcsn-{{ item.name }}"
+  loop: "{{ instances }}"
+
 - name: Start
   community.docker.docker_container:
     name: "fmcs-{{ item.name }}"
@@ -152,6 +157,8 @@
     state: started
     restart: true
     restart_policy: "unless-stopped"
+    networks:
+      - name: "fmcsn-{{ item.name }}"
     volumes:
       - "~/worlds/{{ item.name }}:/fmcs/world"
       - "~/logs/{{ item.name }}:/fmcs/logs"

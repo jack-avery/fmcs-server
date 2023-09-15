@@ -46,6 +46,8 @@
     state: started
     restart: true
     restart_policy: "unless-stopped"
+    networks:
+      - name: "fmcsn-{{ instance.0.name }}"
     volumes:
       - "~/logs/{{ instance.0.name }}:/bot/logs"
 

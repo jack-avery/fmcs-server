@@ -1,5 +1,5 @@
 token: {{ instance.1.relay_bot_token }}
-address: {{ ansible_host }}
+address: fmcs-{{ instance.0.name }}
 rcon_port: {{ mcs_base_port + (loop0 * 10) + 1 }}
 rcon_pass: {{ instance.1.rcon_pass }}
 channel: {{ instance.0.relay_bot.channel }}
