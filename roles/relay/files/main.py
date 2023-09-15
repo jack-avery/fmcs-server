@@ -42,16 +42,12 @@ class DiscordBot(discord.Client):
         self.tree = discord.app_commands.CommandTree(self)
 
     async def on_ready(self) -> None:
-        # record no. lines in log to not send old messages
-        with open("logs/latest.log", "r") as log:
-            ln = len(log.readlines())
-
         # find relay channel
         self.CHANNEL = self.get_channel(CONFIG["channel"])
         self.AVATAR_CACHE = dict()
 
         # begin checking log file for changes
-        asyncio.ensure_future(self.tick(ln))
+        asyncio.ensure_future(self.tick())
 
         logging.info("Ready!")
 
@@ -59,13 +55,13 @@ class DiscordBot(discord.Client):
         self.tree.copy_global_to(guild=discord.Object(id=CONFIG["guild"]))
         await self.tree.sync()
 
-    async def tick(self, ln) -> None:
+    async def tick(self) -> None:
         with open("logs/latest.log", "r") as log:
+            # consume existing lines
+            log.readlines()
+
             while True:
                 lines = log.readlines()
-                _ln = len(lines)
-                lines = lines[ln:]
-                ln = _ln
 
                 for line in lines:
                     if SERVER_MESSAGE_RE.match(line):
@@ -85,7 +81,6 @@ class DiscordBot(discord.Client):
                         )
 
                         await self.CHANNEL.send(embed=embed)
-                        continue
 
                     elif SERVER_JOIN_RE.match(line):
                         user = SERVER_JOIN_RE.findall(line)[0]
@@ -97,7 +92,6 @@ class DiscordBot(discord.Client):
                         )
 
                         await self.CHANNEL.send(embed=embed)
-                        continue
 
                     elif SERVER_LEAVE_RE.match(line):
                         user = SERVER_LEAVE_RE.findall(line)[0]
@@ -109,7 +103,6 @@ class DiscordBot(discord.Client):
                         )
 
                         await self.CHANNEL.send(embed=embed)
-                        continue
 
                 await asyncio.sleep(CONFIG["poll_rate"])
 
@@ -131,7 +124,7 @@ class DiscordBot(discord.Client):
         msg = message.content
 
         if message.channel.id == CONFIG["channel"]:
-            discord_to_server(message.author.name, msg)
+            discord_to_server(message.author.name, msg, len(message.attachments) != 0)
 
 
 def rcon(cmd: str):
@@ -142,8 +135,19 @@ def rcon(cmd: str):
     return response
 
 
-def discord_to_server(sender: str, msg: str):
+def discord_to_server(sender: str, msg: str, has_att: bool):
+    # sanitize: remove \ and "
     msg = msg.replace('"', "''")
+    msg = msg.replace("\\", "")
+
+    # max minecraft message length is 256;
+    # " [...] (attachment)" (19) on max length 236+19=255
+    if len(msg) > 242:
+        msg = msg[:235] + " [...]"
+
+    if has_att:
+        msg = msg + " (attachment)"
+
     rcon(
         'tellraw @a [{"text":"(Discord) ", "color":"blue"}, {"text":"'
         + f"<{sender}> {msg}"
