@@ -54,7 +54,7 @@ class DiscordBot(discord.Client):
             await self.tree.sync()
 
             # begin checking log file for changes
-            # asyncio.ensure_future(self.tick())
+            asyncio.ensure_future(self.tick())
 
             logging.info("Ready!")
             self.SETUP = True
