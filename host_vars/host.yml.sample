@@ -5,8 +5,7 @@ instances:
     fabric_inst_ver: "0.11.2"
 
     relay_bot:
-      guild_id: discord server ID
-      channel_id: discord channel ID
+      channel: discord channel ID
       poll_rate: frequency in seconds
 
     properties:

@@ -124,8 +124,7 @@ instances:
     ram: "6G"
 
     relay_bot:
-      guild_id: "263208248843173888"
-      channel_id: "1151768150510149642"
+      channel: 1151768150510149642
       poll_rate: 1
 
     properties:

@@ -2,6 +2,9 @@ mcs_base_port: 25565
 delete_backups_after_days: 7
 
 defaults:
+  relay_bot:
+    poll_rate: 1
+
   properties:
     # Minecraft server properties
     allow-flight: "true"

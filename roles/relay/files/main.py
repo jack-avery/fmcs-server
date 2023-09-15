@@ -41,20 +41,23 @@ class DiscordBot(discord.Client):
         # I don't know which to use, so we just do this.
         discord.Client.__init__(self, intents=discord.Intents().all())
         self.tree = discord.app_commands.CommandTree(self)
+        self.SETUP = False
 
     async def on_ready(self) -> None:
-        # find relay channel
-        self.CHANNEL = self.get_channel(CONFIG["channel"])
-        self.AVATAR_CACHE = dict()
+        if not self.SETUP:
+            # find relay channel
+            self.CHANNEL = self.get_channel(CONFIG["channel"])
+            self.AVATAR_CACHE = dict()
 
-        # begin checking log file for changes
-        asyncio.ensure_future(self.tick())
+            # get guild from channel; add commands
+            self.tree.copy_global_to(guild=discord.Object(id=self.CHANNEL.guild.id))
+            await self.tree.sync()
 
-        logging.info("Ready!")
+            # begin checking log file for changes
+            asyncio.ensure_future(self.tick())
 
-    async def setup_hook(self) -> None:
-        self.tree.copy_global_to(guild=discord.Object(id=CONFIG["guild"]))
-        await self.tree.sync()
+            logging.info("Ready!")
+            self.SETUP = True
 
     async def tick(self) -> None:
         with open("logs/latest.log", "r") as log:

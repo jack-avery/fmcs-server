@@ -2,6 +2,5 @@ token: {{ instance.1.relay_bot_token }}
 address: {{ inventory_hostname }}
 rcon_port: {{ mcs_base_port + (loop0 * 10) + 1 }}
 rcon_pass: {{ instance.1.rcon_pass }}
-guild: {{ instance.0.relay_bot.guild_id }}
-channel: {{ instance.0.relay_bot.channel_id }}
-poll_rate: {{ instance.0.relay_bot.poll_rate }}
+channel: {{ instance.0.relay_bot.channel }}
+poll_rate: {% if 'poll_rate' in instance.0.relay_bot %}{{ instance.0.relay_bot.poll_rate }}{% else %}{{ defaults.relay_bot.poll_rate }}{% endif %}
