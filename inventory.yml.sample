@@ -1,0 +1,6 @@
+all:
+  children:
+    mc:
+      hosts:
+        my_minecraft_host:
+          ansible_host: ip or url

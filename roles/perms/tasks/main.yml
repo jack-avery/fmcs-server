@@ -10,21 +10,23 @@
 
 - name: Move whitelist.json into container
   community.docker.docker_container_copy_into:
-    container: "fmcs-{{ instance.name }}"
-    path: ~/build/{{ instance.name }}/whitelist.json
+    container: "fmcs-{{ item.name }}"
+    path: ~/build/{{ item.name }}/whitelist.json
     container_path: /fmcs/whitelist.json
-  delegate_to: "{{ inventory_hostname }}"
+  loop: "{{ instances }}"
+  delegate_to: "{{ ansible_host }}"
 
 - name: Move ops.json into container
   community.docker.docker_container_copy_into:
-    container: "fmcs-{{ instance.name }}"
-    path: ~/build/{{ instance.name }}/ops.json
+    container: "fmcs-{{ item.name }}"
+    path: ~/build/{{ item.name }}/ops.json
     container_path: /fmcs/ops.json
-  delegate_to: "{{ inventory_hostname }}"
+  loop: "{{ instances }}"
+  delegate_to: "{{ ansible_host }}"
 
 - name: Tell servers to reload whitelist
   rcon:
-    address: "{{ inventory_hostname }}"
+    address: "{{ ansible_host }}"
     port: "{{ mcs_base_port + (loop0 * 10) + 1 }}"
     password: "{{ item.rcon_pass }}"
     command: "whitelist reload"
@@ -36,7 +38,7 @@
 - name: Inform whitelist update
   ignore_errors: true
   rcon:
-    address: "{{ inventory_hostname }}"
+    address: "{{ ansible_host }}"
     port: "{{ mcs_base_port + (loop0 * 10) + 1 }}"
     password: "{{ item.rcon_pass }}"
     command: "say Whitelist updated."

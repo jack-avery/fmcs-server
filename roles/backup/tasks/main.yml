@@ -20,7 +20,7 @@
 - name: Inform backup (might lag)
   ignore_errors: true
   rcon:
-    address: "{{ inventory_hostname }}"
+    address: "{{ ansible_host }}"
     port: "{{ mcs_base_port + (loop0 * 10) + 1 }}"
     password: "{{ item.rcon_pass }}"
     command: "say Backup triggered, server might lag."
@@ -32,7 +32,7 @@
 - name: (Attempt to?) save current world state
   ignore_errors: true
   rcon:
-    address: "{{ inventory_hostname }}"
+    address: "{{ ansible_host }}"
     port: "{{ mcs_base_port + (loop0 * 10) + 1 }}"
     password: "{{ item.rcon_pass }}"
     command: "save-all"
@@ -86,7 +86,7 @@
 - name: Inform backup complete
   ignore_errors: true
   rcon:
-    address: "{{ inventory_hostname }}"
+    address: "{{ ansible_host }}"
     port: "{{ mcs_base_port + (loop0 * 10) + 1 }}"
     password: "{{ item.rcon_pass }}"
     command: "say Backup completed."
