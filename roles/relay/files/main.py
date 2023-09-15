@@ -208,7 +208,7 @@ async def _rcon(interaction: discord.Interaction, command: str) -> None:
         return
 
     response = rcon(command)
-    if response == b"":
+    if len(response) == 0:
         response = "*Command does not have a response*"
 
     embed = discord.embeds.Embed(
