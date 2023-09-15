@@ -1,14 +1,14 @@
-FROM amazoncorretto:20-alpine
+FROM amazoncorretto:20
 
 WORKDIR /fmcs
 # Install Fabric Server
-RUN wget -O fabric-server-mc.{{ item.minecraft_ver }}-loader.{{ item.fabric_ver }}-launcher.{{ item.fabric_inst_ver }}.jar https://meta.fabricmc.net/v2/versions/loader/{{ item.minecraft_ver }}/{{ item.fabric_ver }}/{{ item.fabric_inst_ver }}/server/jar
+RUN curl -L -o fabric-server-mc.{{ item.minecraft_ver }}-loader.{{ item.fabric_ver }}-launcher.{{ item.fabric_inst_ver }}.jar https://meta.fabricmc.net/v2/versions/loader/{{ item.minecraft_ver }}/{{ item.fabric_ver }}/{{ item.fabric_inst_ver }}/server/jar
 
 WORKDIR /fmcs/mods
 # Install Mods
 {% for name, mod in item.mods.items() %}
 {% if mod.mode != "client" %}
-RUN wget -O "{{ name }}.jar" {{ mod.source }}
+RUN curl -L -o "{{ name }}.jar" {{ mod.source }}
 {% endif %}
 {% endfor %}
 
