@@ -24,6 +24,7 @@ stdout_handler.setFormatter(formatter)
 log_handlers.append(stdout_handler)
 logging.basicConfig(handlers=log_handlers, level=logging.DEBUG)
 
+SERVER_LIST_RE = re.compile(r"There are (\d+) of a max of (\d+) players online: (.+)?")
 SERVER_MESSAGE_RE = re.compile(
     r"\[[0-9:]+\] \[Server thread/INFO\]: <([a-zA-Z0-9_]+)> (.+)"
 )
@@ -161,15 +162,32 @@ client = DiscordBot()
 @client.tree.command(name="list", description="See online players")
 async def _list(interaction: discord.Interaction) -> None:
     playerlist = rcon("list")
-    embed = discord.embeds.Embed(color=discord.Color.teal(), description=playerlist)
+
+    info = SERVER_LIST_RE.findall(playerlist)[0]
+    current = int(info[0])
+    max = int(info[1])
+    if current != 0:
+        listing = info[2].split(", ")
+        listing = "- " + "\n- ".join(listing)
+    else:
+        listing = "There are no players online..."
+
+    embed = discord.embeds.Embed(
+        color=discord.Color.og_blurple(),
+        title=f"Players ({current}/{max})",
+        description=listing,
+    )
     await interaction.response.send_message(embed=embed)
 
 
 @client.tree.command(name="help", description="See available commands")
 async def _help(interaction: discord.Interaction) -> None:
     commands = await client.tree.fetch_commands()
-    commands = f"Available commands are: {', '.join([c.name for c in commands])}"
-    embed = discord.embeds.Embed(color=discord.Color.teal(), description=commands)
+    listing = "- " + "\n- ".join([c.name for c in commands])
+
+    embed = discord.embeds.Embed(
+        color=discord.Color.og_blurple(), title="Commands", description=listing
+    )
     await interaction.response.send_message(embed=embed)
 
 
