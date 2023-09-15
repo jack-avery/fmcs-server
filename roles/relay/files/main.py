@@ -10,6 +10,7 @@ import re
 import requests
 
 from rcon.source import Client
+from rcon.exceptions import EmptyResponse
 
 with open("config.yml", "r") as f:
     CONFIG = yaml.safe_load(f.read())
@@ -131,7 +132,7 @@ class DiscordBot(discord.Client):
             discord_to_server(message.author.name, msg, len(message.attachments) != 0)
 
 
-def rcon(cmd: str):
+def rcon(cmd: str) -> str:
     with Client(
         CONFIG["address"], CONFIG["rcon_port"], passwd=CONFIG["rcon_pass"]
     ) as client:
@@ -139,7 +140,7 @@ def rcon(cmd: str):
     return response
 
 
-def discord_to_server(sender: str, msg: str, has_att: bool):
+def discord_to_server(sender: str, msg: str, has_att: bool) -> None:
     # sanitize: remove \ and "
     msg = msg.replace('"', "''")
     msg = msg.replace("\\", "")
@@ -207,6 +208,8 @@ async def _rcon(interaction: discord.Interaction, command: str) -> None:
         return
 
     response = rcon(command)
+    if response == b"":
+        response = "*Command does not have a response*"
 
     embed = discord.embeds.Embed(
         color=discord.Color.og_blurple(), title="Command", description=response
