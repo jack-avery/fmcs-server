@@ -126,6 +126,8 @@ instances:
     relay_bot:
       channel: 1151768150510149642
       poll_rate: 1
+      rcon_users:
+        - 97441955893477376
 
     properties:
       seed: "4888621265641200900"

@@ -7,6 +7,8 @@ instances:
     relay_bot:
       channel: discord channel ID
       poll_rate: frequency in seconds
+      rcon_users:
+        - your discord ID
 
     properties:
       difficulty: "easy"

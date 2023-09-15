@@ -54,7 +54,7 @@ class DiscordBot(discord.Client):
             await self.tree.sync()
 
             # begin checking log file for changes
-            asyncio.ensure_future(self.tick())
+            # asyncio.ensure_future(self.tick())
 
             logging.info("Ready!")
             self.SETUP = True
@@ -190,6 +190,26 @@ async def _help(interaction: discord.Interaction) -> None:
 
     embed = discord.embeds.Embed(
         color=discord.Color.og_blurple(), title="Commands", description=listing
+    )
+    await interaction.response.send_message(embed=embed)
+
+
+@client.tree.command(
+    name="rcon", description="Run a command on the server through rcon"
+)
+async def _rcon(interaction: discord.Interaction, command: str) -> None:
+    if interaction.user.id not in CONFIG["rcon_users"]:
+        embed = discord.embeds.Embed(
+            color=discord.Color.red(),
+            description="You do not have access to that command.",
+        )
+        await interaction.response.send_message(embed=embed)
+        return
+
+    response = rcon(command)
+
+    embed = discord.embeds.Embed(
+        color=discord.Color.og_blurple(), title="Command", description=response
     )
     await interaction.response.send_message(embed=embed)
 
