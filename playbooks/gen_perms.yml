@@ -3,6 +3,7 @@
   set_fact:
     whitelist: "{{ whitelist | default([]) + [{ 'name': 'placeholder', 'uuid': item }] }}"
   with_items: "{{ instance.whitelist }}"
+  when: '"whitelist" in instance'
 
 - name: Set placeholder names
   set_fact:
@@ -13,6 +14,7 @@
   copy:
     dest: ~/build/{{ instance.name }}/whitelist.json
     content: "{{ whitelist | to_json }}"
+  when: '"whitelist" in instance'
 
 - name: Generate ops.json
   copy:
