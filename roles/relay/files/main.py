@@ -10,7 +10,6 @@ import re
 import requests
 
 from rcon.source import Client
-from rcon.exceptions import EmptyResponse
 
 with open("config.yml", "r") as f:
     CONFIG = yaml.safe_load(f.read())
@@ -37,6 +36,14 @@ SERVER_LEAVE_RE = re.compile(
 )
 
 
+def rcon(cmd: str) -> str:
+    with Client(
+        CONFIG["address"], CONFIG["rcon_port"], passwd=CONFIG["rcon_pass"]
+    ) as client:
+        response = client.run(cmd)
+    return response
+
+
 class DiscordBot(discord.Client):
     def __init__(self):
         # I don't know which to use, so we just do this.
@@ -55,63 +62,73 @@ class DiscordBot(discord.Client):
             await self.tree.sync()
 
             # begin checking log file for changes
-            asyncio.ensure_future(self.tick())
+            asyncio.ensure_future(self.poll_logs())
 
             logging.info("Ready!")
             self.SETUP = True
 
-    async def tick(self) -> None:
-        with open("logs/latest.log", "r") as log:
-            # consume existing lines
-            log.readlines()
+    async def poll_logs(self) -> None:
+        """
+        Poll the logs every `CONFIG["poll_rate"]` seconds for new messages, connects, or disconnects.
+        """
+        # consume existing lines
+        log = open("logs/latest.log", "r")
+        log.readlines()
 
-            while True:
-                lines = log.readlines()
+        while True:
+            lines = log.readlines()
 
-                for line in lines:
-                    if SERVER_MESSAGE_RE.match(line):
-                        info = SERVER_MESSAGE_RE.findall(line)[0]
-                        user = info[0]
-                        msg = info[1]
+            for line in lines:
+                if SERVER_MESSAGE_RE.match(line):
+                    info = SERVER_MESSAGE_RE.findall(line)[0]
+                    user = info[0]
+                    msg = info[1]
 
-                        # No.
-                        if ("@everyone" in msg) or ("@here" in msg):
-                            msg = msg.replace("@", "")
+                    # No.
+                    if ("@everyone" in msg) or ("@here" in msg):
+                        msg = msg.replace("@", "")
 
-                        embed = discord.embeds.Embed(
-                            color=discord.Color.teal(), description=msg
-                        )
-                        embed.set_author(
-                            name=user, icon_url=await self.get_player_avatar(user)
-                        )
+                    embed = discord.embeds.Embed(
+                        color=discord.Color.teal(), description=msg
+                    )
+                    embed.set_author(
+                        name=user, icon_url=await self.get_player_avatar(user)
+                    )
 
-                        await self.CHANNEL.send(embed=embed)
+                    await self.CHANNEL.send(embed=embed)
 
-                    elif SERVER_JOIN_RE.match(line):
-                        user = SERVER_JOIN_RE.findall(line)[0]
+                elif SERVER_JOIN_RE.match(line):
+                    user = SERVER_JOIN_RE.findall(line)[0]
 
-                        embed = discord.embeds.Embed(color=discord.Color.green())
-                        embed.set_author(
-                            name=f"📥 {user} joined the server",
-                            icon_url=await self.get_player_avatar(user),
-                        )
+                    embed = discord.embeds.Embed(color=discord.Color.green())
+                    embed.set_author(
+                        name=f"📥 {user} joined the server",
+                        icon_url=await self.get_player_avatar(user),
+                    )
 
-                        await self.CHANNEL.send(embed=embed)
+                    await self.CHANNEL.send(embed=embed)
 
-                    elif SERVER_LEAVE_RE.match(line):
-                        user = SERVER_LEAVE_RE.findall(line)[0]
+                elif SERVER_LEAVE_RE.match(line):
+                    user = SERVER_LEAVE_RE.findall(line)[0]
 
-                        embed = discord.embeds.Embed(color=discord.Color.red())
-                        embed.set_author(
-                            name=f"📤 {user} left the server",
-                            icon_url=await self.get_player_avatar(user),
-                        )
+                    embed = discord.embeds.Embed(color=discord.Color.red())
+                    embed.set_author(
+                        name=f"📤 {user} left the server",
+                        icon_url=await self.get_player_avatar(user),
+                    )
 
-                        await self.CHANNEL.send(embed=embed)
+                    await self.CHANNEL.send(embed=embed)
 
-                await asyncio.sleep(CONFIG["poll_rate"])
+            await asyncio.sleep(CONFIG["poll_rate"])
 
     async def get_player_avatar(self, username: str) -> str:
+        """
+        Get the URL for an icon of given user's Minecraft avatar.
+
+        :param username: Minecraft username
+
+        :returns: URL for icon of `username`
+        """
         if username not in self.AVATAR_CACHE:
             r = requests.get(f"https://playerdb.co/api/player/minecraft/{username}")
             if r.status_code != 200:
@@ -126,38 +143,27 @@ class DiscordBot(discord.Client):
         if message.author == self.user:
             return
 
-        msg = message.content
-
+        # send messages from configured channel ingame
         if message.channel.id == CONFIG["channel"]:
-            discord_to_server(message.author.name, msg, len(message.attachments) != 0)
+            # sanitize: remove \ and "
+            msg = message.content.replace('"', "''")
+            msg = msg.replace("\\", "")
 
+            msg = f"<{message.author.display_name}> {msg}"
 
-def rcon(cmd: str) -> str:
-    with Client(
-        CONFIG["address"], CONFIG["rcon_port"], passwd=CONFIG["rcon_pass"]
-    ) as client:
-        response = client.run(cmd)
-    return response
+            # max minecraft message length is 256;
+            # " [...] (attachment)" (19) on max length 236+19=255
+            if len(msg) > 242:
+                msg = msg[:235] + " [...]"
 
+            if len(message.attachments) != 0:
+                msg = msg + " (attachment)"
 
-def discord_to_server(sender: str, msg: str, has_att: bool) -> None:
-    # sanitize: remove \ and "
-    msg = msg.replace('"', "''")
-    msg = msg.replace("\\", "")
-
-    # max minecraft message length is 256;
-    # " [...] (attachment)" (19) on max length 236+19=255
-    if len(msg) > 242:
-        msg = msg[:235] + " [...]"
-
-    if has_att:
-        msg = msg + " (attachment)"
-
-    rcon(
-        'tellraw @a [{"text":"(Discord) ", "color":"blue"}, {"text":"'
-        + f"<{sender}> {msg}"
-        + '", "color":"white"}]',
-    )
+            rcon(
+                'tellraw @a [{"text":"(Discord) ", "color":"blue"}, {"text":"'
+                + msg
+                + '", "color":"white"}]',
+            )
 
 
 client = DiscordBot()
