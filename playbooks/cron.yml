@@ -1,0 +1,23 @@
+---
+- name: Generate restart cronjob and install
+  hosts: mc
+  tasks:
+    # I would like for this to be better but attempting to template otherwise fails.
+    - name: Add servers to cron
+      set_fact:
+        cron: |
+          {% for item in instances %}
+          docker restart fmcs-{{ item.name }}; {% if 'relay_bot' in item %}
+          docker restart fmcsr-{{ item.name }}; {% endif %}{% endfor %}
+    
+    - name: Install cronjob (10AM UTC)
+      become: true
+      become_method: su
+      become_user: root
+      ansible.builtin.cron:
+        name: "fmcs-restart"
+        weekday: "*"
+        minute: "0"
+        hour: "10"
+        job: "{{ cron }}"
+      when: ansible_distribution == 'Ubuntu'

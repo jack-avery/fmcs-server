@@ -50,18 +50,3 @@
       - name: "fmcsn-{{ instance.0.name }}"
     volumes:
       - "~/logs/{{ instance.0.name }}:/bot/logs"
-
-- name: Set up restart cronjob (10AM UTC)
-  become: true
-  become_method: su
-  become_user: root
-  ansible.builtin.cron:
-    name: "fmcsr-restart-{{ item.name }}"
-    weekday: "*"
-    minute: "0"
-    hour: "10"
-    job: "docker restart fmcsr-{{ item.name }}"
-  loop: "{{ instances }}"
-  loop_control:
-    index_var: loop0
-  when: ansible_distribution == 'Ubuntu'
