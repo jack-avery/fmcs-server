@@ -10,16 +10,20 @@ Found the playbooks useful? [Buy me a coffee ☕](https://ko-fi.com/raspy)!
 
 ## How to Use ✍️
 
-Ansible requires Linux. If you're running Windows, consider setting up WSL.
+Ansible requires **Linux**. If you're running Windows, consider setting up [**WSL**](https://learn.microsoft.com/en-us/windows/wsl/install).
 
 1. Run `pip install -r requirements.txt` to install Python requirements.
 2. Ensure you have Ansible installed on your machine.
 3. Ensure your Ansible Hosts have Docker installed, and a user named `fmcs` with the `docker` role.
+> If you are hosting on your own machine, you must have Ansible and Docker installed on your machine<br/>
+> [Here is the docs for installing Docker in WSL](https://docs.docker.com/desktop/install/ubuntu/)
 4. Build your Ansible inventory and global/host variables using the samples:
-> * host_vars/host.secret.yml.sample
-> * host_vars/host.yml.sample
+> * host_vars/my_host.secret.yml.sample
+> * host_vars/my_host.yml.sample
 > * inventory.yml.sample
-5. Setting up the daily restart automatically requires that you echo the password for the `root` user in a script named `.become_pass.sh` in this folder:
+5. If you plan on using Ansible vaults, echo the key in `.vault_pass.sh`.
+> If you're not using vaults, the file must still exist so that Ansible doesn't panic, even if it's empty
+6. Setting up the daily restart automatically requires that you echo the password for the `root` user in a script named `.become_pass.sh` in this folder:
 ```sh
 #!/bin/bash
 # .become_pass.sh

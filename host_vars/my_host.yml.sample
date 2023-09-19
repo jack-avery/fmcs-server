@@ -10,7 +10,7 @@ instances:
       rcon_users:
         - your discord ID
 
-    properties:
+    properties: # you only need to define what you're overriding; see defaults in group_vars/mc.yml
       difficulty: "easy"
       max-players: 6
       gamemode: "creative"
@@ -24,6 +24,15 @@ instances:
         bypassesPlayerLimit: false
 
     mods: # list of mods; direct download link from website
+      # use `mode: client` to indicate a mod is client-side only
+      sound-physics-remastered: 
+        source: https://www.curseforge.com/api/v1/mods/535489/files/4584319/download
+        mode: both
+
+      # use `mode: both` to indicate a mod should be on both the clients and the server
+      fabric-api:
+        source: https://www.curseforge.com/api/v1/mods/306612/files/4622908/download
+        mode: both
       balm:
         source: https://www.curseforge.com/api/v1/mods/500525/files/4597439/download
         mode: both
@@ -37,6 +46,7 @@ instances:
           spectator_interaction: "true"
           spectator_player_possession: "true"
 
+      # use `mode: server` to indicate a mod should only be on the server
       lithium:
         source: https://cdn.modrinth.com/data/gvQqBUqZ/versions/ZSNsJrPI/lithium-fabric-mc1.20.1-0.11.2.jar
         mode: server
