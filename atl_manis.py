@@ -67,10 +67,10 @@ def main():
     )
 
     # verify file structure
-    if not os.path.exists("tmp"):
-        os.mkdir("tmp")
-    if not os.path.exists("tmp/_"):
-        os.mkdir("tmp/_")
+    if not os.path.exists("out"):
+        os.mkdir("out")
+    if not os.path.exists("out/_"):
+        os.mkdir("out/_")
 
     for host in host_vars:
         instances = host_vars[host]["instances"]
@@ -87,14 +87,14 @@ def main():
             manifest = make_atlauncher_manifest(
                 minecraft_ver, fabric_ver, name, AUTHOR, mods
             )
-            with open(f"tmp/_/manifest.json", "w") as file:
+            with open(f"out/_/manifest.json", "w") as file:
                 file.write(json.dumps(manifest, indent=4))
-            shutil.make_archive(f"tmp/{name}", "zip", "tmp/_")
+            shutil.make_archive(f"out/{name}", "zip", "out/_")
             logging.info(f"{name} completed")
 
     # clean up
-    os.remove("tmp/_/manifest.json")
-    os.rmdir("tmp/_")
+    os.remove("out/_/manifest.json")
+    os.rmdir("out/_")
 
     logging.info(f"Done")
     return 0

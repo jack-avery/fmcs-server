@@ -18,4 +18,4 @@ cron:
 	@ansible-playbook playbooks/cron.yml
 
 atl:
-	@python atl_manis.py
+	@python3 atl_manis.py
