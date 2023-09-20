@@ -66,7 +66,12 @@ class DiscordBot(discord.Client):
             await self.tree.sync()
 
             # begin checking log file for changes
+<<<<<<< HEAD
             asyncio.ensure_future(self.poll_logs())
+=======
+            if "debug" not in sys.argv:
+                asyncio.ensure_future(self.poll_logs())
+>>>>>>> prod
 
             logging.info("Ready!")
             self.SETUP = True
@@ -159,14 +164,15 @@ class DiscordBot(discord.Client):
             # replace channel mentions with raw text
             if DISCORD_CHANNEL_RE.match(msg):
                 for m, c in zip(
-                    DISCORD_MENTION_RE.findall(msg), message.channel_mentions
+                    DISCORD_CHANNEL_RE.findall(msg), message.channel_mentions
                 ):
                     msg = msg.replace(m, f"#{c.name}")
 
             # replace emotes with raw text
             if DISCORD_EMOTE_RE.match(msg):
-                for e in DISCORD_EMOTE_RE.findall(msg)[0]:
-                    msg = msg.replace(e[0], e[1])
+                for m, e in DISCORD_EMOTE_RE.findall(msg):
+                    print(m, e)
+                    msg = msg.replace(m, e)
 
             # sanitize: remove \ and "
             msg = msg.replace('"', "''")
