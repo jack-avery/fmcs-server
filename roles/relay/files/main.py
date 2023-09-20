@@ -66,12 +66,8 @@ class DiscordBot(discord.Client):
             await self.tree.sync()
 
             # begin checking log file for changes
-<<<<<<< HEAD
-            asyncio.ensure_future(self.poll_logs())
-=======
             if "debug" not in sys.argv:
                 asyncio.ensure_future(self.poll_logs())
->>>>>>> prod
 
             logging.info("Ready!")
             self.SETUP = True
