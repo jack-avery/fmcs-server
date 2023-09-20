@@ -153,21 +153,20 @@ class DiscordBot(discord.Client):
             msg = message.content
 
             # replace mentions with raw text
-            if DISCORD_MENTION_RE.match(msg):
+            if DISCORD_MENTION_RE.search(msg):
                 for m, c in zip(DISCORD_MENTION_RE.findall(msg), message.mentions):
                     msg = msg.replace(m, f"@{c.display_name}")
 
             # replace channel mentions with raw text
-            if DISCORD_CHANNEL_RE.match(msg):
+            if DISCORD_CHANNEL_RE.search(msg):
                 for m, c in zip(
                     DISCORD_CHANNEL_RE.findall(msg), message.channel_mentions
                 ):
                     msg = msg.replace(m, f"#{c.name}")
 
             # replace emotes with raw text
-            if DISCORD_EMOTE_RE.match(msg):
+            if DISCORD_EMOTE_RE.search(msg):
                 for m, e in DISCORD_EMOTE_RE.findall(msg):
-                    print(m, e)
                     msg = msg.replace(m, e)
 
             # sanitize: remove \ and "
