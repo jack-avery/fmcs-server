@@ -35,6 +35,10 @@ SERVER_LEAVE_RE = re.compile(
     r"\[[0-9:]+\] \[Server thread/INFO\]: ([a-zA-Z0-9_]+) left the game"
 )
 
+DISCORD_MENTION_RE = re.compile(r"<@\d+>")
+DISCORD_CHANNEL_RE = re.compile(r"<#\d+>")
+DISCORD_EMOTE_RE = re.compile(r"(<a?(:[a-zA-Z0-9_]+:)\d+>)")
+
 
 def rcon(cmd: str) -> str:
     with Client(
@@ -62,7 +66,7 @@ class DiscordBot(discord.Client):
             await self.tree.sync()
 
             # begin checking log file for changes
-            asyncio.ensure_future(self.poll_logs())
+            # asyncio.ensure_future(self.poll_logs())
 
             logging.info("Ready!")
             self.SETUP = True
@@ -145,8 +149,27 @@ class DiscordBot(discord.Client):
 
         # send messages from configured channel ingame
         if message.channel.id == CONFIG["channel"]:
+            msg = message.content
+
+            # replace mentions with raw text
+            if DISCORD_MENTION_RE.match(msg):
+                for m, c in zip(DISCORD_MENTION_RE.findall(msg), message.mentions):
+                    msg = msg.replace(m, f"@{c.display_name}")
+
+            # replace channel mentions with raw text
+            if DISCORD_CHANNEL_RE.match(msg):
+                for m, c in zip(
+                    DISCORD_MENTION_RE.findall(msg), message.channel_mentions
+                ):
+                    msg = msg.replace(m, f"#{c.name}")
+
+            # replace emotes with raw text
+            if DISCORD_EMOTE_RE.match(msg):
+                for e in DISCORD_EMOTE_RE.findall(msg)[0]:
+                    msg = msg.replace(e[0], e[1])
+
             # sanitize: remove \ and "
-            msg = message.content.replace('"', "''")
+            msg = msg.replace('"', "''")
             msg = msg.replace("\\", "")
 
             msg = f"<{message.author.display_name}> {msg}"
