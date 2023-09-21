@@ -24,20 +24,54 @@ stdout_handler.setFormatter(formatter)
 log_handlers.append(stdout_handler)
 logging.basicConfig(handlers=log_handlers, level=logging.DEBUG)
 
+SERVER_INFO_RE = re.compile(r"\[[0-9:]+\] \[Server thread/INFO\]: (.+)")
 SERVER_LIST_RE = re.compile(r"There are (\d+) of a max of (\d+) players online: (.+)?")
-SERVER_MESSAGE_RE = re.compile(
-    r"\[[0-9:]+\] \[Server thread/INFO\]: <([a-zA-Z0-9_]+)> (.+)"
-)
-SERVER_JOIN_RE = re.compile(
-    r"\[[0-9:]+\] \[Server thread/INFO\]: ([a-zA-Z0-9_]+) joined the game"
-)
-SERVER_LEAVE_RE = re.compile(
-    r"\[[0-9:]+\] \[Server thread/INFO\]: ([a-zA-Z0-9_]+) left the game"
-)
+SERVER_MESSAGE_RE = re.compile(r"<([a-zA-Z0-9_]+)> (.+)")
+SERVER_ADVANCEMENT_RE = re.compile(r"([a-zA-Z0-9_]+) has made the advancement \[.+\]")
+SERVER_CHALLENGE_RE = re.compile(r"([a-zA-Z0-9_]+) has completed the challenge \[.+\]")
+SERVER_JOIN_RE = re.compile(r"([a-zA-Z0-9_]+) joined the game")
+SERVER_LEAVE_RE = re.compile(r"([a-zA-Z0-9_]+) left the game")
 
 DISCORD_MENTION_RE = re.compile(r"<@\d+>")
 DISCORD_CHANNEL_RE = re.compile(r"<#\d+>")
 DISCORD_EMOTE_RE = re.compile(r"(<a?(:[a-zA-Z0-9_]+:)\d+>)")
+
+# This should be ALL of them, sorted in order of which regex catches most or is most likely to show up
+SERVER_DEATH_MESSAGES_RE = [
+    re.compile(
+        r"([a-zA-Z0-9_]+) was (?:shot|pummeled|blown up|killed|squashed|skewered|struck|slain|frozen to death|fireballed|stung|squashed|poked to death|impaled) by .+"
+    ),
+    re.compile(
+        r"([a-zA-Z0-9_]+) (?:starved|burned|froze|was stung|was pricked) to death"
+    ),
+    re.compile(r"([a-zA-Z0-9_]+) .+ whilst trying to escape .+"),
+    re.compile(r"([a-zA-Z0-9_]+) .+ whilst fighting .+"),
+    re.compile(r"([a-zA-Z0-9_]+) drowned"),
+    re.compile(r"([a-zA-Z0-9_]+) blew up"),
+    re.compile(r"([a-zA-Z0-9_]+) hit the ground too hard"),
+    re.compile(r"([a-zA-Z0-9_]+) fell from a high place"),
+    re.compile(
+        r"([a-zA-Z0-9_]+) fell off (?:a ladder|some vines|some weeping vines|some twisting vines|scaffolding)"
+    ),
+    re.compile(r"([a-zA-Z0-9_]+) fell while climbing"),
+    re.compile(r"([a-zA-Z0-9_]+) experienced kinetic energy"),
+    re.compile(r"([a-zA-Z0-9_]+) was impaled on a stalagmite"),
+    re.compile(r"([a-zA-Z0-9_]+) went up in flames"),
+    re.compile(r"([a-zA-Z0-9_]+) went off with a bang"),
+    re.compile(r"([a-zA-Z0-9_]+) went off with a bang due to a firework fired from .+"),
+    re.compile(r"([a-zA-Z0-9_]+) tried to swim in lava"),
+    re.compile(r"([a-zA-Z0-9_]+) tried to swim in lava to escape .+"),
+    re.compile(r"([a-zA-Z0-9_]+) was struck by lightning"),
+    re.compile(r"([a-zA-Z0-9_]+) discovered the floor was lava"),
+    re.compile(r"([a-zA-Z0-9_]+) walked into danger zone due to .+"),
+    re.compile(r"([a-zA-Z0-9_]+) was shot by a skull from .+"),
+    re.compile(r"([a-zA-Z0-9_]+) suffocated in a wall"),
+    re.compile(r"([a-zA-Z0-9_]+) was squished too much"),
+    re.compile(r"([a-zA-Z0-9_]+) was killed trying to hurt .+"),
+    re.compile(r"([a-zA-Z0-9_]+) fell out of the world"),
+    re.compile(r"([a-zA-Z0-9_]+) withered away"),
+    re.compile(r"([a-zA-Z0-9_]+) was killed"),
+]
 
 
 def rcon(cmd: str) -> str:
@@ -84,45 +118,98 @@ class DiscordBot(discord.Client):
             lines = log.readlines()
 
             for line in lines:
-                if SERVER_MESSAGE_RE.match(line):
-                    info = SERVER_MESSAGE_RE.findall(line)[0]
-                    user = info[0]
-                    msg = info[1]
+                raw = line
 
-                    # No.
-                    if ("@everyone" in msg) or ("@here" in msg):
-                        msg = msg.replace("@", "")
+                if not SERVER_INFO_RE.match(line):
+                    continue
 
+                line = SERVER_INFO_RE.findall(line)[0]
+
+                try:
+                    if SERVER_MESSAGE_RE.match(line):
+                        info = SERVER_MESSAGE_RE.findall(line)[0]
+                        user = info[0]
+                        msg = info[1]
+
+                        embed = discord.embeds.Embed(
+                            color=discord.Color.teal(), description=msg
+                        )
+                        embed.set_author(
+                            name=user, icon_url=await self.get_player_avatar(user)
+                        )
+
+                        await self.CHANNEL.send(embed=embed)
+                        continue
+
+                    if SERVER_JOIN_RE.match(line):
+                        user = SERVER_JOIN_RE.findall(line)[0]
+
+                        embed = discord.embeds.Embed(color=discord.Color.green())
+                        embed.set_author(
+                            name=f"📥 {user} joined the server",
+                            icon_url=await self.get_player_avatar(user),
+                        )
+
+                        await self.CHANNEL.send(embed=embed)
+
+                    if SERVER_LEAVE_RE.match(line):
+                        user = SERVER_LEAVE_RE.findall(line)[0]
+
+                        embed = discord.embeds.Embed(color=discord.Color.red())
+                        embed.set_author(
+                            name=f"📤 {user} left the server",
+                            icon_url=await self.get_player_avatar(user),
+                        )
+
+                        await self.CHANNEL.send(embed=embed)
+                        continue
+
+                    if SERVER_ADVANCEMENT_RE.match(line):
+                        user = SERVER_ADVANCEMENT_RE.findall(line)[0]
+
+                        embed = discord.embeds.Embed(color=discord.Color.teal())
+                        embed.set_author(
+                            name=f"📖 {line}",
+                            icon_url=await self.get_player_avatar(user),
+                        )
+
+                        await self.CHANNEL.send(embed=embed)
+                        continue
+
+                    if SERVER_CHALLENGE_RE.match(line):
+                        user = SERVER_CHALLENGE_RE.findall(line)[0]
+
+                        embed = discord.embeds.Embed(color=discord.Color.gold())
+                        embed.set_author(
+                            name=f"🏆 {line}",
+                            icon_url=await self.get_player_avatar(user),
+                        )
+
+                        await self.CHANNEL.send(embed=embed)
+                        continue
+
+                    for r in SERVER_DEATH_MESSAGES_RE:
+                        if r.match(line):
+                            user = r.findall(line)[0]
+
+                            embed = discord.embeds.Embed(color=discord.Color.dark_red())
+                            embed.set_author(
+                                name=f"💀 {line}",
+                                icon_url=await self.get_player_avatar(user),
+                            )
+
+                            await self.CHANNEL.send(embed=embed)
+                            break
+
+                except Exception as err:
                     embed = discord.embeds.Embed(
-                        color=discord.Color.teal(), description=msg
+                        color=discord.Color.red(),
+                        description=f"{raw}\n\n{err.with_traceback()}",
                     )
                     embed.set_author(
-                        name=user, icon_url=await self.get_player_avatar(user)
+                        name=f"Failed to send message from server",
+                        icon_url=self.application.icon.url,
                     )
-
-                    await self.CHANNEL.send(embed=embed)
-
-                elif SERVER_JOIN_RE.match(line):
-                    user = SERVER_JOIN_RE.findall(line)[0]
-
-                    embed = discord.embeds.Embed(color=discord.Color.green())
-                    embed.set_author(
-                        name=f"📥 {user} joined the server",
-                        icon_url=await self.get_player_avatar(user),
-                    )
-
-                    await self.CHANNEL.send(embed=embed)
-
-                elif SERVER_LEAVE_RE.match(line):
-                    user = SERVER_LEAVE_RE.findall(line)[0]
-
-                    embed = discord.embeds.Embed(color=discord.Color.red())
-                    embed.set_author(
-                        name=f"📤 {user} left the server",
-                        icon_url=await self.get_player_avatar(user),
-                    )
-
-                    await self.CHANNEL.send(embed=embed)
 
             await asyncio.sleep(CONFIG["poll_rate"])
 
