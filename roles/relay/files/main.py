@@ -3,11 +3,12 @@
 
 import asyncio
 import discord
-import yaml
 import logging
-import sys
 import re
 import requests
+import sys
+import yaml
+from datetime import date
 
 from rcon.source import Client
 
@@ -115,6 +116,8 @@ class DiscordBot(discord.Client):
         log.readlines()
 
         while True:
+            last_poll_start_date = date.today()
+
             lines = log.readlines()
 
             for line in lines:
@@ -212,6 +215,11 @@ class DiscordBot(discord.Client):
                     )
 
             await asyncio.sleep(CONFIG["poll_rate"])
+
+            # grab new log file if day changed
+            current_date = date.today()
+            if current_date != last_poll_start_date:
+                log = open("logs/latest.log", "r")
 
     async def get_player_avatar(self, username: str) -> str:
         """
