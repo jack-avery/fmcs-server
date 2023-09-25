@@ -10,7 +10,7 @@ CURSEFORGE_RE = re.compile(
     r"https://www\.curseforge\.com/api/v1/mods/(\d+)/files/(\d+)/download"
 )
 
-AUTHOR = "raspy"
+AUTHOR = "raspy_on_osu"
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s"
 )
@@ -36,14 +36,15 @@ def make_atlauncher_manifest(
         if mod["mode"] == "server":
             continue
 
-        project, file = CURSEFORGE_RE.findall(mod["source"])[0]
-
-        mod_manifest = {
-            "projectID": project,
-            "fileID": file,
-            "required": True,
-        }
-        manifest["files"].append(mod_manifest)
+        if (project := CURSEFORGE_RE.findall(mod["source"])[0][0]) and (
+            file := CURSEFORGE_RE.findall(mod["source"])[0][1]
+        ):
+            mod_manifest = {
+                "projectID": project,
+                "fileID": file,
+                "required": True,
+            }
+            manifest["files"].append(mod_manifest)
 
     return manifest
 
@@ -69,8 +70,6 @@ def main():
     # verify file structure
     if not os.path.exists("out"):
         os.mkdir("out")
-    if not os.path.exists("out/_"):
-        os.mkdir("out/_")
 
     for host in host_vars:
         instances = host_vars[host]["instances"]
@@ -78,6 +77,12 @@ def main():
             f"{host} has {len(instances)} instance(s):\n -- "
             + ", ".join([i["name"] for i in instances])
         )
+
+        os.mkdir("out/_")
+        os.mkdir("out/_/overrides")
+        os.mkdir("out/_/overrides/mods")
+        os.mkdir("out/_/overrides/resourcepacks")
+
         for instance in instances:
             minecraft_ver = instance["minecraft_ver"]
             fabric_ver = instance["fabric_ver"]
@@ -89,12 +94,12 @@ def main():
             )
             with open(f"out/_/manifest.json", "w") as file:
                 file.write(json.dumps(manifest, indent=4))
+
             shutil.make_archive(f"out/{name}", "zip", "out/_")
             logging.info(f"{name} completed")
 
-    # clean up
-    os.remove("out/_/manifest.json")
-    os.rmdir("out/_")
+            # clean up for next
+            shutil.rmtree("out/_")
 
     logging.info(f"Done")
     return 0

@@ -7,6 +7,7 @@ import logging
 import re
 import requests
 import sys
+import watchdog
 import yaml
 from datetime import date
 
@@ -219,7 +220,17 @@ class DiscordBot(discord.Client):
             # grab new log file if day changed
             current_date = date.today()
             if current_date != last_poll_start_date:
-                log = open("logs/latest.log", "r")
+                last_line = lines[-1]
+                while True:
+                    # wait for new file
+                    new_log = open("logs/latest.log", "r")
+
+                    if new_log.readlines()[-1] != last_line:
+                        log = new_log
+                        break
+
+                    new_log.close()
+                    await asyncio.sleep(1)
 
     async def get_player_avatar(self, username: str) -> str:
         """

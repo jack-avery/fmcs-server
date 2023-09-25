@@ -171,6 +171,12 @@ instances:
       ledger:
         source: https://www.curseforge.com/api/v1/mods/491137/files/4572696/download
         mode: server
+      terralith:
+        source: https://www.curseforge.com/api/v1/mods/513688/files/4725190/download
+        mode: server
+      tectonic:
+        source: https://www.curseforge.com/api/v1/mods/686836/files/4755730/download
+        mode: server
       lithium: 
         source: https://cdn.modrinth.com/data/gvQqBUqZ/versions/ZSNsJrPI/lithium-fabric-mc1.20.1-0.11.2.jar
         mode: server
