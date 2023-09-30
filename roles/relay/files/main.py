@@ -7,7 +7,6 @@ import logging
 import re
 import requests
 import sys
-import watchdog
 import yaml
 from datetime import date
 
@@ -225,7 +224,12 @@ class DiscordBot(discord.Client):
                     # wait for new file
                     new_log = open("logs/latest.log", "r")
 
-                    if new_log.readlines()[-1] != last_line:
+                    try:
+                        if new_log.readlines()[-1] != last_line:
+                            log = new_log
+                            break
+
+                    except IndexError:
                         log = new_log
                         break
 
