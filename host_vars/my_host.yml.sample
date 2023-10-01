@@ -5,12 +5,9 @@ instances:
 
     # Supports both Fabric and Forge (uncomment preferred):
     #
-    # fabric: # from https://fabricmc.net/use/installer/
-    #   fabric_ver: "0.14.21" #
-    #   fabric_inst_ver: "0.11.2"
+    # fabric: "0.14.21" # from https://fabricmc.net/use/installer/
     #
-    # forge: # from https://files.minecraftforge.net/net/minecraftforge/forge/
-    #   version: "47.1.0"
+    # forge: "47.1.0" # from https://files.minecraftforge.net/net/minecraftforge/forge/
 
     relay_bot:
       channel: discord channel ID

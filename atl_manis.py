@@ -91,9 +91,9 @@ def main():
         for instance in instances:
             minecraft_ver = instance["minecraft_ver"]
             if "fabric" in instance:
-                loader = f"fabric-{instance['fabric']['version']}"
+                loader = f"fabric-{instance['fabric']}"
             elif "forge" in instance:
-                loader = f"forge-{instance['forge']['version']}"
+                loader = f"forge-{instance['forge']}"
             mods = instance["mods"]
             name = f"{host}-{instance['name']}"
 

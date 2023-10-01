@@ -1,10 +1,8 @@
 instances:
   - name: "debug"
     minecraft_ver: "1.20.1"
+    forge: "47.1.0"
     ram: 4G
-
-    forge:
-      version: "47.1.0"
     
     relay_bot:
       channel: 1056708056576163841
