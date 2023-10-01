@@ -16,6 +16,12 @@
     dest: ~/build-relay/{{ instance.0.name }}
     recursive: true
 
+- name: Copy ATLauncher manifest
+  ansible.posix.synchronize:
+    src: "{{ role_path }}/../../out/{{ inventory_hostname }}-{{ instance.0.name }}.zip"
+    dest: ~/build-relay/{{ instance.0.name }}/{{ inventory_hostname }}-{{ instance.0.name }}.zip
+    recursive: true
+
 - name: Generate config.yml
   ansible.builtin.template:
     src: config.yml.j2

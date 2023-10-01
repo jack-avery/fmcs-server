@@ -26,10 +26,6 @@ instances:
       pvp: "false"
       view-distance: 16
 
-      # if you're using a whitelist, be sure to override these two to "true":
-      white-list: "true"
-      enforce-whitelist: "true"
-
     operators: # list of server operators, their level and bypassesPlayerLimit value
       - uuid: 773e05b1-44fe-47be-b61d-95de8e691832
         level: 4
@@ -63,5 +59,7 @@ instances:
         source: https://cdn.modrinth.com/data/gvQqBUqZ/versions/ZSNsJrPI/lithium-fabric-mc1.20.1-0.11.2.jar
         mode: server
 
+    # if you have a whitelist defined, the server will be whitelisted
+    # you can save the list but remove whitelist requirement by commenting the whitelist
     whitelist: # list of whitelisted UUIDs
       - 773e05b1-44fe-47be-b61d-95de8e691832 # raspy_on_osu

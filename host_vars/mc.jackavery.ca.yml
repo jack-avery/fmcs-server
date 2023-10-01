@@ -137,8 +137,6 @@ instances:
       max-players: 20
       motd: "Chiliverse SMP"
       view-distance: 16
-      white-list: "true"
-      enforce-whitelist: "true"
 
     operators:
       - uuid: 773e05b1-44fe-47be-b61d-95de8e691832
@@ -146,17 +144,21 @@ instances:
         bypassesPlayerLimit: true
 
     mods:
-      fabric-api:
-        source: https://www.curseforge.com/api/v1/mods/306612/files/4622908/download
-        mode: both
-      inventory-sorting: 
-        source: https://www.curseforge.com/api/v1/mods/325471/files/4597704/download
-        mode: both
+      sound-physics-remastered: 
+        source: https://www.curseforge.com/api/v1/mods/535489/files/4584319/download
+        mode: client
+      presence-footsteps:
+        source: https://www.curseforge.com/api/v1/mods/334259/files/4575802/download
+        mode: client
       xaeros-minimap: 
         source: https://www.curseforge.com/api/v1/mods/263420/files/4593188/download
-        mode: both
+        mode: client
       xaeros-world-map: 
         source: https://www.curseforge.com/api/v1/mods/317780/files/4594989/download
+        mode: client
+
+      fabric-api:
+        source: https://www.curseforge.com/api/v1/mods/306612/files/4622908/download
         mode: both
       simple-voice-chat: 
         source: https://www.curseforge.com/api/v1/mods/416089/files/4645807/download
@@ -164,9 +166,6 @@ instances:
         properties:
           spectator_interaction: "true"
           spectator_player_possession: "true"
-      sound-physics-remastered: 
-        source: https://www.curseforge.com/api/v1/mods/535489/files/4584319/download
-        mode: both
 
       fabric-language-kotlin: 
         source: https://www.curseforge.com/api/v1/mods/308769/files/4628045/download

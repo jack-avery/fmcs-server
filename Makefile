@@ -12,6 +12,7 @@ backup:
 	@ansible-playbook playbooks/backup.yml
 
 relay:
+	@python3 atl_manis.py
 	@ansible-playbook playbooks/relay.yml
 
 cron:

@@ -57,8 +57,6 @@ defaults:
     text-filtering-config: 
     use-native-transport: "true"
     view-distance: 12
-    white-list: "false"
-    enforce-whitelist: "false"
 
   simple-voice-chat:
     # The distance to where the voice can be heard
