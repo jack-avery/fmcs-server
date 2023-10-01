@@ -351,7 +351,9 @@ async def _info(interaction: discord.Interaction) -> None:
 @client.tree.command(name="help", description="See available commands")
 async def _help(interaction: discord.Interaction) -> None:
     commands = await client.tree.fetch_commands()
-    listing = "- " + "\n- ".join([c.name for c in commands])
+    listing = "- " + "\n- ".join(
+        [f"</{c.name}:{c.id}>: {c.description}" for c in commands]
+    )
 
     embed = discord.embeds.Embed(
         color=discord.Color.og_blurple(), title="Commands", description=listing
