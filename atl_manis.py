@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import re
+import requests
 import shutil
 import yaml
 
@@ -32,19 +33,23 @@ def make_atlauncher_manifest(
         "overrides": "overrides",
     }
 
-    for mod in mods.values():
+    for name, mod in mods.items():
         if mod["mode"] == "server":
             continue
 
-        if (project := CURSEFORGE_RE.findall(mod["source"])[0][0]) and (
-            file := CURSEFORGE_RE.findall(mod["source"])[0][1]
-        ):
+        if CURSEFORGE_RE.match(mod["source"]):
+            project = CURSEFORGE_RE.findall(mod["source"])[0][0]
+            file = CURSEFORGE_RE.findall(mod["source"])[0][1]
             mod_manifest = {
                 "projectID": project,
                 "fileID": file,
                 "required": True,
             }
             manifest["files"].append(mod_manifest)
+
+        else:
+            file = requests.get(mod["source"])
+            open(f"out/_/overrides/mods/{name}.jar", "wb").write(file.content)
 
     return manifest
 

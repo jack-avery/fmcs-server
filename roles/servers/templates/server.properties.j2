@@ -2,6 +2,8 @@
 rcon.password={{ item.1.rcon_pass }}
 rcon.port={{ mcs_base_port + (loop0 * 10) + 1 }}
 server-port={{ mcs_base_port + (loop0 * 10) }}
+white-list={{ "true" if 'whitelist' in item.0 else "false" }}
+enforce-whitelist={{ "true" if 'whitelist' in item.0 else "false" }}
 
 {% for k, v in defaults.properties.items() %}
 {% if 'properties' in item.0 %}

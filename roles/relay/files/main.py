@@ -79,7 +79,7 @@ SERVER_DEATH_MESSAGES_RE = [
 
 def rcon(cmd: str) -> str:
     with Client(
-        CONFIG["address"], CONFIG["rcon_port"], passwd=CONFIG["rcon_pass"]
+        CONFIG["rcon_addr"], CONFIG["port"] + 1, passwd=CONFIG["rcon_pass"]
     ) as client:
         response = client.run(cmd)
     return response
@@ -250,7 +250,10 @@ class DiscordBot(discord.Client):
         :returns: URL for icon of `username`
         """
         if username not in self.AVATAR_CACHE:
-            r = requests.get(f"https://playerdb.co/api/player/minecraft/{username}")
+            HEADERS = {"User-Agent": "github.com/jack-avery/fmcs-server"}
+            r = requests.get(
+                f"https://playerdb.co/api/player/minecraft/{username}", headers=HEADERS
+            )
             if r.status_code != 200:
                 return False
 
@@ -263,7 +266,6 @@ class DiscordBot(discord.Client):
         if message.author == self.user:
             return
 
-        # send messages from configured channel ingame
         if message.channel.id == CONFIG["channel"]:
             msg = message.content
 
@@ -285,6 +287,7 @@ class DiscordBot(discord.Client):
                     msg = msg.replace(m, e)
 
             # sanitize: remove \ and "
+            # TODO: triple-check and confirm this works OK
             msg = msg.replace('"', "''")
             msg = msg.replace("\\", "")
 
@@ -327,6 +330,22 @@ async def _list(interaction: discord.Interaction) -> None:
         description=listing,
     )
     await interaction.response.send_message(embed=embed)
+
+
+@client.tree.command(
+    name="info", description="Get info for the server and the ATLauncher manifest"
+)
+async def _info(interaction: discord.Interaction) -> None:
+    embed = discord.embeds.Embed(
+        color=discord.Color.og_blurple(),
+        title=f"Server info",
+        description=f"Connect at `{CONFIG['address']}:{CONFIG['port']}`"
+        + f"\nThe server {'**is**' if CONFIG['is_whitelist'] else 'is **not**'} using a whitelist."
+        + "\n\n> *ATLauncher manifest with used mods is attached.*",
+    )
+    await interaction.response.send_message(
+        embed=embed, file=discord.File(CONFIG["atl_manifest"])
+    )
 
 
 @client.tree.command(name="help", description="See available commands")

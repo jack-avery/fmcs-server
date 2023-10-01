@@ -21,17 +21,18 @@ Ansible requires **Linux**. If you're running Windows, consider setting up [**WS
 > * host_vars/my_host.secret.yml.sample
 > * host_vars/my_host.yml.sample
 > * inventory.yml.sample
-5. If you plan on using Ansible vaults, echo the key in `.vault_pass.sh`.
-> If you're not using vaults, the file must still exist so that Ansible doesn't panic, even if it's empty
-6. Setting up the daily restart automatically requires that you echo the password for the `root` user in a script named `.become_pass.sh` in this folder:
+5. Echo your Ansible vault key in `.vault_pass.sh`. Even if you're not using vaults, the file **must still exist**!
+> Setting up the daily restart "cronjob" automatically requires that you echo the password for the `root` user in a script named `.become_pass.sh` in this folder.
+
 ```sh
 #!/bin/bash
-# .become_pass.sh
-echo my_root_password
+# Sample .become_pass.sh or .vault_pass.sh
+echo vault_or_root_pass
 ```
 
 ### Creating servers
-2. Trigger `make servers` to build images and run servers.
+2. Trigger `make servers` to build images and run servers.<br/>
+-- Save the server icon(s) you want as `roles/servers/files/{host}/{instance}.png`
 
 ### Updating ops/whitelist
 1. Trigger `make perms`.<br/>

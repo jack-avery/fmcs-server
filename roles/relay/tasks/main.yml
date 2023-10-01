@@ -1,7 +1,7 @@
 - name: Load secrets
   ansible.builtin.include_tasks: secrets.yml
 
-- name: /config/voicechat/voicechat-server.properties
+- name: Create Relay bot (if enabled)
   ansible.builtin.include_tasks: relay.yml
   loop: "{{ instances|zip(instances_secrets) }}"
   loop_control:

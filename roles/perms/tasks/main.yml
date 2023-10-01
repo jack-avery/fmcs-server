@@ -15,6 +15,7 @@
     container_path: /server/whitelist.json
   loop: "{{ instances }}"
   delegate_to: "{{ ansible_host }}"
+  when: '"whitelist" in item'
 
 - name: Move ops.json into container
   community.docker.docker_container_copy_into:
@@ -23,6 +24,18 @@
     container_path: /server/ops.json
   loop: "{{ instances }}"
   delegate_to: "{{ ansible_host }}"
+
+- name: Enable whitelist if whitelist is created
+  rcon:
+    address: "{{ ansible_host }}"
+    port: "{{ mcs_base_port + (loop0 * 10) + 1 }}"
+    password: "{{ item.rcon_pass }}"
+    command: "whitelist on"
+  loop: "{{ instances_secrets }}"
+  loop_control:
+    index_var: loop0
+  delegate_to: localhost
+  when: '"whitelist" in item'
 
 - name: Tell servers to reload whitelist
   rcon:
@@ -34,6 +47,19 @@
   loop_control:
     index_var: loop0
   delegate_to: localhost
+  when: '"whitelist" in item'
+
+- name: Disable whitelist if whitelist is removed
+  rcon:
+    address: "{{ ansible_host }}"
+    port: "{{ mcs_base_port + (loop0 * 10) + 1 }}"
+    password: "{{ item.rcon_pass }}"
+    command: "whitelist off"
+  loop: "{{ instances_secrets }}"
+  loop_control:
+    index_var: loop0
+  delegate_to: localhost
+  when: '"whitelist" not in item'
 
 - name: Inform whitelist update
   ignore_errors: true
