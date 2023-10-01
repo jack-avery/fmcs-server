@@ -1,10 +1,10 @@
 #!/usr/bin/env sh
 {% if 'fabric' in item %}
 # Fabric
-java -Xmx{{ item.ram }} -jar fabric-server-mc.{{ item.minecraft_ver }}-loader.{{ item.fabric.version }}-launcher.{{ item.fabric.installer }}.jar nogui
+java -Xmx{{ item.ram }} -jar fabric-server-mc.{{ item.minecraft_ver }}-loader.{{ item.fabric }}-launcher.{{ fabric_installer_version }}.jar nogui
 {% elif 'forge' in item %}
 # Forge
-java -Xmx{{ item.ram }} @libraries/net/minecraftforge/forge/{{ item.minecraft_ver }}-{{ item.forge.version }}/unix_args.txt "$@" nogui
+java -Xmx{{ item.ram }} @libraries/net/minecraftforge/forge/{{ item.minecraft_ver }}-{{ item.forge }}/unix_args.txt "$@" nogui
 {% else %}
 # Vanilla
 # TODO: support this?? raise an error to stop in the meantime

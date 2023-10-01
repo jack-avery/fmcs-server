@@ -27,6 +27,16 @@
     mode: 0755
   loop: "{{ instances }}"
 
+- name: Get latest Fabric installer
+  ansible.builtin.uri:
+    url: https://meta.fabricmc.net/v2/versions/installer
+    method: GET
+  register: fabric_api_installers
+
+- name: Set Fabric installer version
+  set_fact:
+    fabric_installer_version: "{{ fabric_api_installers.json[0].version }}"
+
 # - name: Copy files
 #   ansible.posix.synchronize:
 #     src: "{{ role_path }}/files/"
