@@ -4,7 +4,7 @@
 
 </div>
 
-Automatic set-up [Fabric](https://fabricmc.net/) modded Minecraft dedicated servers, supporting identical exports for use with [ATLauncher](https://atlauncher.com/) and a Server <-> Discord relay bot.
+Automatic set-up [Fabric](https://fabricmc.net/) or [Forge](https://forums.minecraftforge.net/) modded Minecraft dedicated servers, supporting manifest exports for installation with [ATLauncher](https://atlauncher.com/) and a Server <-> Discord relay bot.
 
 Found the playbooks useful? [Buy me a coffee ☕](https://ko-fi.com/raspy)!
 
@@ -31,7 +31,7 @@ echo my_root_password
 ```
 
 ### Creating servers
-2. Trigger `make fmcs` to build images and run servers.
+2. Trigger `make servers` to build images and run servers.
 
 ### Updating ops/whitelist
 1. Trigger `make perms`.<br/>

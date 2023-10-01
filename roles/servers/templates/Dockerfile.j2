@@ -1,0 +1,31 @@
+FROM amazoncorretto:20
+
+WORKDIR /server
+# Install Server
+{% if 'fabric' in item %}
+# Fabric
+RUN curl -L -o fabric-server-mc.{{ item.minecraft_ver }}-loader.{{ item.fabric.version }}-launcher.{{ item.fabric.installer }}.jar https://meta.fabricmc.net/v2/versions/loader/{{ item.minecraft_ver }}/{{ item.fabric.version }}/{{ item.fabric.installer }}/server/jar
+{% elif 'forge' in item %}
+# Forge
+RUN curl -L -o forge-{{ item.minecraft_ver }}-{{ item.forge.version }}-installer.jar https://maven.minecraftforge.net/net/minecraftforge/forge/{{ item.minecraft_ver }}-{{ item.forge.version }}/forge-{{ item.minecraft_ver }}-{{ item.forge.version }}-installer.jar
+RUN java -jar forge-{{ item.minecraft_ver }}-{{ item.forge.version }}-installer.jar --installServer
+RUN rm forge-{{ item.minecraft_ver }}-{{ item.forge.version }}-installer.jar
+{% else %}
+# Vanilla
+# TODO: support this?? raise an error to stop in the meantime
+{{ 0/0 }}
+{% endif %}
+
+WORKDIR /server/mods
+# Install Mods
+{% for name, mod in item.mods.items() %}
+{% if mod.mode != "client" %}
+RUN curl -L -o "{{ name }}.jar" {{ mod.source }}
+{% endif %}
+{% endfor %}
+
+# Copy in generated items
+WORKDIR /server
+COPY . .
+
+ENTRYPOINT [ "./run.sh" ]

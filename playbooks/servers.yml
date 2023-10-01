@@ -2,4 +2,4 @@
 - name: Create images and deploy servers to hosts
   hosts: mc
   roles:
-    - fmcs
+    - servers
