@@ -17,12 +17,12 @@ logging.basicConfig(
 
 
 def make_atlauncher_manifest(
-    minecraft_ver: str, fabric_ver: str, name: str, author: str, mods: dict
+    minecraft_ver: str, loader: str, name: str, author: str, mods: dict
 ) -> dict:
     manifest = {
         "minecraft": {
             "version": f"{minecraft_ver}",
-            "modLoaders": [{"id": f"fabric-{fabric_ver}", "primary": True}],
+            "modLoaders": [{"id": f"{loader}", "primary": True}],
         },
         "manifestType": "minecraftModpack",
         "manifestVersion": 1,
@@ -85,12 +85,15 @@ def main():
 
         for instance in instances:
             minecraft_ver = instance["minecraft_ver"]
-            fabric_ver = instance["fabric_ver"]
+            if "fabric" in instance:
+                loader = f"fabric-{instance['fabric']['version']}"
+            elif "forge" in instance:
+                loader = f"forge-{instance['forge']['version']}"
             mods = instance["mods"]
             name = f"{host}-{instance['name']}"
 
             manifest = make_atlauncher_manifest(
-                minecraft_ver, fabric_ver, name, AUTHOR, mods
+                minecraft_ver, loader, name, AUTHOR, mods
             )
             with open(f"out/_/manifest.json", "w") as file:
                 file.write(json.dumps(manifest, indent=4))

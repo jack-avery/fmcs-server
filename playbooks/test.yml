@@ -1,0 +1,6 @@
+---
+- name: Debug on debug host (localhost)
+  hosts: debug
+  roles:
+    - servers
+    - relay

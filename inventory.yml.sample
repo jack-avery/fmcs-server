@@ -1,9 +1,14 @@
 all:
   children:
+    debug:
+      hosts:
+        localhost:
+          ansible_host: 127.0.0.1
+          ansible_connection: local
+
     mc:
       hosts:
         my_host:
           ansible_host: ip or url
-          # or, if you are hosting on your machine, use:
-          # ansible_host: 127.0.0.1
-          # ansible_connection: local
+          # or, if you are hosting on your machine,
+          # replace this entry with the "localhost" entry above

@@ -1,0 +1,34 @@
+instances:
+  - name: "debug"
+    minecraft_ver: "1.20.1"
+    ram: 4G
+
+    forge:
+      version: "47.1.0"
+    
+    relay_bot:
+      channel: 1056708056576163841
+      poll_rate: 1
+      rcon_users:
+        - 97441955893477376
+
+    properties:
+      difficulty: "easy"
+      max-players: 5
+      gamemode: "creative"
+      motd: "debug"
+      pvp: "false"
+      view-distance: 8
+
+    operators:
+      - uuid: 773e05b1-44fe-47be-b61d-95de8e691832
+        level: 4
+        bypassesPlayerLimit: false
+
+    mods:
+      balm:
+        source: https://www.curseforge.com/api/v1/mods/531761/files/4757228/download
+        mode: both
+      waystones:
+        source: https://www.curseforge.com/api/v1/mods/245755/files/4749833/download
+        mode: both

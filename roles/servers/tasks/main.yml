@@ -110,7 +110,7 @@
 
 - name: Build images
   community.docker.docker_image:
-    name: "fmcs-{{ item.name }}"
+    name: "mcs-{{ item.name }}"
     tag: "latest"
     source: build
     build:
@@ -147,21 +147,21 @@
 
 - name: Create network for relay
   community.docker.docker_network:
-    name: "fmcsn-{{ item.name }}"
+    name: "network-mcs-{{ item.name }}"
   loop: "{{ instances }}"
 
 - name: Start
   community.docker.docker_container:
-    name: "fmcs-{{ item.name }}"
-    image: "fmcs-{{ item.name }}:latest"
+    name: "mcs-{{ item.name }}"
+    image: "mcs-{{ item.name }}:latest"
     state: started
     restart: true
     restart_policy: "unless-stopped"
     networks:
-      - name: "fmcsn-{{ item.name }}"
+      - name: "network-mcs-{{ item.name }}"
     volumes:
-      - "~/worlds/{{ item.name }}:/fmcs/world"
-      - "~/logs/{{ item.name }}:/fmcs/logs"
+      - "~/worlds/{{ item.name }}:/server/world"
+      - "~/logs/{{ item.name }}:/server/logs"
     ports:
       - "{{ mcs_base_port + (loop0 * 10) }}:{{ mcs_base_port + (loop0 * 10) }}"
       - "{{ mcs_base_port + (loop0 * 10) }}:{{ mcs_base_port + (loop0 * 10) }}/udp"

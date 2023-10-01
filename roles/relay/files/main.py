@@ -25,7 +25,9 @@ stdout_handler.setFormatter(formatter)
 log_handlers.append(stdout_handler)
 logging.basicConfig(handlers=log_handlers, level=logging.DEBUG)
 
-SERVER_INFO_RE = re.compile(r"\[[0-9:]+\] \[Server thread/INFO\]: (.+)")
+SERVER_INFO_RE = re.compile(
+    r"\[(?:[a-zA-Z0-9]+ )?[0-9:.]+\] \[Server thread/INFO\](?: \[net.minecraft.server.MinecraftServer\/\])?: (.+)"
+)
 SERVER_LIST_RE = re.compile(r"There are (\d+) of a max of (\d+) players online: (.+)?")
 SERVER_MESSAGE_RE = re.compile(r"<([a-zA-Z0-9_]+)> (.+)")
 SERVER_ADVANCEMENT_RE = re.compile(r"([a-zA-Z0-9_]+) has made the advancement \[.+\]")

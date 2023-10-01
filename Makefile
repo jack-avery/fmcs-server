@@ -1,9 +1,9 @@
-.PHONY: all fmcs
+.PHONY: all servers test
 
-all: fmcs relay cron
+all: servers relay cron
 
-fmcs:
-	@ansible-playbook playbooks/fmcs.yml
+servers:
+	@ansible-playbook playbooks/servers.yml
 
 perms:
 	@ansible-playbook playbooks/perms.yml
@@ -16,6 +16,9 @@ relay:
 
 cron:
 	@ansible-playbook playbooks/cron.yml
+
+test:
+	@ansible-playbook playbooks/test.yml
 
 atl:
 	@python3 atl_manis.py

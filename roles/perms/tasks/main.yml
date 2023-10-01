@@ -10,17 +10,17 @@
 
 - name: Move whitelist.json into container
   community.docker.docker_container_copy_into:
-    container: "fmcs-{{ item.name }}"
+    container: "mcs-{{ item.name }}"
     path: ~/build/{{ item.name }}/whitelist.json
-    container_path: /fmcs/whitelist.json
+    container_path: /server/whitelist.json
   loop: "{{ instances }}"
   delegate_to: "{{ ansible_host }}"
 
 - name: Move ops.json into container
   community.docker.docker_container_copy_into:
-    container: "fmcs-{{ item.name }}"
+    container: "mcs-{{ item.name }}"
     path: ~/build/{{ item.name }}/ops.json
-    container_path: /fmcs/ops.json
+    container_path: /server/ops.json
   loop: "{{ instances }}"
   delegate_to: "{{ ansible_host }}"
 

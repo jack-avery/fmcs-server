@@ -29,7 +29,7 @@
 
 - name: Build image
   community.docker.docker_image:
-    name: "fmcsr-{{ instance.0.name }}"
+    name: "mcr-{{ instance.0.name }}"
     tag: "latest"
     source: build
     build:
@@ -41,12 +41,12 @@
 
 - name: Start
   community.docker.docker_container:
-    name: "fmcsr-{{ instance.0.name }}"
-    image: "fmcsr-{{ instance.0.name }}:latest"
+    name: "mcr-{{ instance.0.name }}"
+    image: "mcr-{{ instance.0.name }}:latest"
     state: started
     restart: true
     restart_policy: "unless-stopped"
     networks:
-      - name: "fmcsn-{{ instance.0.name }}"
+      - name: "network-mcs-{{ instance.0.name }}"
     volumes:
       - "~/logs/{{ instance.0.name }}:/bot/logs"
