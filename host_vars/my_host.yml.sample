@@ -1,8 +1,16 @@
 instances:
   - name: "unique-internal-name"
     minecraft_ver: "1.20.1"
-    fabric_ver: "0.14.21"
-    fabric_inst_ver: "0.11.2"
+    ram: 4G
+
+    # Supports both Fabric and Forge (uncomment preferred):
+    #
+    # fabric: # from https://fabricmc.net/use/installer/
+    #   fabric_ver: "0.14.21" #
+    #   fabric_inst_ver: "0.11.2"
+    #
+    # forge: # from https://files.minecraftforge.net/net/minecraftforge/forge/
+    #   version: "47.1.0"
 
     relay_bot:
       channel: discord channel ID
@@ -18,6 +26,10 @@ instances:
       pvp: "false"
       view-distance: 16
 
+      # if you're using a whitelist, be sure to override these two to "true":
+      white-list: "true"
+      enforce-whitelist: "true"
+
     operators: # list of server operators, their level and bypassesPlayerLimit value
       - uuid: 773e05b1-44fe-47be-b61d-95de8e691832
         level: 4
@@ -27,7 +39,7 @@ instances:
       # use `mode: client` to indicate a mod is client-side only
       sound-physics-remastered: 
         source: https://www.curseforge.com/api/v1/mods/535489/files/4584319/download
-        mode: both
+        mode: client
 
       # use `mode: both` to indicate a mod should be on both the clients and the server
       fabric-api:
