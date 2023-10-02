@@ -181,9 +181,9 @@ instances:
       tectonic:
         source: https://www.curseforge.com/api/v1/mods/686836/files/4755730/download
         mode: server
-      localized-chat:
-        source: https://www.curseforge.com/api/v1/mods/292502/files/4621909/download
-        mode: server
+      # localized-chat:
+      #   source: https://www.curseforge.com/api/v1/mods/292502/files/4621909/download
+      #   mode: server
       lithium:
         source: https://cdn.modrinth.com/data/gvQqBUqZ/versions/ZSNsJrPI/lithium-fabric-mc1.20.1-0.11.2.jar
         mode: server
