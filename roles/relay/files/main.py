@@ -134,80 +134,87 @@ class DiscordBot(discord.Client):
                 line = SERVER_INFO_RE.findall(line)[0]
 
                 try:
-                    if SERVER_MESSAGE_RE.match(line):
-                        info = SERVER_MESSAGE_RE.findall(line)[0]
-                        user = info[0]
-                        msg = info[1]
+                    if CONFIG["relay_messages"]:
+                        if SERVER_MESSAGE_RE.match(line):
+                            info = SERVER_MESSAGE_RE.findall(line)[0]
+                            user = info[0]
+                            msg = info[1]
 
-                        embed = discord.embeds.Embed(
-                            color=discord.Color.teal(), description=msg
-                        )
-                        embed.set_author(
-                            name=user, icon_url=await self.get_player_avatar(user)
-                        )
-
-                        await self.CHANNEL.send(embed=embed)
-                        continue
-
-                    if SERVER_JOIN_RE.match(line):
-                        user = SERVER_JOIN_RE.findall(line)[0]
-
-                        embed = discord.embeds.Embed(color=discord.Color.green())
-                        embed.set_author(
-                            name=f"📥 {user} joined the server",
-                            icon_url=await self.get_player_avatar(user),
-                        )
-
-                        await self.CHANNEL.send(embed=embed)
-
-                    if SERVER_LEAVE_RE.match(line):
-                        user = SERVER_LEAVE_RE.findall(line)[0]
-
-                        embed = discord.embeds.Embed(color=discord.Color.red())
-                        embed.set_author(
-                            name=f"📤 {user} left the server",
-                            icon_url=await self.get_player_avatar(user),
-                        )
-
-                        await self.CHANNEL.send(embed=embed)
-                        continue
-
-                    if SERVER_ADVANCEMENT_RE.match(line):
-                        user = SERVER_ADVANCEMENT_RE.findall(line)[0]
-
-                        embed = discord.embeds.Embed(color=discord.Color.teal())
-                        embed.set_author(
-                            name=f"📖 {line}",
-                            icon_url=await self.get_player_avatar(user),
-                        )
-
-                        await self.CHANNEL.send(embed=embed)
-                        continue
-
-                    if SERVER_CHALLENGE_RE.match(line):
-                        user = SERVER_CHALLENGE_RE.findall(line)[0]
-
-                        embed = discord.embeds.Embed(color=discord.Color.gold())
-                        embed.set_author(
-                            name=f"🏆 {line}",
-                            icon_url=await self.get_player_avatar(user),
-                        )
-
-                        await self.CHANNEL.send(embed=embed)
-                        continue
-
-                    for r in SERVER_DEATH_MESSAGES_RE:
-                        if r.match(line):
-                            user = r.findall(line)[0]
-
-                            embed = discord.embeds.Embed(color=discord.Color.dark_red())
+                            embed = discord.embeds.Embed(
+                                color=discord.Color.teal(), description=msg
+                            )
                             embed.set_author(
-                                name=f"💀 {line}",
+                                name=user, icon_url=await self.get_player_avatar(user)
+                            )
+
+                            await self.CHANNEL.send(embed=embed)
+                            continue
+
+                    if CONFIG["relay_connections"]:
+                        if SERVER_JOIN_RE.match(line):
+                            user = SERVER_JOIN_RE.findall(line)[0]
+
+                            embed = discord.embeds.Embed(color=discord.Color.green())
+                            embed.set_author(
+                                name=f"📥 {user} joined the server",
                                 icon_url=await self.get_player_avatar(user),
                             )
 
                             await self.CHANNEL.send(embed=embed)
-                            break
+                            continue
+
+                        if SERVER_LEAVE_RE.match(line):
+                            user = SERVER_LEAVE_RE.findall(line)[0]
+
+                            embed = discord.embeds.Embed(color=discord.Color.red())
+                            embed.set_author(
+                                name=f"📤 {user} left the server",
+                                icon_url=await self.get_player_avatar(user),
+                            )
+
+                            await self.CHANNEL.send(embed=embed)
+                            continue
+
+                    if CONFIG["relay_advancements"]:
+                        if SERVER_ADVANCEMENT_RE.match(line):
+                            user = SERVER_ADVANCEMENT_RE.findall(line)[0]
+
+                            embed = discord.embeds.Embed(color=discord.Color.teal())
+                            embed.set_author(
+                                name=f"📖 {line}",
+                                icon_url=await self.get_player_avatar(user),
+                            )
+
+                            await self.CHANNEL.send(embed=embed)
+                            continue
+
+                        if SERVER_CHALLENGE_RE.match(line):
+                            user = SERVER_CHALLENGE_RE.findall(line)[0]
+
+                            embed = discord.embeds.Embed(color=discord.Color.gold())
+                            embed.set_author(
+                                name=f"🏆 {line}",
+                                icon_url=await self.get_player_avatar(user),
+                            )
+
+                            await self.CHANNEL.send(embed=embed)
+                            continue
+
+                    if CONFIG["relay_deaths"]:
+                        for r in SERVER_DEATH_MESSAGES_RE:
+                            if r.match(line):
+                                user = r.findall(line)[0]
+
+                                embed = discord.embeds.Embed(
+                                    color=discord.Color.dark_red()
+                                )
+                                embed.set_author(
+                                    name=f"💀 {line}",
+                                    icon_url=await self.get_player_avatar(user),
+                                )
+
+                                await self.CHANNEL.send(embed=embed)
+                                break
 
                 except Exception as err:
                     embed = discord.embeds.Embed(
@@ -254,6 +261,9 @@ class DiscordBot(discord.Client):
 
     async def on_message(self, message: discord.Message) -> None:
         if message.author == self.user:
+            return
+
+        if not CONFIG["relay_messages"]:
             return
 
         if message.channel.id == CONFIG["channel"]:
