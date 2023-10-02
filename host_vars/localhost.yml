@@ -1,155 +1,49 @@
 instances:
-  - name: "debug"
-    minecraft_ver: "1.12.2"
-    forge: "14.23.5.2859"
-    ram: 4G
-    
-    relay_bot:
-      channel: 1056708056576163841
-      poll_rate: 1
-      rcon_users:
-        - 97441955893477376
+  - name: "ras"
+    minecraft_ver: "1.20.1"
+    fabric: "0.14.21"
+    ram: "4G"
 
     properties:
-      difficulty: "easy"
-      max-players: 5
-      gamemode: "survival"
-      motd: "debug"
-      pvp: "false"
-      view-distance: 8
+      max-players: 4
+      motd: "chungus"
 
     operators:
       - uuid: 773e05b1-44fe-47be-b61d-95de8e691832
         level: 4
-        bypassesPlayerLimit: false
+        bypassesPlayerLimit: true
 
     mods:
-      fairylights:
-        source: https://www.curseforge.com/api/v1/mods/233342/files/3068499/download
+      sound-physics-remastered:
+        source: https://www.curseforge.com/api/v1/mods/535489/files/4584319/download
+        mode: client
+      presence-footsteps:
+        source: https://www.curseforge.com/api/v1/mods/334259/files/4575802/download
+        mode: client
+      sodium:
+        source: https://cdn.modrinth.com/data/AANobbMI/versions/4OZL6q9h/sodium-fabric-mc1.20.1-0.5.3.jar
+        mode: client
+      iris:
+        source: https://cdn.modrinth.com/data/YL57xq9U/versions/P8R7yx6t/iris-mc1.20.1-1.6.9.jar
+        mode: client
+
+      lithium:
+        source: https://cdn.modrinth.com/data/gvQqBUqZ/versions/ZSNsJrPI/lithium-fabric-mc1.20.1-0.11.2.jar
         mode: both
-      spartan-shields:
-        source: https://www.curseforge.com/api/v1/mods/252239/files/3567495/download
+      fabric-api:
+        source: https://www.curseforge.com/api/v1/mods/306612/files/4622908/download
         mode: both
-      hwyla:
-        source: https://www.curseforge.com/api/v1/mods/253449/files/2568751/download
-        mode: both
-      scape-and-run-parasites-survival-addon-by-nocube: 
-        source: https://www.curseforge.com/api/v1/mods/693318/files/4048221/download
-        mode: both
-      quark:
-        source: https://www.curseforge.com/api/v1/mods/243121/files/2924091/download
-        mode: both
-      iron-chests:
-        source: https://www.curseforge.com/api/v1/mods/228756/files/2747935/download
-        mode: both
-      future-mc:
-        source: https://www.curseforge.com/api/v1/mods/310059/files/3924863/download
-        mode: both
-      quark-oddities:
-        source: https://www.curseforge.com/api/v1/mods/301051/files/2604798/download
-        mode: both
-      clumps:
-        source: https://www.curseforge.com/api/v1/mods/256717/files/2666198/download
-        mode: both
-      ctm: # connected textures mod
-        source: https://www.curseforge.com/api/v1/mods/267602/files/2915363/download
-        mode: both
-      scape-and-run-parasites: 
-        source: https://www.curseforge.com/api/v1/mods/348025/files/4494577/download
-        mode: both
-      simple-voice-chat:
-        source: https://www.curseforge.com/api/v1/mods/416089/files/4726775/download
-        mode: both
-      netherportalfix:
-        source: https://www.curseforge.com/api/v1/mods/241160/files/2612052/download
-        mode: both
-      lootr:
-        source: https://www.curseforge.com/api/v1/mods/361276/files/4756301/download
-        mode: both
-      collective:
-        source: https://www.curseforge.com/api/v1/mods/342584/files/3533131/download
-        mode: both
-      just-enough-resources-jer:
-        source: https://www.curseforge.com/api/v1/mods/240630/files/2728585/download
-        mode: both
-      baubles:
-        source: https://www.curseforge.com/api/v1/mods/227083/files/2518667/download
-        mode: both
-      shadowfacts-forgelin:
-        source: https://www.curseforge.com/api/v1/mods/248453/files/2785465/download
-        mode: both
-      carry-on:
-        source: https://www.curseforge.com/api/v1/mods/274259/files/4507139/download
-        mode: both
-      biomes-o-plenty:
-        source: https://www.curseforge.com/api/v1/mods/220318/files/3558882/download
-        mode: both
-      lolasm:
-        source: https://www.curseforge.com/api/v1/mods/460609/files/4623985/download
-        mode: both
-      scape-and-run-parasites-resource-pack:
-        source: https://www.curseforge.com/api/v1/mods/562269/files/4732650/download
-        mode: both
-      tree-harvester:
-        source: https://www.curseforge.com/api/v1/mods/367178/files/3520536/download
-        mode: both
-      travelers-backpack:
-        source: https://www.curseforge.com/api/v1/mods/321117/files/3150850/download
-        mode: both
-      autoreglib:
-        source: https://www.curseforge.com/api/v1/mods/250363/files/2746011/download
-        mode: both
-      mo-bends:
-        source: https://www.curseforge.com/api/v1/mods/231347/files/3573346/download
-        mode: both
-      cooking-for-blockheads:
-        source: https://www.curseforge.com/api/v1/mods/231484/files/2862651/download
-        mode: both
-      jei: # just enough items
-        source: https://www.curseforge.com/api/v1/mods/238222/files/3040523/download
-        mode: both
-      trinkets-and-baubles:
-        source: https://www.curseforge.com/api/v1/mods/279900/files/4469269/download
-        mode: both
-      crafttweaker:
-        source: https://www.curseforge.com/api/v1/mods/239197/files/4731280/download
-        mode: both
-      mixin-booter:
-        source: https://www.curseforge.com/api/v1/mods/419286/files/4752579/download
-        mode: both
-      dark-theme-mod:
-        source: https://www.curseforge.com/api/v1/mods/323440/files/3146120/download
-        mode: both
-      cosmetic-armor-reworked:
-        source: https://www.curseforge.com/api/v1/mods/237307/files/2937869/download
-        mode: both
-      electroblobs-wizardry:
-        source: https://www.curseforge.com/api/v1/mods/265642/files/4617771/download
-        mode: both
-      spartan-weaponry:
-        source: https://www.curseforge.com/api/v1/mods/278141/files/4467344/download
-        mode: both
-      mob-controller:
-        source: https://www.curseforge.com/api/v1/mods/283935/files/2512867/download
-        mode: both
-      scape-and-run-parasites-addon-by-nocube:
-        source: https://www.curseforge.com/api/v1/mods/514409/files/4051307/download
-        mode: both
-      chisel:
-        source: https://www.curseforge.com/api/v1/mods/235279/files/2915375/download
-        mode: both
-      botania:
-        source: https://www.curseforge.com/api/v1/mods/225643/files/3330934/download
-        mode: both
-      vampirism-integrations:
-        source: https://www.curseforge.com/api/v1/mods/282433/files/2947539/download
-        mode: both
-      vampirism-become-a-vampire:
-        source: https://www.curseforge.com/api/v1/mods/233029/files/2890062/download
-        mode: both
-      default-improved:
-        source: https://www.curseforge.com/api/v1/mods/236886/files/2572308/download
-        mode: both
-      naturalrealism:
-        source: https://www.curseforge.com/api/v1/mods/274394/files/2775550/download
-        mode: both
+
+      fabric-language-kotlin:
+        source: https://www.curseforge.com/api/v1/mods/308769/files/4628045/download
+        mode: server
+      terralith:
+        source: https://www.curseforge.com/api/v1/mods/513688/files/4725190/download
+        mode: server
+      tectonic:
+        source: https://www.curseforge.com/api/v1/mods/686836/files/4755730/download
+        mode: server
+
+    whitelist:
+      - 773e05b1-44fe-47be-b61d-95de8e691832
+      - 434fe80d-e945-4acb-ab4a-d180982b54ab

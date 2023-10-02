@@ -30,6 +30,7 @@ SERVER_INFO_RE = re.compile(
 )
 SERVER_LIST_RE = re.compile(r"There are (\d+) of a max of (\d+) players online: (.+)?")
 SERVER_MESSAGE_RE = re.compile(r"<([a-zA-Z0-9_]+)> (.+)")
+SERVER_ACTION_RE = re.compile(r"\* ([a-zA-Z0-9_]+) .+")
 SERVER_ADVANCEMENT_RE = re.compile(r"([a-zA-Z0-9_]+) has made the advancement \[.+\]")
 SERVER_CHALLENGE_RE = re.compile(r"([a-zA-Z0-9_]+) has completed the challenge \[.+\]")
 SERVER_JOIN_RE = re.compile(r"([a-zA-Z0-9_]+) joined the game")
@@ -150,13 +151,24 @@ class DiscordBot(discord.Client):
                             await self.CHANNEL.send(embed=embed)
                             continue
 
+                        if SERVER_ACTION_RE.match(line):
+                            user = SERVER_ACTION_RE.findall(line)[0]
+
+                            embed = discord.embeds.Embed(color=discord.Color.teal())
+                            embed.set_author(
+                                name=line, icon_url=await self.get_player_avatar(user)
+                            )
+
+                            await self.CHANNEL.send(embed=embed)
+                            continue
+
                     if CONFIG["relay_connections"]:
                         if SERVER_JOIN_RE.match(line):
                             user = SERVER_JOIN_RE.findall(line)[0]
 
                             embed = discord.embeds.Embed(color=discord.Color.green())
                             embed.set_author(
-                                name=f"📥 {user} joined the server",
+                                name=f"📥 {line}",
                                 icon_url=await self.get_player_avatar(user),
                             )
 
@@ -168,7 +180,7 @@ class DiscordBot(discord.Client):
 
                             embed = discord.embeds.Embed(color=discord.Color.red())
                             embed.set_author(
-                                name=f"📤 {user} left the server",
+                                name=f"📤 {line}",
                                 icon_url=await self.get_player_avatar(user),
                             )
 

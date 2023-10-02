@@ -152,12 +152,21 @@ instances:
       xaeros-world-map:
         source: https://www.curseforge.com/api/v1/mods/317780/files/4594989/download
         mode: client
+      sodium:
+        source: https://cdn.modrinth.com/data/AANobbMI/versions/4OZL6q9h/sodium-fabric-mc1.20.1-0.5.3.jar
+        mode: client
+      iris:
+        source: https://cdn.modrinth.com/data/YL57xq9U/versions/P8R7yx6t/iris-mc1.20.1-1.6.9.jar
+        mode: client
 
       fabric-api:
         source: https://www.curseforge.com/api/v1/mods/306612/files/4622908/download
         mode: both
       cloth-config:
         source: https://www.curseforge.com/api/v1/mods/348521/files/4633442/download
+        mode: both
+      lithium:
+        source: https://cdn.modrinth.com/data/gvQqBUqZ/versions/ZSNsJrPI/lithium-fabric-mc1.20.1-0.11.2.jar
         mode: both
       inventory-sorting:
         source: https://www.curseforge.com/api/v1/mods/325471/files/4597704/download
@@ -184,9 +193,6 @@ instances:
       # localized-chat:
       #   source: https://www.curseforge.com/api/v1/mods/292502/files/4621909/download
       #   mode: server
-      lithium:
-        source: https://cdn.modrinth.com/data/gvQqBUqZ/versions/ZSNsJrPI/lithium-fabric-mc1.20.1-0.11.2.jar
-        mode: server
 
     whitelist:
       - 773e05b1-44fe-47be-b61d-95de8e691832 # raspy

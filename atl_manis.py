@@ -83,12 +83,12 @@ def main():
             + ", ".join([i["name"] for i in instances])
         )
 
-        os.mkdir("out/_")
-        os.mkdir("out/_/overrides")
-        os.mkdir("out/_/overrides/mods")
-        os.mkdir("out/_/overrides/resourcepacks")
-
         for instance in instances:
+            os.mkdir("out/_")
+            os.mkdir("out/_/overrides")
+            os.mkdir("out/_/overrides/mods")
+            os.mkdir("out/_/overrides/resourcepacks")
+
             minecraft_ver = instance["minecraft_ver"]
             if "fabric" in instance:
                 loader = f"fabric-{instance['fabric']}"
