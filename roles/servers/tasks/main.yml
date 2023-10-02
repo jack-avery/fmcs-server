@@ -102,13 +102,24 @@
 
 - name: /config/voicechat/voicechat-server.properties
   ansible.builtin.template:
-    src: voicechat-server.properties.j2
+    src: mods/voicechat-server.properties.j2
     dest: ~/build/{{ item.name }}/config/voicechat/voicechat-server.properties
     mode: 0755
   loop: "{{ instances }}"
   loop_control:
     index_var: loop0
   when: '"simple-voice-chat" in item.mods'
+
+  # TODO: figure out some way to easily reformat yml to this toml format
+- name: /config/localizedchat.toml
+  ansible.builtin.template:
+    src: mods/localizedchat.toml.j2
+    dest: ~/build/{{ item.name }}/config/localizedchat.toml
+    mode: 0755
+  loop: "{{ instances }}"
+  loop_control:
+    index_var: loop0
+  when: '"localized-chat" in item.mods'
 
 ##
 # Build and run

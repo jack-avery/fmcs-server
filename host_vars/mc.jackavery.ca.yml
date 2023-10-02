@@ -156,6 +156,15 @@ instances:
       fabric-api:
         source: https://www.curseforge.com/api/v1/mods/306612/files/4622908/download
         mode: both
+      cloth-config:
+        source: https://www.curseforge.com/api/v1/mods/348521/files/4633442/download
+        mode: both
+      inventory-sorting:
+        source: https://www.curseforge.com/api/v1/mods/325471/files/4597704/download
+        mode: both
+      localized-chat:
+        source: https://www.curseforge.com/api/v1/mods/292502/files/4621909/download
+        mode: both
       simple-voice-chat: 
         source: https://www.curseforge.com/api/v1/mods/416089/files/4645807/download
         mode: both
