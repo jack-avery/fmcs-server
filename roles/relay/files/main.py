@@ -122,10 +122,6 @@ class DiscordBot(discord.Client):
             last_poll_start_date = date.today()
 
             lines = log.readlines()
-            if not lines:
-                await asyncio.sleep(CONFIG["poll_rate"])
-                continue
-
             for line in lines:
                 raw = line
 
@@ -241,8 +237,7 @@ class DiscordBot(discord.Client):
             await asyncio.sleep(CONFIG["poll_rate"])
 
             # grab new log file if day changed
-            current_date = date.today()
-            if current_date != last_poll_start_date:
+            if date.today() != last_poll_start_date:
                 # force new file to be opened
                 rcon("list")
                 # wait 1 second to be sure
