@@ -141,58 +141,26 @@ instances:
 
     mods:
       sound-physics-remastered:
-        source: https://www.curseforge.com/api/v1/mods/535489/files/4584319/download
-        mode: client
       presence-footsteps:
-        source: https://www.curseforge.com/api/v1/mods/334259/files/4575802/download
-        mode: client
       xaeros-minimap:
-        source: https://www.curseforge.com/api/v1/mods/263420/files/4593188/download
-        mode: client
       xaeros-world-map:
-        source: https://www.curseforge.com/api/v1/mods/317780/files/4594989/download
-        mode: client
       sodium:
-        source: https://cdn.modrinth.com/data/AANobbMI/versions/4OZL6q9h/sodium-fabric-mc1.20.1-0.5.3.jar
-        mode: client
       iris:
-        source: https://cdn.modrinth.com/data/YL57xq9U/versions/P8R7yx6t/iris-mc1.20.1-1.6.9.jar
-        mode: client
 
       fabric-api:
-        source: https://www.curseforge.com/api/v1/mods/306612/files/4622908/download
-        mode: both
       cloth-config:
-        source: https://www.curseforge.com/api/v1/mods/348521/files/4633442/download
-        mode: both
       lithium:
-        source: https://cdn.modrinth.com/data/gvQqBUqZ/versions/ZSNsJrPI/lithium-fabric-mc1.20.1-0.11.2.jar
-        mode: both
       inventory-sorting:
-        source: https://www.curseforge.com/api/v1/mods/325471/files/4597704/download
-        mode: both
       simple-voice-chat:
-        source: https://www.curseforge.com/api/v1/mods/416089/files/4645807/download
-        mode: both
         properties:
           spectator_interaction: "true"
           spectator_player_possession: "true"
 
       fabric-language-kotlin:
-        source: https://www.curseforge.com/api/v1/mods/308769/files/4628045/download
-        mode: server
       ledger:
-        source: https://www.curseforge.com/api/v1/mods/491137/files/4572696/download
-        mode: server
       terralith:
-        source: https://www.curseforge.com/api/v1/mods/513688/files/4725190/download
-        mode: server
       tectonic:
-        source: https://www.curseforge.com/api/v1/mods/686836/files/4755730/download
-        mode: server
       # localized-chat:
-      #   source: https://www.curseforge.com/api/v1/mods/292502/files/4621909/download
-      #   mode: server
 
     whitelist:
       - 773e05b1-44fe-47be-b61d-95de8e691832 # raspy

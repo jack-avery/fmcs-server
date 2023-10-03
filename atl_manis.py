@@ -2,54 +2,53 @@
 import json
 import logging
 import os
-import re
 import requests
 import shutil
 import yaml
 
-CURSEFORGE_RE = re.compile(
-    r"https://www\.curseforge\.com/api/v1/mods/(\d+)/files/(\d+)/download"
-)
-
-AUTHOR = "raspy_on_osu"
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s"
 )
 
 
-def make_atlauncher_manifest(
-    minecraft_ver: str, loader: str, name: str, author: str, mods: dict
-) -> dict:
-    manifest = {
-        "minecraft": {
-            "version": f"{minecraft_ver}",
-            "modLoaders": [{"id": f"{loader}", "primary": True}],
+def get_mrpack_mod(name: str, game_version: str, loader: str) -> dict:
+    project = requests.get(f"https://api.modrinth.com/v2/project/{name}").json()
+    version = requests.get(
+        f'https://api.modrinth.com/v2/project/{name}/version?game_versions=["{game_version}"]&loaders=["{loader}"]'
+    ).json()[0]["files"][0]
+
+    return {
+        "path": f"mods/{name}.jar",
+        "hashes": {
+            "sha1": version["hashes"]["sha1"],
+            "sha512": version["hashes"]["sha512"],
         },
-        "manifestType": "minecraftModpack",
-        "manifestVersion": 1,
-        "name": name,
-        "author": author,
-        "files": [],
-        "overrides": "overrides",
+        "env": {
+            "server": project["server_side"],
+            "client": project["client_side"],
+        },
+        "downloads": [version["url"]],
+        "filesize": version["size"],
     }
 
-    for name, mod in mods.items():
-        if mod["mode"] == "server":
-            continue
 
-        if CURSEFORGE_RE.match(mod["source"]):
-            project = CURSEFORGE_RE.findall(mod["source"])[0][0]
-            file = CURSEFORGE_RE.findall(mod["source"])[0][1]
-            mod_manifest = {
-                "projectID": project,
-                "fileID": file,
-                "required": True,
-            }
-            manifest["files"].append(mod_manifest)
+def make_atlauncher_manifest(
+    minecraft_ver: str, loader: str, name: str, mods: dict
+) -> dict:
+    manifest = {
+        "formatVersion": 1,
+        "game": "minecraft",
+        "versionId": "1.0.0",
+        "name": name,
+        "files": [],
+        "dependencies": {
+            "minecraft": minecraft_ver,
+            f"{loader['type']}-loader": loader["version"],
+        },
+    }
 
-        else:
-            file = requests.get(mod["source"])
-            open(f"out/_/overrides/mods/{name}.jar", "wb").write(file.content)
+    for name in mods.keys():
+        manifest["files"].append(get_mrpack_mod(name, minecraft_ver, loader["type"]))
 
     return manifest
 
@@ -91,19 +90,20 @@ def main():
 
             minecraft_ver = instance["minecraft_ver"]
             if "fabric" in instance:
-                loader = f"fabric-{instance['fabric']}"
+                loader = {"type": "fabric", "version": instance["fabric"]}
             elif "forge" in instance:
-                loader = f"forge-{instance['forge']}"
+                loader = {"type": "forge", "version": instance["forge"]}
             mods = instance["mods"]
             name = f"{host}-{instance['name']}"
 
-            manifest = make_atlauncher_manifest(
-                minecraft_ver, loader, name, AUTHOR, mods
-            )
-            with open(f"out/_/manifest.json", "w") as file:
+            manifest = make_atlauncher_manifest(minecraft_ver, loader, name, mods)
+            with open(f"out/_/modrinth.index.json", "w") as file:
                 file.write(json.dumps(manifest, indent=4))
 
+            # zip and rename to .mrpack so ATLauncher accepts it
             shutil.make_archive(f"out/{name}", "zip", "out/_")
+            shutil.move(f"out/{name}.zip", f"out/{name}.mrpack")
+
             logging.info(f"{name} completed")
 
             # clean up for next

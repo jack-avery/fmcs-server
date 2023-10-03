@@ -16,16 +16,5 @@ RUN rm forge-{{ item.minecraft_ver }}-{{ item.forge }}-installer.jar
 {{ 0/0 }}
 {% endif %}
 
-WORKDIR /server/mods
-# Install Mods
-{% for name, mod in item.mods.items() %}
-{% if mod.mode != "client" %}
-RUN curl -L -o "{{ name }}.jar" {{ mod.source }}
-{% endif %}
-{% endfor %}
-
-# Copy in generated items
-WORKDIR /server
 COPY . .
-
 ENTRYPOINT [ "./run.sh" ]
