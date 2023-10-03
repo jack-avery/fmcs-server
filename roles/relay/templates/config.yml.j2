@@ -4,9 +4,13 @@ port: {{ mcs_base_port + (loop0 * 10) }}
 rcon_addr: mcs-{{ instance.0.name }}
 rcon_pass: {{ instance.1.rcon_pass }}
 channel: {{ instance.0.relay_bot.channel }}
-atl_manifest: "{{ inventory_hostname }}-{{ instance.0.name }}.zip"
+atl_manifest: "{{ inventory_hostname }}-{{ instance.0.name }}.mrpack"
 is_whitelist: {{ true if 'whitelist' in instance.0 else false }}
-poll_rate: {% if 'poll_rate' in instance.0.relay_bot %}{{ instance.0.relay_bot.poll_rate }}{% else %}{{ defaults.relay_bot.poll_rate }}{% endif %}
+relay_messages: {{ instance.0.relay_bot.relay_messages | default(defaults.relay_bot.relay_messages) }}
+relay_deaths: {{ instance.0.relay_bot.relay_deaths | default(defaults.relay_bot.relay_deaths) }}
+relay_advancements: {{ instance.0.relay_bot.relay_advancements | default(defaults.relay_bot.relay_advancements) }}
+relay_connections: {{ instance.0.relay_bot.relay_connections | default(defaults.relay_bot.relay_connections) }}
+poll_rate: {{ instance.0.relay_bot.poll_rate | default(defaults.relay_bot.poll_rate) }}
 
 rcon_users:
 {% for user in instance.0.relay_bot.rcon_users %}

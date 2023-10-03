@@ -4,6 +4,10 @@ delete_backups_after_days: 7
 defaults:
   relay_bot:
     poll_rate: 1
+    relay_messages: true # will not work with 'localized-chat' mod
+    relay_deaths: true
+    relay_advancements: true
+    relay_connections: true
 
   properties:
     # Minecraft server properties

@@ -30,6 +30,7 @@ SERVER_INFO_RE = re.compile(
 )
 SERVER_LIST_RE = re.compile(r"There are (\d+) of a max of (\d+) players online: (.+)?")
 SERVER_MESSAGE_RE = re.compile(r"<([a-zA-Z0-9_]+)> (.+)")
+SERVER_ACTION_RE = re.compile(r"\* ([a-zA-Z0-9_]+) .+")
 SERVER_ADVANCEMENT_RE = re.compile(r"([a-zA-Z0-9_]+) has made the advancement \[.+\]")
 SERVER_CHALLENGE_RE = re.compile(r"([a-zA-Z0-9_]+) has completed the challenge \[.+\]")
 SERVER_JOIN_RE = re.compile(r"([a-zA-Z0-9_]+) joined the game")
@@ -121,11 +122,6 @@ class DiscordBot(discord.Client):
             last_poll_start_date = date.today()
 
             lines = log.readlines()
-            if not lines:
-                await asyncio.sleep(CONFIG["poll_rate"])
-                continue
-            last_line = lines[-1]
-
             for line in lines:
                 raw = line
 
@@ -135,80 +131,98 @@ class DiscordBot(discord.Client):
                 line = SERVER_INFO_RE.findall(line)[0]
 
                 try:
-                    if SERVER_MESSAGE_RE.match(line):
-                        info = SERVER_MESSAGE_RE.findall(line)[0]
-                        user = info[0]
-                        msg = info[1]
+                    if CONFIG["relay_messages"]:
+                        if SERVER_MESSAGE_RE.match(line):
+                            info = SERVER_MESSAGE_RE.findall(line)[0]
+                            user = info[0]
+                            msg = info[1]
 
-                        embed = discord.embeds.Embed(
-                            color=discord.Color.teal(), description=msg
-                        )
-                        embed.set_author(
-                            name=user, icon_url=await self.get_player_avatar(user)
-                        )
-
-                        await self.CHANNEL.send(embed=embed)
-                        continue
-
-                    if SERVER_JOIN_RE.match(line):
-                        user = SERVER_JOIN_RE.findall(line)[0]
-
-                        embed = discord.embeds.Embed(color=discord.Color.green())
-                        embed.set_author(
-                            name=f"📥 {user} joined the server",
-                            icon_url=await self.get_player_avatar(user),
-                        )
-
-                        await self.CHANNEL.send(embed=embed)
-
-                    if SERVER_LEAVE_RE.match(line):
-                        user = SERVER_LEAVE_RE.findall(line)[0]
-
-                        embed = discord.embeds.Embed(color=discord.Color.red())
-                        embed.set_author(
-                            name=f"📤 {user} left the server",
-                            icon_url=await self.get_player_avatar(user),
-                        )
-
-                        await self.CHANNEL.send(embed=embed)
-                        continue
-
-                    if SERVER_ADVANCEMENT_RE.match(line):
-                        user = SERVER_ADVANCEMENT_RE.findall(line)[0]
-
-                        embed = discord.embeds.Embed(color=discord.Color.teal())
-                        embed.set_author(
-                            name=f"📖 {line}",
-                            icon_url=await self.get_player_avatar(user),
-                        )
-
-                        await self.CHANNEL.send(embed=embed)
-                        continue
-
-                    if SERVER_CHALLENGE_RE.match(line):
-                        user = SERVER_CHALLENGE_RE.findall(line)[0]
-
-                        embed = discord.embeds.Embed(color=discord.Color.gold())
-                        embed.set_author(
-                            name=f"🏆 {line}",
-                            icon_url=await self.get_player_avatar(user),
-                        )
-
-                        await self.CHANNEL.send(embed=embed)
-                        continue
-
-                    for r in SERVER_DEATH_MESSAGES_RE:
-                        if r.match(line):
-                            user = r.findall(line)[0]
-
-                            embed = discord.embeds.Embed(color=discord.Color.dark_red())
+                            embed = discord.embeds.Embed(
+                                color=discord.Color.teal(), description=msg
+                            )
                             embed.set_author(
-                                name=f"💀 {line}",
+                                name=user, icon_url=await self.get_player_avatar(user)
+                            )
+
+                            await self.CHANNEL.send(embed=embed)
+                            continue
+
+                        if SERVER_ACTION_RE.match(line):
+                            user = SERVER_ACTION_RE.findall(line)[0]
+
+                            embed = discord.embeds.Embed(color=discord.Color.teal())
+                            embed.set_author(
+                                name=line, icon_url=await self.get_player_avatar(user)
+                            )
+
+                            await self.CHANNEL.send(embed=embed)
+                            continue
+
+                    if CONFIG["relay_connections"]:
+                        if SERVER_JOIN_RE.match(line):
+                            user = SERVER_JOIN_RE.findall(line)[0]
+
+                            embed = discord.embeds.Embed(color=discord.Color.green())
+                            embed.set_author(
+                                name=f"📥 {line}",
                                 icon_url=await self.get_player_avatar(user),
                             )
 
                             await self.CHANNEL.send(embed=embed)
-                            break
+                            continue
+
+                        if SERVER_LEAVE_RE.match(line):
+                            user = SERVER_LEAVE_RE.findall(line)[0]
+
+                            embed = discord.embeds.Embed(color=discord.Color.red())
+                            embed.set_author(
+                                name=f"📤 {line}",
+                                icon_url=await self.get_player_avatar(user),
+                            )
+
+                            await self.CHANNEL.send(embed=embed)
+                            continue
+
+                    if CONFIG["relay_advancements"]:
+                        if SERVER_ADVANCEMENT_RE.match(line):
+                            user = SERVER_ADVANCEMENT_RE.findall(line)[0]
+
+                            embed = discord.embeds.Embed(color=discord.Color.teal())
+                            embed.set_author(
+                                name=f"📖 {line}",
+                                icon_url=await self.get_player_avatar(user),
+                            )
+
+                            await self.CHANNEL.send(embed=embed)
+                            continue
+
+                        if SERVER_CHALLENGE_RE.match(line):
+                            user = SERVER_CHALLENGE_RE.findall(line)[0]
+
+                            embed = discord.embeds.Embed(color=discord.Color.gold())
+                            embed.set_author(
+                                name=f"🏆 {line}",
+                                icon_url=await self.get_player_avatar(user),
+                            )
+
+                            await self.CHANNEL.send(embed=embed)
+                            continue
+
+                    if CONFIG["relay_deaths"]:
+                        for r in SERVER_DEATH_MESSAGES_RE:
+                            if r.match(line):
+                                user = r.findall(line)[0]
+
+                                embed = discord.embeds.Embed(
+                                    color=discord.Color.dark_red()
+                                )
+                                embed.set_author(
+                                    name=f"💀 {line}",
+                                    icon_url=await self.get_player_avatar(user),
+                                )
+
+                                await self.CHANNEL.send(embed=embed)
+                                break
 
                 except Exception as err:
                     embed = discord.embeds.Embed(
@@ -223,23 +237,13 @@ class DiscordBot(discord.Client):
             await asyncio.sleep(CONFIG["poll_rate"])
 
             # grab new log file if day changed
-            current_date = date.today()
-            if current_date != last_poll_start_date:
-                while True:
-                    # wait for new file
-                    new_log = open("logs/latest.log", "r")
-
-                    try:
-                        if new_log.readlines()[-1] != last_line:
-                            log = new_log
-                            break
-
-                    except IndexError:
-                        log = new_log
-                        break
-
-                    new_log.close()
-                    await asyncio.sleep(1)
+            if date.today() != last_poll_start_date:
+                # force new file to be opened
+                rcon("list")
+                # wait 1 second to be sure
+                await asyncio.sleep(1)
+                # grab it
+                log = open("logs/latest.log", "r")
 
     async def get_player_avatar(self, username: str) -> str:
         """
@@ -264,6 +268,9 @@ class DiscordBot(discord.Client):
 
     async def on_message(self, message: discord.Message) -> None:
         if message.author == self.user:
+            return
+
+        if not CONFIG["relay_messages"]:
             return
 
         if message.channel.id == CONFIG["channel"]:
@@ -351,7 +358,9 @@ async def _info(interaction: discord.Interaction) -> None:
 @client.tree.command(name="help", description="See available commands")
 async def _help(interaction: discord.Interaction) -> None:
     commands = await client.tree.fetch_commands()
-    listing = "- " + "\n- ".join([c.name for c in commands])
+    listing = "- " + "\n- ".join(
+        [f"</{c.name}:{c.id}>: {c.description}" for c in commands]
+    )
 
     embed = discord.embeds.Embed(
         color=discord.Color.og_blurple(), title="Commands", description=listing

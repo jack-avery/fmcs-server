@@ -1,0 +1,21 @@
+---
+- name: Get Modrinth links
+  modrinth:
+    game_version: "{{ instance.minecraft_ver }}"
+    loader: "{{ 'fabric' if 'fabric' in instance else 'forge' if 'forge' in instance }}"
+    mods: "{{ instance.mods.keys() }}"
+  register: modrinth
+
+- name: Create mod folder
+  ansible.builtin.file:
+    path: ~/build/{{ instance.name }}/mods
+    state: directory
+    mode: 0755
+
+- name: Download mods
+  get_url:
+    url: "{{ mod.link }}"
+    dest: ~/build/{{ instance.name }}/mods/{{ mod.name }}.jar
+  loop: "{{ modrinth.dls }}"
+  loop_control:
+    loop_var: mod

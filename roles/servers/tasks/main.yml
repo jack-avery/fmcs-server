@@ -2,17 +2,17 @@
 - name: Load secrets
   ansible.builtin.include_tasks: secrets.yml
 
-- name: Warn update
-  ignore_errors: true
-  rcon:
-    address: "{{ ansible_host }}"
-    port: "{{ mcs_base_port + (loop0 * 10) + 1 }}"
-    password: "{{ item.rcon_pass }}"
-    command: "say Update triggered, restart soon..."
-  loop: "{{ instances_secrets }}"
-  loop_control:
-    index_var: loop0
-  delegate_to: localhost
+# - name: Warn update
+#   ignore_errors: true
+#   rcon:
+#     address: "{{ ansible_host }}"
+#     port: "{{ mcs_base_port + (loop0 * 10) + 1 }}"
+#     password: "{{ item.rcon_pass }}"
+#     command: "say Update triggered, restart soon..."
+#   loop: "{{ instances_secrets }}"
+#   loop_control:
+#     index_var: loop0
+#   delegate_to: localhost
 
 - name: Delete old build data
   ansible.builtin.file:
@@ -26,6 +26,9 @@
     state: directory
     mode: 0755
   loop: "{{ instances }}"
+
+##
+# Set up mod-related
 
 - name: Get latest Fabric installer
   ansible.builtin.uri:
@@ -91,6 +94,13 @@
 ##
 # Mod stuff
 
+- name: Get Modrinth mods
+  ansible.builtin.include_tasks: modrinth.yml
+  loop: "{{ instances }}"
+  loop_control:
+    loop_var: instance
+    index_var: loop0
+
 - name: /config/voicechat
   file:
     path: ~/build/{{ item.name }}/config/voicechat/
@@ -102,13 +112,24 @@
 
 - name: /config/voicechat/voicechat-server.properties
   ansible.builtin.template:
-    src: voicechat-server.properties.j2
+    src: mods/voicechat-server.properties.j2
     dest: ~/build/{{ item.name }}/config/voicechat/voicechat-server.properties
     mode: 0755
   loop: "{{ instances }}"
   loop_control:
     index_var: loop0
   when: '"simple-voice-chat" in item.mods'
+
+  # TODO: figure out some way to easily reformat yml to this toml format
+- name: /config/localizedchat.toml
+  ansible.builtin.template:
+    src: mods/localizedchat.toml.j2
+    dest: ~/build/{{ item.name }}/config/localizedchat.toml
+    mode: 0755
+  loop: "{{ instances }}"
+  loop_control:
+    index_var: loop0
+  when: '"localized-chat" in item.mods'
 
 ##
 # Build and run

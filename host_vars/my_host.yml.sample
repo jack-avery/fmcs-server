@@ -28,33 +28,20 @@ instances:
         level: 4
         bypassesPlayerLimit: false
 
-    mods: # list of mods; direct download link from website
-      # use `mode: client` to indicate a mod is client-side only
-      sound-physics-remastered: 
-        source: https://www.curseforge.com/api/v1/mods/535489/files/4584319/download
-        mode: client
-
-      # use `mode: both` to indicate a mod should be on both the clients and the server
+    mods: # list of mods from modrinth; use name in URL
+      sound-physics-remastered:
       fabric-api:
-        source: https://www.curseforge.com/api/v1/mods/306612/files/4622908/download
-        mode: both
       balm:
-        source: https://www.curseforge.com/api/v1/mods/500525/files/4597439/download
-        mode: both
       waystones:
-        source: https://www.curseforge.com/api/v1/mods/500087/files/4635403/download
-        mode: both
+      lithium:
+
+      # fmcs-server will handle serverside and clientside relations
+
+      # mods that support customization have it done under "properties"
       simple-voice-chat:
-        source: https://www.curseforge.com/api/v1/mods/416089/files/4645807/download
-        mode: both
-        properties: # mods that support customization have it done under "properties"
+        properties:
           spectator_interaction: "true"
           spectator_player_possession: "true"
-
-      # use `mode: server` to indicate a mod should only be on the server
-      lithium:
-        source: https://cdn.modrinth.com/data/gvQqBUqZ/versions/ZSNsJrPI/lithium-fabric-mc1.20.1-0.11.2.jar
-        mode: server
 
     # if you have a whitelist defined, the server will be whitelisted
     # you can save the list but remove whitelist requirement by commenting the whitelist

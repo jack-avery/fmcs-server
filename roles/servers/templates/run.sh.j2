@@ -4,7 +4,12 @@
 java -Xmx{{ item.ram }} -jar fabric-server-mc.{{ item.minecraft_ver }}-loader.{{ item.fabric }}-launcher.{{ fabric_installer_version }}.jar nogui
 {% elif 'forge' in item %}
 # Forge
+# Compatibility with weird archaic Forge setups? 1.12.2 is the latest they were like this it seems
+{% if item.minecraft_ver == '1.12.2' %}
+java -Xmx{{ item.ram }} -jar minecraft_server.{{ item.minecraft_ver }}.jar nogui
+{% else %}
 java -Xmx{{ item.ram }} @libraries/net/minecraftforge/forge/{{ item.minecraft_ver }}-{{ item.forge }}/unix_args.txt "$@" nogui
+{% endif %}
 {% else %}
 # Vanilla
 # TODO: support this?? raise an error to stop in the meantime

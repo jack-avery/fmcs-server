@@ -18,8 +18,8 @@
 
 - name: Copy ATLauncher manifest
   ansible.posix.synchronize:
-    src: "{{ role_path }}/../../out/{{ inventory_hostname }}-{{ instance.0.name }}.zip"
-    dest: ~/build-relay/{{ instance.0.name }}/{{ inventory_hostname }}-{{ instance.0.name }}.zip
+    src: "{{ role_path }}/../../out/{{ inventory_hostname }}-{{ instance.0.name }}.mrpack"
+    dest: ~/build-relay/{{ instance.0.name }}/{{ inventory_hostname }}-{{ instance.0.name }}.mrpack
     recursive: true
 
 - name: Generate config.yml
