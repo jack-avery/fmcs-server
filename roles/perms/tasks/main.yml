@@ -29,37 +29,37 @@
   rcon:
     address: "{{ ansible_host }}"
     port: "{{ mcs_base_port + (loop0 * 10) + 1 }}"
-    password: "{{ item.rcon_pass }}"
+    password: "{{ item.1.rcon_pass }}"
     command: "whitelist on"
-  loop: "{{ instances_secrets }}"
+  loop: "{{ instances|zip(instances_secrets) }}"
   loop_control:
     index_var: loop0
   delegate_to: localhost
-  when: '"whitelist" in item'
+  when: '"whitelist" in item.0'
 
 - name: Tell servers to reload whitelist
   rcon:
     address: "{{ ansible_host }}"
     port: "{{ mcs_base_port + (loop0 * 10) + 1 }}"
-    password: "{{ item.rcon_pass }}"
+    password: "{{ item.1.rcon_pass }}"
     command: "whitelist reload"
-  loop: "{{ instances_secrets }}"
+  loop: "{{ instances|zip(instances_secrets) }}"
   loop_control:
     index_var: loop0
   delegate_to: localhost
-  when: '"whitelist" in item'
+  when: '"whitelist" in item.0'
 
 - name: Disable whitelist if whitelist is removed
   rcon:
     address: "{{ ansible_host }}"
     port: "{{ mcs_base_port + (loop0 * 10) + 1 }}"
-    password: "{{ item.rcon_pass }}"
+    password: "{{ item.1.rcon_pass }}"
     command: "whitelist off"
-  loop: "{{ instances_secrets }}"
+  loop: "{{ instances|zip(instances_secrets) }}"
   loop_control:
     index_var: loop0
   delegate_to: localhost
-  when: '"whitelist" not in item'
+  when: 'not "whitelist" in item.0'
 
 - name: Inform whitelist update
   ignore_errors: true
