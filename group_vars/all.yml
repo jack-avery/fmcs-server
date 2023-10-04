@@ -93,3 +93,18 @@ defaults:
     # The range where the voice chat should broadcast audio to
     # A value <0 means 'max_voice_distance'
     broadcast_range: -1.0
+
+  localized-chat:
+    talkRange: 100
+    shoutTalkRange: 100
+    shoutFoodCost: 1
+    opAsPlayer: false
+    prefix: ""
+    usePrefix: false
+    rangeNotifier: true
+    bracketColor: "§6"
+    angleBraceColor: "§7"
+    posColor: "§e"
+    nameColor: "§f"
+    bodyColor: "§f"
+    defaultColor: "§f"
