@@ -43,16 +43,17 @@ from ansible.module_utils.basic import *
 import requests
 
 
-def get_modrinth_mod(name) -> dict:
+def get_modrinth_project(name) -> dict:
     project = requests.get(f"https://api.modrinth.com/v2/project/{name}")
     if project.status_code == 404:
         return None
     return project.json()
 
 
-def get_modrinth_mod_ver(name: str, game_version: str, loader: str) -> dict:
+def get_modrinth_version(name: str, game_version: str, loader: str = None) -> dict:
     mod = requests.get(
-        f'https://api.modrinth.com/v2/project/{name}/version?game_versions=["{game_version}"]&loaders=["{loader}"]'
+        f'https://api.modrinth.com/v2/project/{name}/version?game_versions=["{game_version}"]'
+        + (f'&loaders=["{loader}"]' if loader else "")
     ).json()
     if len(mod) == 0:
         return None
@@ -60,13 +61,13 @@ def get_modrinth_mod_ver(name: str, game_version: str, loader: str) -> dict:
 
 
 def get_modrinth_dl(name: str, game_version: str, loader: str) -> dict:
-    project = get_modrinth_mod(name)
+    project = get_modrinth_project(name)
     if not project:
         raise ValueError(f"{name} does not exist on modrinth")
     if project["server_side"] == "unsupported":
         return None
 
-    mod = get_modrinth_mod_ver(name, game_version, loader)
+    mod = get_modrinth_version(name, game_version, loader)
     if not mod:
         raise ValueError(f"mod {name} is not available for {game_version}-{loader}")
 

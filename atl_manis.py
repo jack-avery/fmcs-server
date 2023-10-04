@@ -2,10 +2,11 @@
 import json
 import logging
 import os
+import requests
 import shutil
 import yaml
 
-from library.modrinth import get_modrinth_mod, get_modrinth_mod_ver
+from library.modrinth import get_modrinth_project, get_modrinth_version
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s"
@@ -14,28 +15,48 @@ logging.basicConfig(
 CACHE = {}
 
 
-def get_mrpack_mod(name: str, game_version: str, loader: str) -> dict:
+def get_mrpack_file(name: str, game_version: str, loader: str = None) -> dict:
     if not (project := dict.get(CACHE, name, None)):
         logging.info(f"Getting project info for {name}...")
-        project = get_modrinth_mod(name)
+        project = get_modrinth_project(name)
         if not project:
             raise ValueError(f"{name} does not exist on modrinth")
         CACHE[name] = project
     else:
         logging.info(f"~ Using cached project info for {name}...")
 
+    match project["project_type"]:
+        case "mod":
+            folder = "mods"
+        case "shader":
+            folder = "shaderpacks"
+
+            # verify shader has loader
+            # shaders are processed after mods, so this should be ok
+            shader_has_loader = False
+            for l in project["loaders"]:
+                if l in CACHE:
+                    shader_has_loader = True
+                    break
+            if not shader_has_loader:
+                raise ValueError(
+                    f"shader {name} missing loader! valid loaders are ({', '.join(project['loaders'])})"
+                )
+        case "resourcepack":
+            folder = "resourcepacks"
+
     if not (version := dict.get(CACHE[name], f"{game_version}-{loader}", None)):
-        logging.info(f"... and mod info on {game_version}-{loader}...")
-        mod = get_modrinth_mod_ver(name, game_version, loader)
+        logging.info(f"... and info on {game_version}-{loader}...")
+        mod = get_modrinth_version(name, game_version, loader)
         if not mod:
-            raise ValueError(f"mod {name} is not available for {game_version}-{loader}")
+            raise ValueError(f"{name} is not available for {game_version}-{loader}")
         version = mod[0]["files"][0]
         CACHE[name][f"{game_version}-{loader}"] = version
     else:
-        logging.info(f"~ ... and cached mod info on {game_version}-{loader}...")
+        logging.info(f"~ ... and cached info on {game_version}-{loader}...")
 
     return {
-        "path": f"mods/{name}.jar",
+        "path": f"{folder}/{version['filename']}",
         "hashes": {
             "sha1": version["hashes"]["sha1"],
             "sha512": version["hashes"]["sha512"],
@@ -49,8 +70,13 @@ def get_mrpack_mod(name: str, game_version: str, loader: str) -> dict:
     }
 
 
-def make_atlauncher_manifest(
-    minecraft_ver: str, loader: str, name: str, mods: dict
+def make_mrpack(
+    minecraft_ver: str,
+    loader: str,
+    name: str,
+    mods: dict = None,
+    resource_packs: dict = None,
+    shaders: dict = None,
 ) -> dict:
     manifest = {
         "formatVersion": 1,
@@ -64,8 +90,47 @@ def make_atlauncher_manifest(
         },
     }
 
-    for name in mods.keys():
-        manifest["files"].append(get_mrpack_mod(name, minecraft_ver, loader["type"]))
+    if mods:
+        for name, info in mods.items():
+            if info:
+                # curseforge, discord links, etc.
+                if "source" in info:
+                    file = requests.get(info["source"])
+                    open(f"out/_/overrides/mods/{name}.jar", "wb").write(file.content)
+
+            manifest["files"].append(
+                get_mrpack_file(name, minecraft_ver, loader["type"])
+            )
+
+    if resource_packs:
+        for name, info in resource_packs.items():
+            if info:
+                # curseforge, discord links, etc.
+                if "source" in info:
+                    file = requests.get(info["source"])
+                    open(f"out/_/overrides/resourcepacks/{name}.zip", "wb").write(
+                        file.content
+                    )
+                    shutil.unpack_archive(
+                        f"out/_/overrides/resourcepacks/{name}.zip",
+                        f"out/_/overrides/resourcepacks/{name}",
+                        "zip",
+                    )
+                    os.remove(f"out/_/overrides/resourcepacks/{name}.zip")
+
+            manifest["files"].append(get_mrpack_file(name, minecraft_ver))
+
+    if shaders:
+        for name, info in shaders.items():
+            if info:
+                # curseforge, discord links, etc.
+                if "source" in info:
+                    file = requests.get(info["source"])
+                    open(f"out/_/overrides/shaderpacks/{name}.zip", "wb").write(
+                        file.content
+                    )
+
+        manifest["files"].append(get_mrpack_file(name, minecraft_ver))
 
     return manifest
 
@@ -112,10 +177,14 @@ def main():
                 loader = {"type": "fabric", "version": instance["fabric"]}
             elif "forge" in instance:
                 loader = {"type": "forge", "version": instance["forge"]}
-            mods = instance["mods"]
+            mods = dict.get(instance, "mods", None)
+            resource_packs = dict.get(instance, "resource_packs", None)
+            shaders = dict.get(instance, "shaders", None)
             name = f"{host}-{instance['name']}"
 
-            manifest = make_atlauncher_manifest(minecraft_ver, loader, name, mods)
+            manifest = make_mrpack(
+                minecraft_ver, loader, name, mods, resource_packs, shaders
+            )
             with open(f"out/_/modrinth.index.json", "w") as file:
                 file.write(json.dumps(manifest, indent=4))
 
