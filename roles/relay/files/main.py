@@ -30,6 +30,7 @@ SERVER_INFO_RE = re.compile(
 )
 SERVER_LIST_RE = re.compile(r"There are (\d+) of a max of (\d+) players online: (.+)?")
 SERVER_MESSAGE_RE = re.compile(r"<([a-zA-Z0-9_]+)> (.+)")
+SERVER_SYSTEM_MESSAGE_RE = re.compile(r"(?:\[Not Secure\] )?\[Rcon\] (.+)")
 SERVER_ACTION_RE = re.compile(r"\* ([a-zA-Z0-9_]+) .+")
 SERVER_ADVANCEMENT_RE = re.compile(r"([a-zA-Z0-9_]+) has made the advancement \[.+\]")
 SERVER_CHALLENGE_RE = re.compile(r"([a-zA-Z0-9_]+) has completed the challenge \[.+\]")
@@ -131,6 +132,19 @@ class DiscordBot(discord.Client):
                 line = SERVER_INFO_RE.findall(line)[0]
 
                 try:
+                    if SERVER_SYSTEM_MESSAGE_RE.match(line):
+                        info = SERVER_SYSTEM_MESSAGE_RE.findall(line)[0]
+
+                        embed = discord.embeds.Embed(
+                            color=discord.Color.dark_magenta(), description=info
+                        )
+                        embed.set_author(
+                            name="System Message", icon_url=self.user.display_avatar.url
+                        )
+
+                        await self.CHANNEL.send(embed=embed)
+                        continue
+
                     if CONFIG["relay_messages"]:
                         if SERVER_MESSAGE_RE.match(line):
                             info = SERVER_MESSAGE_RE.findall(line)[0]
@@ -233,6 +247,7 @@ class DiscordBot(discord.Client):
                         name=f"Failed to send message from server",
                         icon_url=self.application.icon.url,
                     )
+                    await self.CHANNEL.send(embed=embed)
 
             await asyncio.sleep(CONFIG["poll_rate"])
 
