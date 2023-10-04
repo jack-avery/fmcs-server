@@ -2,20 +2,37 @@
 import json
 import logging
 import os
-import requests
 import shutil
 import yaml
+
+from library.modrinth import get_modrinth_mod, get_modrinth_mod_ver
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s"
 )
 
+CACHE = {}
+
 
 def get_mrpack_mod(name: str, game_version: str, loader: str) -> dict:
-    project = requests.get(f"https://api.modrinth.com/v2/project/{name}").json()
-    version = requests.get(
-        f'https://api.modrinth.com/v2/project/{name}/version?game_versions=["{game_version}"]&loaders=["{loader}"]'
-    ).json()[0]["files"][0]
+    if not (project := dict.get(CACHE, name, None)):
+        logging.info(f"Getting project info for {name}...")
+        project = get_modrinth_mod(name)
+        if not project:
+            raise ValueError(f"{name} does not exist on modrinth")
+        CACHE[name] = project
+    else:
+        logging.info(f"~ Using cached project info for {name}...")
+
+    if not (version := dict.get(CACHE[name], f"{game_version}-{loader}", None)):
+        logging.info(f"... and mod info on {game_version}-{loader}...")
+        mod = get_modrinth_mod_ver(name, game_version, loader)
+        if not mod:
+            raise ValueError(f"mod {name} is not available for {game_version}-{loader}")
+        version = mod[0]["files"][0]
+        CACHE[name][f"{game_version}-{loader}"] = version
+    else:
+        logging.info(f"~ ... and cached mod info on {game_version}-{loader}...")
 
     return {
         "path": f"mods/{name}.jar",
@@ -74,6 +91,8 @@ def main():
     # verify file structure
     if not os.path.exists("out"):
         os.mkdir("out")
+    if os.path.exists("out/_"):
+        shutil.rmtree("out/_")
 
     for host in host_vars:
         instances = host_vars[host]["instances"]

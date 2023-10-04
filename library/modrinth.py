@@ -43,20 +43,32 @@ from ansible.module_utils.basic import *
 import requests
 
 
-def get_mrpack_mod(name: str, game_version: str, loader: str) -> dict:
+def get_modrinth_mod(name) -> dict:
     project = requests.get(f"https://api.modrinth.com/v2/project/{name}")
-
     if project.status_code == 404:
-        raise ValueError(f"{name} does not exist on modrinth")
-    project = project.json()
-    if project["server_side"] == "unsupported":
         return None
+    return project.json()
 
+
+def get_modrinth_mod_ver(name: str, game_version: str, loader: str) -> dict:
     mod = requests.get(
         f'https://api.modrinth.com/v2/project/{name}/version?game_versions=["{game_version}"]&loaders=["{loader}"]'
     ).json()
     if len(mod) == 0:
-        raise ValueError(f"mod {mod} is not available for {game_version}-{loader}")
+        return None
+    return mod
+
+
+def get_modrinth_dl(name: str, game_version: str, loader: str) -> dict:
+    project = get_modrinth_mod(name)
+    if not project:
+        raise ValueError(f"{name} does not exist on modrinth")
+    if project["server_side"] == "unsupported":
+        return None
+
+    mod = get_modrinth_mod_ver(name, game_version, loader)
+    if not mod:
+        raise ValueError(f"mod {name} is not available for {game_version}-{loader}")
 
     return mod[0]["files"][0]["url"]
 
@@ -73,7 +85,7 @@ def main():
     dls = []
     for mod in module.params["mods"]:
         try:
-            mrpmod = get_mrpack_mod(
+            mrpmod = get_modrinth_dl(
                 mod, module.params["game_version"], module.params["loader"]
             )
         except ValueError as e:

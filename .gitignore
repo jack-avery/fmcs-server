@@ -1,6 +1,7 @@
+__pycache__
+
 .vault_pass.sh
 .become_pass.sh
 out
 roles/backup/files
-roles/relay/files/__pycache__
 roles/relay/files/config.yml
