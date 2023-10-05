@@ -2,6 +2,6 @@ __pycache__
 
 .vault_pass.sh
 .become_pass.sh
-out
+mrpacks
 roles/backup/files
 roles/relay/files/config.yml
