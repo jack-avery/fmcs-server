@@ -16,9 +16,9 @@
     dest: ~/build-relay/{{ instance.0.name }}
     recursive: true
 
-- name: Copy ATLauncher manifest
+- name: Copy instance .mrpack
   ansible.posix.synchronize:
-    src: "{{ role_path }}/../../out/{{ inventory_hostname }}-{{ instance.0.name }}.mrpack"
+    src: "{{ role_path }}/../../mrpacks/{{ inventory_hostname }}-{{ instance.0.name }}.mrpack"
     dest: ~/build-relay/{{ instance.0.name }}/{{ inventory_hostname }}-{{ instance.0.name }}.mrpack
     recursive: true
 

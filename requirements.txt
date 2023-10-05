@@ -1,4 +1,5 @@
 ansible
+ansible-core
 pyjson
 pyyaml
 rcon

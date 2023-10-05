@@ -15,7 +15,7 @@ instances:
       rcon_users:
         - your discord ID
 
-    properties: # you only need to define what you're overriding; see defaults in group_vars/mc.yml
+    properties: # you only need to define what you're overriding; see defaults in group_vars/all.yml
       difficulty: "easy"
       max-players: 6
       gamemode: "creative"
