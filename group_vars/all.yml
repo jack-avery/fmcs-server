@@ -1,4 +1,5 @@
 mcs_base_port: 25565
+mcs_reserve_ports: 10
 delete_backups_after_days: 7
 
 defaults:

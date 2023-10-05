@@ -12,16 +12,19 @@ Found the playbooks useful? [Buy me a coffee ☕](https://ko-fi.com/raspy)!
 
 Ansible requires **Linux**. If you're running Windows, consider setting up [**WSL**](https://learn.microsoft.com/en-us/windows/wsl/install).
 
-1. Run `pip install -r requirements.txt` to install Python requirements.
-2. Ensure you have Ansible installed on your machine.
-3. Ensure your Ansible Hosts have Docker installed, and a user named `fmcs` with the `docker` role.
-> If you are hosting on your own machine, you must have Ansible and Docker installed on your machine<br/>
+In this folder in Linux or WSL (instructions are for Ubuntu):
+
+1. Run `sudo apt-get update && sudo apt-get upgrade`
+2. Install Python and Pip: `sudo apt-get install python3 python3-pip`
+3. Install Python requirements: `pip install -r requirements.txt`
+4. Ensure your servers have Python and Docker installed, and a user named `fmcs` with the `docker` role.
+> If you are hosting on your own machine, you must have Python, Ansible and Docker installed on your machine<br/>
 > [Here is the docs for installing Docker in WSL](https://docs.docker.com/desktop/install/ubuntu/)
-4. Build your Ansible inventory and global/host variables using the samples:
+5. Build your Ansible inventory and global/host variables using the samples:
 > * host_vars/my_host.secret.yml.sample
 > * host_vars/my_host.yml.sample
 > * inventory.yml.sample
-5. Echo your Ansible vault key in `.vault_pass.sh`. Even if you're not using vaults, the file **must still exist**!
+6. Ansible supports encrypted data vaults. Echo the Ansible vault key you're using in `.vault_pass.sh`. Even if you're not using vaults, the file **must still exist**!
 > Setting up the daily restart "cronjob" automatically requires that you echo the password for the `root` user in a script named `.become_pass.sh` in this folder.
 
 ```sh
@@ -51,6 +54,16 @@ echo vault_or_root_pass
 ### Creating ATLauncher instance .zip
 1. Trigger `make atl`.<br/>
 -- The manifests are put into the `out` folder
+
+## 🔌 Ports
+`fmcs-server` bases all used ports off of `mcs_base_port` in `group_vars/all.yml`.<br/>
+By default, this is set to `25565`, which is standard for Minecraft servers.<br/>
+A list of ports, relative to `mcs_base_port`:
+- `+0 (UDP/TCP)`: Main server
+- `+1     (TCP)`: Rcon *(the relay bot does **not** need this to port to be open on the host machine to work!)*
+- `+2     (UDP)`: Port opened for voice chat mods
+
+Every server adds **10** to port number, so if you had two servers on one machine, the second can be connected to using `:25575`.<br/>
 
 ## Pre-commit 🛡️
 There is a pre-commit hook that you should enable to ensure you don't commit any unencrypted secret:<br/>
