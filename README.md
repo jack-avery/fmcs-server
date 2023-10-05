@@ -4,7 +4,7 @@
 
 </div>
 
-Automatic set-up [Fabric](https://fabricmc.net/) or [Forge](https://forums.minecraftforge.net/) modded Minecraft dedicated servers, supporting manifest exports for installation with [ATLauncher](https://atlauncher.com/) and a Server <-> Discord relay bot.
+Automatic set-up [Fabric](https://fabricmc.net/) or [Forge](https://forums.minecraftforge.net/) modded Minecraft dedicated servers, supporting `.mrpack` exports for import with [ATLauncher](https://atlauncher.com/) and a Server <-> Discord relay bot.
 
 Found the playbooks useful? [Buy me a coffee ☕](https://ko-fi.com/raspy)!
 
@@ -41,6 +41,10 @@ echo vault_or_root_pass
 1. Trigger `make perms`.<br/>
 -- Define ops/whitelist in `{host}.yml`
 
+### Creating ATLauncher .mrpacks
+1. Trigger `make mrpack`.<br/>
+-- The files are put into the `mrpacks` folder
+
 ### Running relay bots
 1. Ensure you have the required setup:
 * Discord bot token
@@ -50,10 +54,6 @@ echo vault_or_root_pass
 ### Backing up worlds
 1. Trigger `make backup`.<br/>
 -- Backups will appear in `roles/backup/files/{host}`
-
-### Creating ATLauncher instance .zip
-1. Trigger `make atl`.<br/>
--- The manifests are put into the `out` folder
 
 ## 🔌 Ports
 `fmcs-server` bases all used ports off of `mcs_base_port` in `group_vars/all.yml`.<br/>

@@ -11,8 +11,7 @@ perms:
 backup:
 	@ansible-playbook playbooks/backup.yml
 
-relay:
-	@python3 atl_manis.py
+relay: mrpack
 	@ansible-playbook playbooks/relay.yml
 
 cron:
@@ -21,5 +20,5 @@ cron:
 test:
 	@ansible-playbook playbooks/test.yml
 
-atl:
-	@python3 atl_manis.py
+mrpack:
+	@python3 mrpack.py

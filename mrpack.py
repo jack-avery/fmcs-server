@@ -96,7 +96,9 @@ def make_mrpack(
                 # curseforge, discord links, etc.
                 if "source" in info:
                     file = requests.get(info["source"])
-                    open(f"out/_/overrides/mods/{name}.jar", "wb").write(file.content)
+                    open(f"mrpacks/_/overrides/mods/{name}.jar", "wb").write(
+                        file.content
+                    )
 
             manifest["files"].append(
                 get_mrpack_file(name, minecraft_ver, loader["type"])
@@ -108,15 +110,15 @@ def make_mrpack(
                 # curseforge, discord links, etc.
                 if "source" in info:
                     file = requests.get(info["source"])
-                    open(f"out/_/overrides/resourcepacks/{name}.zip", "wb").write(
+                    open(f"mrpacks/_/overrides/resourcepacks/{name}.zip", "wb").write(
                         file.content
                     )
                     shutil.unpack_archive(
-                        f"out/_/overrides/resourcepacks/{name}.zip",
-                        f"out/_/overrides/resourcepacks/{name}",
+                        f"mrpacks/_/overrides/resourcepacks/{name}.zip",
+                        f"mrpacks/_/overrides/resourcepacks/{name}",
                         "zip",
                     )
-                    os.remove(f"out/_/overrides/resourcepacks/{name}.zip")
+                    os.remove(f"mrpacks/_/overrides/resourcepacks/{name}.zip")
 
             manifest["files"].append(get_mrpack_file(name, minecraft_ver))
 
@@ -126,7 +128,7 @@ def make_mrpack(
                 # curseforge, discord links, etc.
                 if "source" in info:
                     file = requests.get(info["source"])
-                    open(f"out/_/overrides/shaderpacks/{name}.zip", "wb").write(
+                    open(f"mrpacks/_/overrides/shaderpacks/{name}.zip", "wb").write(
                         file.content
                     )
 
@@ -154,10 +156,10 @@ def main():
     )
 
     # verify file structure
-    if not os.path.exists("out"):
-        os.mkdir("out")
-    if os.path.exists("out/_"):
-        shutil.rmtree("out/_")
+    if not os.path.exists("mrpacks"):
+        os.mkdir("mrpacks")
+    if os.path.exists("mrpacks/_"):
+        shutil.rmtree("mrpacks/_")
 
     for host in host_vars:
         instances = host_vars[host]["instances"]
@@ -167,10 +169,10 @@ def main():
         )
 
         for instance in instances:
-            os.mkdir("out/_")
-            os.mkdir("out/_/overrides")
-            os.mkdir("out/_/overrides/mods")
-            os.mkdir("out/_/overrides/resourcepacks")
+            os.mkdir("mrpacks/_")
+            os.mkdir("mrpacks/_/overrides")
+            os.mkdir("mrpacks/_/overrides/mods")
+            os.mkdir("mrpacks/_/overrides/resourcepacks")
 
             minecraft_ver = instance["minecraft_ver"]
             if "fabric" in instance:
@@ -185,17 +187,17 @@ def main():
             manifest = make_mrpack(
                 minecraft_ver, loader, name, mods, resource_packs, shaders
             )
-            with open(f"out/_/modrinth.index.json", "w") as file:
+            with open(f"mrpacks/_/modrinth.index.json", "w") as file:
                 file.write(json.dumps(manifest, indent=4))
 
             # zip and rename to .mrpack so ATLauncher accepts it
-            shutil.make_archive(f"out/{name}", "zip", "out/_")
-            shutil.move(f"out/{name}.zip", f"out/{name}.mrpack")
+            shutil.make_archive(f"mrpacks/{name}", "zip", "mrpacks/_")
+            shutil.move(f"mrpacks/{name}.zip", f"mrpacks/{name}.mrpack")
 
             logging.info(f"{name} completed")
 
             # clean up for next
-            shutil.rmtree("out/_")
+            shutil.rmtree("mrpacks/_")
 
     logging.info(f"Done")
     return 0
