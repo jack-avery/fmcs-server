@@ -60,7 +60,6 @@ echo vault_or_root_pass
 Every server reserves `mcs_reserve_ports` ports for itself; default `10`.
 > e.g. if you have multiple servers on one machine, they would be: `25565`, `25575`, etc...
 
-By default, this is set to `25565`, which is standard for Minecraft servers.<br/>
 A list of ports, relative to `mcs_base_port`:
 - `+0 (UDP/TCP)`: Main server
 - `+1     (TCP)`: Rcon *(the relay bot does **not** need this to port to be open on the host machine to work!)*
