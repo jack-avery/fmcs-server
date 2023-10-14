@@ -3,7 +3,7 @@
   modrinth:
     game_version: "{{ instance.minecraft_ver }}"
     loader: "{{ 'fabric' if 'fabric' in instance else 'forge' if 'forge' in instance }}"
-    mods: "{{ instance.mods.keys() }}"
+    mods: "{{ instance.mods }}"
   register: modrinth
 
 - name: Create mod folder
@@ -17,5 +17,14 @@
     url: "{{ mod.link }}"
     dest: ~/build/{{ instance.name }}/mods/{{ mod.name }}.jar
   loop: "{{ modrinth.dls }}"
+  loop_control:
+    loop_var: mod
+
+- name: Download overrides
+  get_url:
+    url: "{{ instance.mods[mod].source }}"
+    dest: ~/build/{{ instance.name }}/mods/{{ mod }}.jar
+  when: 'not instance.mods[mod] == None and "source" in instance.mods[mod]'
+  loop: "{{ instance.mods.keys() }}"
   loop_control:
     loop_var: mod
