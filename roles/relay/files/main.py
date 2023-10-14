@@ -98,6 +98,15 @@ class DiscordBot(discord.Client):
         if not self.SETUP:
             # find relay channel
             self.CHANNEL = self.get_channel(CONFIG["channel"])
+
+            # create webhook if it doesn't exist
+            self.WEBHOOK = None
+            for webhook in await self.CHANNEL.webhooks():
+                if webhook.user == self.user:
+                    self.WEBHOOK = webhook
+            if self.WEBHOOK is None:
+                self.WEBHOOK = await self.CHANNEL.create_webhook(name="fmcs-server")
+
             self.AVATAR_CACHE = dict()
 
             # get guild from channel; add commands
@@ -151,14 +160,13 @@ class DiscordBot(discord.Client):
                             user = info[0]
                             msg = info[1]
 
-                            embed = discord.embeds.Embed(
-                                color=discord.Color.teal(), description=msg
-                            )
-                            embed.set_author(
-                                name=user, icon_url=await self.get_player_avatar(user)
-                            )
+                            embed = discord.embeds.Embed(description=msg)
 
-                            await self.CHANNEL.send(embed=embed)
+                            await self.WEBHOOK.send(
+                                embed=embed,
+                                username=user,
+                                avatar_url=await self.get_player_avatar(user),
+                            )
                             continue
 
                         if SERVER_ACTION_RE.match(line):
@@ -282,7 +290,7 @@ class DiscordBot(discord.Client):
         return self.AVATAR_CACHE[username]
 
     async def on_message(self, message: discord.Message) -> None:
-        if message.author == self.user:
+        if message.author == self.user or message.author.bot:
             return
 
         if not CONFIG["relay_messages"]:
