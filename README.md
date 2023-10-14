@@ -56,14 +56,16 @@ echo vault_or_root_pass
 -- Backups will appear in `roles/backup/files/{host}`
 
 ## 🔌 Ports
-`fmcs-server` bases all used ports off of `mcs_base_port` in `group_vars/all.yml`.<br/>
+`fmcs-server` bases all used ports off of `mcs_base_port`; default `25565`.<br/>
+Every server reserves `mcs_reserve_ports` ports for itself; default `10`.
+> e.g. if you have multiple servers on one machine, they would be: `25565`, `25575`, etc...
+
 By default, this is set to `25565`, which is standard for Minecraft servers.<br/>
 A list of ports, relative to `mcs_base_port`:
 - `+0 (UDP/TCP)`: Main server
 - `+1     (TCP)`: Rcon *(the relay bot does **not** need this to port to be open on the host machine to work!)*
-- `+2     (UDP)`: Port opened for voice chat mods
-
-Every server adds **10** to port number, so if you had two servers on one machine, the second can be connected to using `:25575`.<br/>
+- `+2     (UDP)`: Port opened for voice chat mods such as [Simple Voice Chat](https://modrinth.com/plugin/simple-voice-chat)
+- `+3     (TCP)`: Autoconfigured for [Dynmap](https://github.com/webbukkit/dynmap/)
 
 ## Pre-commit 🛡️
 There is a pre-commit hook that you should enable to ensure you don't commit any unencrypted secret:<br/>
