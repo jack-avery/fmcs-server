@@ -2,11 +2,13 @@ instances:
   - name: "ras"
     minecraft_ver: "1.20.1"
     fabric: "0.14.21"
-    ram: "4G"
+    ram: "6G"
 
     properties:
       max-players: 4
+      level-seed: "epic"
       motd: "chungus"
+      view-distance: 16
 
     operators:
       - uuid: 773e05b1-44fe-47be-b61d-95de8e691832
@@ -19,17 +21,26 @@ instances:
       sodium:
       iris:
 
-      lithium:
       fabric-api:
-
-      fabric-language-kotlin:
-      terralith:
-      tectonic:
+      cloth-config:
+      lithium:
       simple-voice-chat:
         properties:
           spectator_interaction: "true"
           spectator_player_possession: "true"
 
+      fabric-language-kotlin:
+      ledger:
+      terralith:
+      tectonic:
+      # localized-chat:
+    
+    resource_packs:
+      faithless:
+
+    shaders:
+      complementary-unbound:
+
     whitelist:
-      - 773e05b1-44fe-47be-b61d-95de8e691832
-      - 434fe80d-e945-4acb-ab4a-d180982b54ab
+      - 773e05b1-44fe-47be-b61d-95de8e691832 # raspy
+      - 3fd45f24-7143-4ef5-af7d-1b6d952ab129 # Chili
