@@ -21,17 +21,10 @@ In this folder in Linux or WSL (instructions are for Ubuntu):
 > If you are hosting on your own machine, you must have Python, Ansible and Docker installed on your machine<br/>
 > [Here is the docs for installing Docker in WSL](https://docs.docker.com/desktop/install/ubuntu/)
 5. Build your Ansible inventory and global/host variables using the samples:
-> * host_vars/my_host.secret.yml.sample
-> * host_vars/my_host.yml.sample
+> * host_vars/mc.myhost.com.secret.yml.sample
+> * host_vars/mc.myhost.com.yml.sample
 > * inventory.yml.sample
-6. Ansible supports encrypted data vaults. Echo the Ansible vault key you're using in `.vault_pass.sh`. Even if you're not using vaults, the file **must still exist**!
-> Setting up the daily restart "cronjob" automatically requires that you echo the password for the `root` user in a script named `.become_pass.sh` in this folder.
-
-```sh
-#!/bin/bash
-# Sample .become_pass.sh or .vault_pass.sh
-echo vault_or_root_pass
-```
+6. Ansible supports encrypted data vaults. Rename `.vault_pass.sh.sample` to `.vault_pass.sh` and put your vault key in. Even if you're not using vaults, the file **must still exist**!
 
 ### Creating servers
 2. Trigger `make servers` to build images and run servers.<br/>

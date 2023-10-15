@@ -124,7 +124,6 @@ instances:
 
     relay_bot:
       channel: 1151768150510149642
-      poll_rate: 1
       rcon_users:
         - 97441955893477376
 
@@ -203,3 +202,5 @@ instances:
       - dfb731bb-55b8-4d7e-ad25-9902f0edb295 # hootie1939
       - 567264b0-c240-483e-a35d-18bf6f3dcd4e # id_rotatcepS
       - 704205d3-cd3c-4d54-9da8-d5f199f83d70 # Let_us_dance
+      - de12c48a-b840-46c6-bd1f-0445be8f32bf # Xabuza7
+      - 333fb790-ca9f-418c-b1e4-142f5a38dd7d # lolTSM

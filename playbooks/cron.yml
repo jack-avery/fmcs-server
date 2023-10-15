@@ -6,14 +6,11 @@
     - name: Add servers to cron
       set_fact:
         cron: |
-          {% for item in instances %}
-          docker restart mcs-{{ item.name }}; {% if 'relay_bot' in item %}
-          docker restart mcr-{{ item.name }}; {% endif %}{% endfor %}
+          docker restart {% for item in instances %}
+          mcs-{{ item.name }} {% if 'relay_bot' in item %}
+          mcr-{{ item.name }} {% endif %}{% endfor %}
     
     - name: Install cronjob (10AM UTC)
-      become: true
-      become_method: su
-      become_user: root
       ansible.builtin.cron:
         name: "mcs-restart"
         weekday: "*"
