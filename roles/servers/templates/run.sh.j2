@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 {% if 'fabric' in item %}
 # Fabric
 java -Xmx{{ item.ram }} -jar fabric-server-mc.{{ item.minecraft_ver }}-loader.{{ item.fabric }}-launcher.{{ fabric_installer_version }}.jar nogui

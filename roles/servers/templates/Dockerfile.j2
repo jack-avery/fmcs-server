@@ -17,17 +17,4 @@ RUN rm forge-{{ item.minecraft_ver }}-{{ item.forge }}-installer.jar
 {% endif %}
 
 COPY . .
-
-# Create chroot dirs
-RUN mkdir bin lib64
-
-# libs
-RUN cp -r /lib64/* lib64/
-
-# bin
-RUN cp /bin/sh bin/sh
-RUN cp /bin/java bin/java
-
-# chroot!
-RUN chroot /server
 ENTRYPOINT [ "./run.sh" ]
