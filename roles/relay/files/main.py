@@ -44,7 +44,7 @@ DISCORD_EMOTE_RE = re.compile(r"(<a?(:[a-zA-Z0-9_]+:)\d+>)")
 # This should be ALL of them, sorted in order of which regex catches most or is most likely to show up
 SERVER_DEATH_MESSAGES_RE = [
     re.compile(
-        r"([a-zA-Z0-9_]+) was (?:shot|pummeled|blown up|killed|squashed|skewered|struck|slain|frozen to death|fireballed|stung|squashed|poked to death|impaled) by .+"
+        r"([a-zA-Z0-9_]+) was (?:shot|doomed to fall|pummeled|blown up|killed|squashed|skewered|struck|slain|frozen to death|fireballed|stung|squashed|poked to death|impaled) by .+"
     ),
     re.compile(
         r"([a-zA-Z0-9_]+) (?:starved|burned|froze|was stung|was pricked) to death"
@@ -366,12 +366,19 @@ async def _list(interaction: discord.Interaction) -> None:
     name="info", description="Get info for the server and the ATLauncher manifest"
 )
 async def _info(interaction: discord.Interaction) -> None:
+    description = f"Connect at `{CONFIG['address']}:{CONFIG['port']}`"
+
+    # Whitelist note
+    description += f"\nThe server {'**is**' if CONFIG['is_whitelist'] else 'is **not**'} using a whitelist."
+
+    # Link Dynmap
+    if CONFIG["has_dynmap"]:
+        description += f"\nThe server has Dynmap available at: http://{CONFIG['address']}:{CONFIG['port'] + 3}"
+
+    description += "\n\n> *ATLauncher manifest with used mods is attached.*"
+
     embed = discord.embeds.Embed(
-        color=discord.Color.og_blurple(),
-        title=f"Server info",
-        description=f"Connect at `{CONFIG['address']}:{CONFIG['port']}`"
-        + f"\nThe server {'**is**' if CONFIG['is_whitelist'] else 'is **not**'} using a whitelist."
-        + "\n\n> *ATLauncher manifest with used mods is attached.*",
+        color=discord.Color.og_blurple(), title=f"Server info", description=description
     )
     await interaction.response.send_message(
         embed=embed, file=discord.File(CONFIG["atl_manifest"])
