@@ -33,7 +33,9 @@ instances:
       ledger:
       terralith:
       tectonic:
-      # localized-chat:
+      dynmap:
+        source: https://www.curseforge.com/api/v1/mods/59433/files/4632247/download
+        mode: server
     
     resource_packs:
       faithless:
