@@ -55,15 +55,15 @@ components:
   - class: org.dynmap.InternalClientUpdateComponent
     sendhealth: true
     sendposition: true
-    allowwebchat: true
-    webchat-interval: 5
+    allowwebchat: false
+    #webchat-interval: 5
     hidewebchatip: false
     trustclientname: false
     includehiddenplayers: false
     # (optional) if true, color codes in player display names are used
     use-name-colors: false
     # (optional) if true, player login IDs will be used for web chat when their IPs match
-    use-player-login-ip: true
+    use-player-login-ip: false
     # (optional) if use-player-login-ip is true, setting this to true will cause chat messages not matching a known player IP to be ignored
     require-player-login-ip: false
     # (optional) block player login IDs that are banned from chatting
