@@ -157,9 +157,6 @@ instances:
       ledger:
       terralith:
       tectonic:
-      dynmap:
-        source: https://www.curseforge.com/api/v1/mods/59433/files/4632247/download
-        mode: server
 
     resource_packs:
       faithless:
@@ -204,3 +201,5 @@ instances:
       - 704205d3-cd3c-4d54-9da8-d5f199f83d70 # Let_us_dance
       - de12c48a-b840-46c6-bd1f-0445be8f32bf # Xabuza7
       - 333fb790-ca9f-418c-b1e4-142f5a38dd7d # lolTSM
+      - 2b169b0f-167d-4628-9a0a-25ea88f8bfe5 # Dealta
+      - 159fd80b-467b-497a-b3dc-fce36ceda2b0 # StarStrile
