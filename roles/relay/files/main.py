@@ -44,7 +44,7 @@ DISCORD_EMOTE_RE = re.compile(r"(<a?(:[a-zA-Z0-9_]+:)\d+>)")
 # This should be ALL of them, sorted in order of which regex catches most or is most likely to show up
 SERVER_DEATH_MESSAGES_RE = [
     re.compile(
-        r"([a-zA-Z0-9_]+) was (?:shot|doomed to fall|pummeled|blown up|killed|squashed|skewered|struck|slain|frozen to death|fireballed|stung|squashed|poked to death|impaled) by .+"
+        r"([a-zA-Z0-9_]+) was (?:shot|doomed to fall|pummeled|blown up|killed|squashed|skewered|struck|slain|frozen to death|fireballed|stung|squashed|poked to death|impaled|obliterated) by .+"
     ),
     re.compile(
         r"([a-zA-Z0-9_]+) (?:starved|burned|froze|was stung|was pricked) to death"

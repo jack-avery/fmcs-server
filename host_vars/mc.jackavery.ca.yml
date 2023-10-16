@@ -130,7 +130,7 @@ instances:
     properties:
       seed: "4888621265641200900"
       max-players: 20
-      motd: "Chiliverse SMP"
+      motd: "\u00A72\u00A7lChili SMP | \u00A7rSeason \u00A762\u00A7r\n\u00A7bHopefully with less lag now!"
       view-distance: 16
 
     operators:
@@ -141,6 +141,7 @@ instances:
     mods:
       sound-physics-remastered:
       presence-footsteps:
+      xaeros-world-map:
       sodium:
       iris:
 
