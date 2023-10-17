@@ -89,6 +89,12 @@ def main():
     missing = []
     for mod, info in module.params["mods"].items():
         if info:
+            # explicit client-only
+            if "mode" in info:
+                if info["mode"] == "client":
+                    continue
+
+            # has provided source URL; ignore
             if "source" in info:
                 continue
 

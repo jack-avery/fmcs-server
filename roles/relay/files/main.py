@@ -80,11 +80,14 @@ SERVER_DEATH_MESSAGES_RE = [
 
 
 def rcon(cmd: str) -> str:
-    with Client(
-        CONFIG["rcon_addr"], CONFIG["port"] + 1, passwd=CONFIG["rcon_pass"]
-    ) as client:
-        response = client.run(cmd)
-    return response
+    try:
+        with Client(
+            CONFIG["rcon_addr"], CONFIG["port"] + 1, passwd=CONFIG["rcon_pass"]
+        ) as client:
+            response = client.run(cmd)
+        return response
+    except:
+        return None
 
 
 class DiscordBot(discord.Client):
@@ -119,6 +122,33 @@ class DiscordBot(discord.Client):
 
             logging.info("Ready!")
             self.SETUP = True
+
+        asyncio.ensure_future(self.poll_status())
+
+    async def poll_status(self) -> None:
+        while True:
+            playerlist = rcon("list")
+
+            if not playerlist:
+                await self.change_presence(
+                    activity=discord.Activity(
+                        type=discord.ActivityType.listening,
+                        name="for server restart...",
+                    )
+                )
+
+            else:
+                info = SERVER_LIST_RE.findall(playerlist)[0]
+                current = int(info[0])
+
+                await self.change_presence(
+                    activity=discord.Activity(
+                        type=discord.ActivityType.watching,
+                        name=f"{current} player{'' if current == 1 else 's'}",
+                    )
+                )
+
+            asyncio.sleep(60)
 
     async def poll_logs(self) -> None:
         """
@@ -344,6 +374,14 @@ client = DiscordBot()
 @client.tree.command(name="list", description="See online players")
 async def _list(interaction: discord.Interaction) -> None:
     playerlist = rcon("list")
+
+    if not playerlist:
+        embed = discord.embeds.Embed(
+            color=discord.Color.red(),
+            description="The server is not online!",
+        )
+        await interaction.response.send_message(embed=embed)
+        return
 
     info = SERVER_LIST_RE.findall(playerlist)[0]
     current = int(info[0])
