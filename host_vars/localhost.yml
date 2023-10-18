@@ -1,40 +1,53 @@
 instances:
-  - name: "ras"
+  - name: "guh"
     minecraft_ver: "1.20.1"
     fabric: "0.14.21"
-    ram: "6G"
+    ram: "8G"
+
+    relay_bot:
+      channel: 1164009624647782430
+      rcon_users:
+        - 97441955893477376
+        - 188014073147817985
+        - 344382928328982531
 
     properties:
       max-players: 4
-      level-seed: "epic"
-      motd: "chungus"
+      motd: "guh??"
       view-distance: 16
 
     operators:
       - uuid: 773e05b1-44fe-47be-b61d-95de8e691832
         level: 4
         bypassesPlayerLimit: true
+      - uuid: 36658a9d-e8bc-4ec0-9d51-b9733dc017d8
+        level: 4
+        bypassesPlayerLimit: true
+      - uuid: dc26eb0b-11f2-4b4d-bf25-f7ce86895b59
+        level: 4
+        bypassesPlayerLimit: true
 
     mods:
       sound-physics-remastered:
       presence-footsteps:
+      xaeros-world-map:
+        mode: client
       sodium:
       iris:
 
       fabric-api:
       cloth-config:
       lithium:
+      inventory-sorting:
       simple-voice-chat:
         properties:
           spectator_interaction: "true"
           spectator_player_possession: "true"
 
       fabric-language-kotlin:
-      ledger:
       terralith:
       tectonic:
-      # localized-chat:
-    
+
     resource_packs:
       faithless:
 
@@ -43,4 +56,5 @@ instances:
 
     whitelist:
       - 773e05b1-44fe-47be-b61d-95de8e691832 # raspy
-      - 3fd45f24-7143-4ef5-af7d-1b6d952ab129 # Chili
+      - 36658a9d-e8bc-4ec0-9d51-b9733dc017d8 # fattylugia
+      - dc26eb0b-11f2-4b4d-bf25-f7ce86895b59 # le_joj
