@@ -148,7 +148,7 @@ class DiscordBot(discord.Client):
                     )
                 )
 
-            asyncio.sleep(60)
+            await asyncio.sleep(60)
 
     async def poll_logs(self) -> None:
         """
