@@ -19,7 +19,7 @@ In this folder in Linux or WSL (instructions are for Ubuntu):
 3. Install Python requirements: `pip install -r requirements.txt`
 4. Ensure your servers have Python and Docker installed, and a user named `fmcs` with the `docker` role.
 > If you are hosting on your own machine, you must have Python, Ansible and Docker installed on your machine<br/>
-> [Here is the docs for installing Docker in WSL](https://docs.docker.com/desktop/install/ubuntu/)
+> You can install docker using: `sudo apt-get install docker.io`
 5. Build your Ansible inventory and global/host variables using the samples:
 > * host_vars/mc.myhost.com.secret.yml.sample
 > * host_vars/mc.myhost.com.yml.sample
