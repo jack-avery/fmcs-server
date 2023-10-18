@@ -17,7 +17,7 @@ relay: mrpack
 cron:
 	@ansible-playbook playbooks/cron.yml
 
-test:
+test: mrpack
 	@ansible-playbook playbooks/test.yml
 
 mrpack:
