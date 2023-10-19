@@ -304,12 +304,22 @@ class DiscordBot(discord.Client):
                 for m, e in DISCORD_EMOTE_RE.findall(msg):
                     msg = msg.replace(m, e)
 
-            # sanitize: remove \ and "
-            # TODO: triple-check and confirm this works OK
-            msg = msg.replace('"', "''")
+            reply_note = ""
+            if message.reference:
+                reply = await self.CHANNEL.fetch_message(message.reference.message_id)
+                reply_note = f" (replying to {reply.author.display_name})"
+
+            # sanitize
+            msg = msg.replace("'", "'")
+            for i in ['"', '"']:
+                msg = msg.replace(i, "'")
+
             msg = msg.replace("\\", "")
 
-            msg = f"<{message.author.display_name}> {msg}"
+            for i in ["\n", "\r", "\t", "\f"]:
+                msg = msg.replace(i, " ")
+
+            msg = f"<{message.author.display_name}{reply_note}> {msg}"
 
             # max minecraft message length is 256;
             # " [...] (attachment)" (19) on max length 236+19=255
