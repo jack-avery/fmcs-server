@@ -11,7 +11,6 @@ instances:
 
     relay_bot:
       channel: discord channel ID
-      poll_rate: frequency in seconds
       rcon_users:
         - your discord ID
 
@@ -35,13 +34,25 @@ instances:
       waystones:
       lithium:
 
-      # fmcs-server will handle serverside and clientside relations
-
       # mods that support customization have it done under "properties"
       simple-voice-chat:
         properties:
           spectator_interaction: "true"
           spectator_player_possession: "true"
+
+      # you can indicate a "source" to override what fmcs-server would auto-detect from Modrinth
+      # this works with any link that provides a .jar file, even discord
+      # you can also use "mode: server" to explicitly exclude it from the .mrpack files in the case of errors
+      dynmap:
+        source: https://www.curseforge.com/api/v1/mods/59433/files/4632247/download
+        mode: server
+    
+    # you can also indicate which resource packs and shaders to auto-install for clients
+    resource_packs:
+      faithless:
+
+    shaders:
+      complementary-unbound:
 
     # if you have a whitelist defined, the server will be whitelisted
     # you can save the list but remove whitelist requirement by commenting the whitelist

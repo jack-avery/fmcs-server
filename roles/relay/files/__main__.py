@@ -4,13 +4,14 @@
 import asyncio
 import discord
 import logging
-import re
 import requests
 import sys
 import yaml
 from datetime import date
 
 from rcon.source import Client
+
+from src.regex import *
 
 with open("config.yml", "r") as f:
     CONFIG = yaml.safe_load(f.read())
@@ -25,66 +26,16 @@ stdout_handler.setFormatter(formatter)
 log_handlers.append(stdout_handler)
 logging.basicConfig(handlers=log_handlers, level=logging.DEBUG)
 
-SERVER_INFO_RE = re.compile(
-    r"\[(?:[a-zA-Z0-9]+ )?[0-9:.]+\] \[Server thread/INFO\](?: \[net.minecraft.server.MinecraftServer\/\])?: (.+)"
-)
-SERVER_LIST_RE = re.compile(r"There are (\d+) of a max of (\d+) players online: (.+)?")
-SERVER_MESSAGE_RE = re.compile(r"<([a-zA-Z0-9_]+)> (.+)")
-SERVER_SYSTEM_MESSAGE_RE = re.compile(r"(?:\[Not Secure\] )?\[Rcon\] (.+)")
-SERVER_ACTION_RE = re.compile(r"\* ([a-zA-Z0-9_]+) .+")
-SERVER_ADVANCEMENT_RE = re.compile(r"([a-zA-Z0-9_]+) has made the advancement \[.+\]")
-SERVER_CHALLENGE_RE = re.compile(r"([a-zA-Z0-9_]+) has completed the challenge \[.+\]")
-SERVER_JOIN_RE = re.compile(r"([a-zA-Z0-9_]+) joined the game")
-SERVER_LEAVE_RE = re.compile(r"([a-zA-Z0-9_]+) left the game")
-
-DISCORD_MENTION_RE = re.compile(r"<@\d+>")
-DISCORD_CHANNEL_RE = re.compile(r"<#\d+>")
-DISCORD_EMOTE_RE = re.compile(r"(<a?(:[a-zA-Z0-9_]+:)\d+>)")
-
-# This should be ALL of them, sorted in order of which regex catches most or is most likely to show up
-SERVER_DEATH_MESSAGES_RE = [
-    re.compile(
-        r"([a-zA-Z0-9_]+) was (?:shot|pummeled|blown up|killed|squashed|skewered|struck|slain|frozen to death|fireballed|stung|squashed|poked to death|impaled) by .+"
-    ),
-    re.compile(
-        r"([a-zA-Z0-9_]+) (?:starved|burned|froze|was stung|was pricked) to death"
-    ),
-    re.compile(r"([a-zA-Z0-9_]+) .+ whilst trying to escape .+"),
-    re.compile(r"([a-zA-Z0-9_]+) .+ whilst fighting .+"),
-    re.compile(r"([a-zA-Z0-9_]+) drowned"),
-    re.compile(r"([a-zA-Z0-9_]+) blew up"),
-    re.compile(r"([a-zA-Z0-9_]+) hit the ground too hard"),
-    re.compile(r"([a-zA-Z0-9_]+) fell from a high place"),
-    re.compile(
-        r"([a-zA-Z0-9_]+) fell off (?:a ladder|some vines|some weeping vines|some twisting vines|scaffolding)"
-    ),
-    re.compile(r"([a-zA-Z0-9_]+) fell while climbing"),
-    re.compile(r"([a-zA-Z0-9_]+) experienced kinetic energy"),
-    re.compile(r"([a-zA-Z0-9_]+) was impaled on a stalagmite"),
-    re.compile(r"([a-zA-Z0-9_]+) went up in flames"),
-    re.compile(r"([a-zA-Z0-9_]+) went off with a bang"),
-    re.compile(r"([a-zA-Z0-9_]+) went off with a bang due to a firework fired from .+"),
-    re.compile(r"([a-zA-Z0-9_]+) tried to swim in lava"),
-    re.compile(r"([a-zA-Z0-9_]+) tried to swim in lava to escape .+"),
-    re.compile(r"([a-zA-Z0-9_]+) was struck by lightning"),
-    re.compile(r"([a-zA-Z0-9_]+) discovered the floor was lava"),
-    re.compile(r"([a-zA-Z0-9_]+) walked into danger zone due to .+"),
-    re.compile(r"([a-zA-Z0-9_]+) was shot by a skull from .+"),
-    re.compile(r"([a-zA-Z0-9_]+) suffocated in a wall"),
-    re.compile(r"([a-zA-Z0-9_]+) was squished too much"),
-    re.compile(r"([a-zA-Z0-9_]+) was killed trying to hurt .+"),
-    re.compile(r"([a-zA-Z0-9_]+) fell out of the world"),
-    re.compile(r"([a-zA-Z0-9_]+) withered away"),
-    re.compile(r"([a-zA-Z0-9_]+) was killed"),
-]
-
 
 def rcon(cmd: str) -> str:
-    with Client(
-        CONFIG["rcon_addr"], CONFIG["port"] + 1, passwd=CONFIG["rcon_pass"]
-    ) as client:
-        response = client.run(cmd)
-    return response
+    try:
+        with Client(
+            CONFIG["rcon_addr"], CONFIG["port"] + 1, passwd=CONFIG["rcon_pass"]
+        ) as client:
+            response = client.run(cmd)
+        return response
+    except:
+        return None
 
 
 class DiscordBot(discord.Client):
@@ -98,6 +49,15 @@ class DiscordBot(discord.Client):
         if not self.SETUP:
             # find relay channel
             self.CHANNEL = self.get_channel(CONFIG["channel"])
+
+            # create webhook if it doesn't exist
+            self.WEBHOOK = None
+            for webhook in await self.CHANNEL.webhooks():
+                if webhook.user == self.user:
+                    self.WEBHOOK = webhook
+            if self.WEBHOOK is None:
+                self.WEBHOOK = await self.CHANNEL.create_webhook(name="fmcs-server")
+
             self.AVATAR_CACHE = dict()
 
             # get guild from channel; add commands
@@ -110,6 +70,35 @@ class DiscordBot(discord.Client):
 
             logging.info("Ready!")
             self.SETUP = True
+
+        asyncio.ensure_future(self.poll_status())
+
+    async def update_status(self) -> None:
+        playerlist = rcon("list")
+
+        if not playerlist:
+            await self.change_presence(
+                activity=discord.Activity(
+                    type=discord.ActivityType.watching,
+                    name="for server restart...",
+                )
+            )
+            return
+
+        info = SERVER_LIST_RE.findall(playerlist)[0]
+        current = int(info[0])
+
+        await self.change_presence(
+            activity=discord.Activity(
+                type=discord.ActivityType.watching,
+                name=f"{current} player{'' if current == 1 else 's'}",
+            )
+        )
+
+    async def poll_status(self, frequency: int = 60) -> None:
+        while True:
+            await self.update_status()
+            await asyncio.sleep(frequency)
 
     async def poll_logs(self) -> None:
         """
@@ -151,14 +140,13 @@ class DiscordBot(discord.Client):
                             user = info[0]
                             msg = info[1]
 
-                            embed = discord.embeds.Embed(
-                                color=discord.Color.teal(), description=msg
-                            )
-                            embed.set_author(
-                                name=user, icon_url=await self.get_player_avatar(user)
-                            )
+                            embed = discord.embeds.Embed(description=msg)
 
-                            await self.CHANNEL.send(embed=embed)
+                            await self.WEBHOOK.send(
+                                embed=embed,
+                                username=user,
+                                avatar_url=await self.get_player_avatar(user),
+                            )
                             continue
 
                         if SERVER_ACTION_RE.match(line):
@@ -183,6 +171,7 @@ class DiscordBot(discord.Client):
                             )
 
                             await self.CHANNEL.send(embed=embed)
+                            await self.update_status()
                             continue
 
                         if SERVER_LEAVE_RE.match(line):
@@ -195,6 +184,7 @@ class DiscordBot(discord.Client):
                             )
 
                             await self.CHANNEL.send(embed=embed)
+                            await self.update_status()
                             continue
 
                     if CONFIG["relay_advancements"]:
@@ -223,9 +213,12 @@ class DiscordBot(discord.Client):
                             continue
 
                     if CONFIG["relay_deaths"]:
-                        for r in SERVER_DEATH_MESSAGES_RE:
+                        for r in MINECRAFT_DEATH_MESSAGES_RE:
                             if r.match(line):
                                 user = r.findall(line)[0]
+
+                                if isinstance(user, tuple):
+                                    user = user[0]
 
                                 embed = discord.embeds.Embed(
                                     color=discord.Color.dark_red()
@@ -268,6 +261,9 @@ class DiscordBot(discord.Client):
 
         :returns: URL for icon of `username`
         """
+        if not SERVER_PLAYER_RE.match(username):
+            return
+
         if username not in self.AVATAR_CACHE:
             HEADERS = {"User-Agent": "github.com/jack-avery/fmcs-server"}
             r = requests.get(
@@ -282,7 +278,7 @@ class DiscordBot(discord.Client):
         return self.AVATAR_CACHE[username]
 
     async def on_message(self, message: discord.Message) -> None:
-        if message.author == self.user:
+        if message.author == self.user or message.author.bot:
             return
 
         if not CONFIG["relay_messages"]:
@@ -337,6 +333,14 @@ client = DiscordBot()
 async def _list(interaction: discord.Interaction) -> None:
     playerlist = rcon("list")
 
+    if not playerlist:
+        embed = discord.embeds.Embed(
+            color=discord.Color.red(),
+            description="The server is not online!",
+        )
+        await interaction.response.send_message(embed=embed)
+        return
+
     info = SERVER_LIST_RE.findall(playerlist)[0]
     current = int(info[0])
     max = int(info[1])
@@ -358,12 +362,19 @@ async def _list(interaction: discord.Interaction) -> None:
     name="info", description="Get info for the server and the ATLauncher manifest"
 )
 async def _info(interaction: discord.Interaction) -> None:
+    description = f"Connect at `{CONFIG['address']}:{CONFIG['port']}`"
+
+    # Whitelist note
+    description += f"\nThe server {'**is**' if CONFIG['is_whitelist'] else 'is **not**'} using a whitelist."
+
+    # Link Dynmap
+    if CONFIG["has_dynmap"]:
+        description += f"\nThe server has Dynmap available at: http://{CONFIG['address']}:{CONFIG['port'] + 3}"
+
+    description += "\n\n> *ATLauncher manifest with used mods is attached.*"
+
     embed = discord.embeds.Embed(
-        color=discord.Color.og_blurple(),
-        title=f"Server info",
-        description=f"Connect at `{CONFIG['address']}:{CONFIG['port']}`"
-        + f"\nThe server {'**is**' if CONFIG['is_whitelist'] else 'is **not**'} using a whitelist."
-        + "\n\n> *ATLauncher manifest with used mods is attached.*",
+        color=discord.Color.og_blurple(), title=f"Server info", description=description
     )
     await interaction.response.send_message(
         embed=embed, file=discord.File(CONFIG["atl_manifest"])

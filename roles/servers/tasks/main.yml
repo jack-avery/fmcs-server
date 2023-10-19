@@ -2,17 +2,17 @@
 - name: Load secrets
   ansible.builtin.include_tasks: secrets.yml
 
-# - name: Warn update
-#   ignore_errors: true
-#   rcon:
-#     address: "{{ ansible_host }}"
-#     port: "{{ mcs_base_port + (loop0 * 10) + 1 }}"
-#     password: "{{ item.rcon_pass }}"
-#     command: "say Update triggered, restart soon..."
-#   loop: "{{ instances_secrets }}"
-#   loop_control:
-#     index_var: loop0
-#   delegate_to: localhost
+- name: Warn update
+  ignore_errors: true
+  rcon:
+    address: "{{ ansible_host }}"
+    port: "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}"
+    password: "{{ item.rcon_pass }}"
+    command: "say Update triggered, restart soon..."
+  loop: "{{ instances_secrets }}"
+  loop_control:
+    index_var: loop0
+  delegate_to: localhost
 
 - name: Delete old build data
   ansible.builtin.file:
@@ -120,6 +120,25 @@
     index_var: loop0
   when: '"simple-voice-chat" in item.mods'
 
+- name: /dynmap
+  file:
+    path: ~/build/{{ item.name }}/dynmap/
+    state: directory
+  loop: "{{ instances }}"
+  loop_control:
+    index_var: loop0
+  when: '"dynmap" in item.mods'
+
+- name: /dynmap/configuration.txt
+  ansible.builtin.template:
+    src: mods/dynmap.txt.j2
+    dest: ~/build/{{ item.name }}/dynmap/configuration.txt
+    mode: 0755
+  loop: "{{ instances }}"
+  loop_control:
+    index_var: loop0
+  when: '"dynmap" in item.mods'
+
   # TODO: figure out some way to easily reformat yml to this toml format
 - name: /config/localizedchat.toml
   ansible.builtin.template:
@@ -156,7 +175,7 @@
   ignore_errors: true
   rcon:
     address: "{{ ansible_host }}"
-    port: "{{ mcs_base_port + (loop0 * 10) + 1 }}"
+    port: "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}"
     password: "{{ item.rcon_pass }}"
     command: "say Server is restarting for updates."
   loop: "{{ instances_secrets }}"
@@ -168,7 +187,7 @@
   ignore_errors: true
   rcon:
     address: "{{ ansible_host }}"
-    port: "{{ mcs_base_port + (loop0 * 10) + 1 }}"
+    port: "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}"
     password: "{{ item.rcon_pass }}"
     command: "save-all"
   loop: "{{ instances_secrets }}"
@@ -194,10 +213,11 @@
       - "~/worlds/{{ item.name }}:/server/world"
       - "~/logs/{{ item.name }}:/server/logs"
     ports:
-      - "{{ mcs_base_port + (loop0 * 10) }}:{{ mcs_base_port + (loop0 * 10) }}"
-      - "{{ mcs_base_port + (loop0 * 10) }}:{{ mcs_base_port + (loop0 * 10) }}/udp"
-      - "{{ mcs_base_port + (loop0 * 10) + 1 }}:{{ mcs_base_port + (loop0 * 10) + 1 }}"
-      - "{{ mcs_base_port + (loop0 * 10) + 2 }}:{{ mcs_base_port + (loop0 * 10) + 2 }}/udp"
+      - "{{ mcs_base_port + (loop0 * mcs_reserve_ports) }}:{{ mcs_base_port + (loop0 * mcs_reserve_ports) }}"
+      - "{{ mcs_base_port + (loop0 * mcs_reserve_ports) }}:{{ mcs_base_port + (loop0 * mcs_reserve_ports) }}/udp"
+      - "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}:{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}"
+      - "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 2 }}:{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 2 }}/udp"
+      - "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 3 }}:{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 3 }}/tcp"
   loop: "{{ instances }}"
   loop_control:
     index_var: loop0

@@ -93,6 +93,10 @@ def make_mrpack(
     if mods:
         for name, info in mods.items():
             if info:
+                if "mode" in info:
+                    if info["mode"] == "server":
+                        continue
+
                 # curseforge, discord links, etc.
                 if "source" in info:
                     file = requests.get(info["source"])

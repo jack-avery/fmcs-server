@@ -28,7 +28,7 @@
 - name: Enable whitelist if whitelist is created
   rcon:
     address: "{{ ansible_host }}"
-    port: "{{ mcs_base_port + (loop0 * 10) + 1 }}"
+    port: "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}"
     password: "{{ item.1.rcon_pass }}"
     command: "whitelist on"
   loop: "{{ instances|zip(instances_secrets) }}"
@@ -40,7 +40,7 @@
 - name: Tell servers to reload whitelist
   rcon:
     address: "{{ ansible_host }}"
-    port: "{{ mcs_base_port + (loop0 * 10) + 1 }}"
+    port: "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}"
     password: "{{ item.1.rcon_pass }}"
     command: "whitelist reload"
   loop: "{{ instances|zip(instances_secrets) }}"
@@ -52,7 +52,7 @@
 - name: Disable whitelist if whitelist is removed
   rcon:
     address: "{{ ansible_host }}"
-    port: "{{ mcs_base_port + (loop0 * 10) + 1 }}"
+    port: "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}"
     password: "{{ item.1.rcon_pass }}"
     command: "whitelist off"
   loop: "{{ instances|zip(instances_secrets) }}"
@@ -65,7 +65,7 @@
   ignore_errors: true
   rcon:
     address: "{{ ansible_host }}"
-    port: "{{ mcs_base_port + (loop0 * 10) + 1 }}"
+    port: "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}"
     password: "{{ item.rcon_pass }}"
     command: "say Whitelist updated."
   loop: "{{ instances_secrets }}"

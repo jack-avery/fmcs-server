@@ -8,7 +8,7 @@ all:
 
     mc:
       hosts:
-        my_host:
+        mc.myhost.com:
           ansible_host: ip or url
           # or, if you are hosting on your machine,
           # replace this entry with the "localhost" entry above

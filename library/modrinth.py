@@ -17,9 +17,9 @@ options:
         required: true
         type: str
     mods:
-        description: List of Modrinth mods
+        description: dict (converted yml) of Modrinth mods as configured in host_vars
         required: true
-        type: list
+        type: dict
 author:
     - raspy (github.com/jack-avery)
 """
@@ -27,11 +27,13 @@ author:
 EXAMPLES = r"""
 - name: Get mod download links
   modrinth:
-    game_version: "1.20.1"
+    game_version: "1.20.2"
     loader: "fabric"
     mods:
-      - sodium
-      - lithium
+      sodium:
+      lithium:
+      sound-physics-remastered:
+        source: (override link, checking this will be ignored!)
 """
 
 RETURN = r"""
@@ -78,22 +80,38 @@ def main():
     fields = {
         "game_version": {"required": True, "type": "str"},
         "loader": {"required": True, "type": "str"},
-        "mods": {"required": True, "type": "list"},
+        "mods": {"required": True, "type": "dict"},
     }
 
     module = AnsibleModule(argument_spec=fields)
 
     dls = []
-    for mod in module.params["mods"]:
+    missing = []
+    for mod, info in module.params["mods"].items():
+        if info:
+            # explicit client-only
+            if "mode" in info:
+                if info["mode"] == "client":
+                    continue
+
+            # has provided source URL; ignore
+            if "source" in info:
+                continue
+
+        mrpmod = None
         try:
             mrpmod = get_modrinth_dl(
                 mod, module.params["game_version"], module.params["loader"]
             )
+
         except ValueError as e:
-            return module.fail_json(str(e))
+            missing.append(str(e))
 
         if mrpmod:
             dls.append({"name": mod, "link": mrpmod})
+
+    if len(missing) > 0:
+        module.fail_json(", ".join(missing))
 
     module.exit_json(changed=True, dls=dls)
 

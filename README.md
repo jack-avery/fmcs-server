@@ -19,19 +19,12 @@ In this folder in Linux or WSL (instructions are for Ubuntu):
 3. Install Python requirements: `pip install -r requirements.txt`
 4. Ensure your servers have Python and Docker installed, and a user named `fmcs` with the `docker` role.
 > If you are hosting on your own machine, you must have Python, Ansible and Docker installed on your machine<br/>
-> [Here is the docs for installing Docker in WSL](https://docs.docker.com/desktop/install/ubuntu/)
+> You can install docker using: `sudo apt-get install docker.io`
 5. Build your Ansible inventory and global/host variables using the samples:
-> * host_vars/my_host.secret.yml.sample
-> * host_vars/my_host.yml.sample
+> * host_vars/mc.myhost.com.secret.yml.sample
+> * host_vars/mc.myhost.com.yml.sample
 > * inventory.yml.sample
-6. Ansible supports encrypted data vaults. Echo the Ansible vault key you're using in `.vault_pass.sh`. Even if you're not using vaults, the file **must still exist**!
-> Setting up the daily restart "cronjob" automatically requires that you echo the password for the `root` user in a script named `.become_pass.sh` in this folder.
-
-```sh
-#!/bin/bash
-# Sample .become_pass.sh or .vault_pass.sh
-echo vault_or_root_pass
-```
+6. Ansible supports encrypted data vaults. Rename `.vault_pass.sh.sample` to `.vault_pass.sh` and put your vault key in. Even if you're not using vaults, the file **must still exist**!
 
 ### Creating servers
 2. Trigger `make servers` to build images and run servers.<br/>
@@ -56,14 +49,15 @@ echo vault_or_root_pass
 -- Backups will appear in `roles/backup/files/{host}`
 
 ## 🔌 Ports
-`fmcs-server` bases all used ports off of `mcs_base_port` in `group_vars/all.yml`.<br/>
-By default, this is set to `25565`, which is standard for Minecraft servers.<br/>
+`fmcs-server` bases all used ports off of `mcs_base_port`; default `25565`.<br/>
+Every server reserves `mcs_reserve_ports` ports for itself; default `10`.
+> e.g. if you have multiple servers on one machine, they would be: `25565`, `25575`, etc...
+
 A list of ports, relative to `mcs_base_port`:
 - `+0 (UDP/TCP)`: Main server
 - `+1     (TCP)`: Rcon *(the relay bot does **not** need this to port to be open on the host machine to work!)*
-- `+2     (UDP)`: Port opened for voice chat mods
-
-Every server adds **10** to port number, so if you had two servers on one machine, the second can be connected to using `:25575`.<br/>
+- `+2     (UDP)`: Port opened for voice chat mods such as [Simple Voice Chat](https://modrinth.com/plugin/simple-voice-chat)
+- `+3     (TCP)`: Autoconfigured for [Dynmap](https://github.com/webbukkit/dynmap/)
 
 ## Pre-commit 🛡️
 There is a pre-commit hook that you should enable to ensure you don't commit any unencrypted secret:<br/>
