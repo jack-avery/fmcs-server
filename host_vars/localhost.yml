@@ -4,6 +4,11 @@ instances:
     fabric: "0.14.21"
     ram: "4G"
 
+    relay_bot:
+      channel: 1056708056576163841
+      rcon_users:
+        - 97441955893477376
+
     properties:
       max-players: 1
       motd: "test"
