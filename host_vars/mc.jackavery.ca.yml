@@ -151,6 +151,7 @@ instances:
       fabric-api:
       cloth-config:
       inventory-sorting:
+      emotecraft:
       simple-voice-chat:
         properties:
           spectator_interaction: "true"
@@ -207,3 +208,4 @@ instances:
       - 2b169b0f-167d-4628-9a0a-25ea88f8bfe5 # Dealta
       - 159fd80b-467b-497a-b3dc-fce36ceda2b0 # StarStrile
       - cabeab84-0680-4ed0-b3cb-be2335f122ff # Chazzie__
+      - 70c2ddac-10c7-4820-8940-b392576117e0 # recollision
