@@ -86,12 +86,14 @@ class DiscordBot(discord.Client):
             return
 
         info = SERVER_LIST_RE.findall(playerlist)[0]
-        current = int(info[0])
+        self.players = int(info[0])
+        self.players_max = int(info[1])
+        self.playerlist = info[2].split(", ")
 
         await self.change_presence(
             activity=discord.Activity(
                 type=discord.ActivityType.watching,
-                name=f"{current} player{'' if current == 1 else 's'}",
+                name=f"{self.players} player{'' if self.players == 1 else 's'}",
             )
         )
 
@@ -341,28 +343,14 @@ client = DiscordBot()
 
 @client.tree.command(name="list", description="See online players")
 async def _list(interaction: discord.Interaction) -> None:
-    playerlist = rcon("list")
-
-    if not playerlist:
-        embed = discord.embeds.Embed(
-            color=discord.Color.red(),
-            description="The server is not online!",
-        )
-        await interaction.response.send_message(embed=embed)
-        return
-
-    info = SERVER_LIST_RE.findall(playerlist)[0]
-    current = int(info[0])
-    max = int(info[1])
-    if current != 0:
-        listing = info[2].split(", ")
-        listing = "- " + "\n- ".join(listing)
+    if client.players != 0:
+        listing = "- " + "\n- ".join(client.playerlist)
     else:
         listing = "There are no players online..."
 
     embed = discord.embeds.Embed(
         color=discord.Color.og_blurple(),
-        title=f"Players ({current}/{max})",
+        title=f"Players ({client.players}/{client.players_max})",
         description=listing,
     )
     await interaction.response.send_message(embed=embed)
