@@ -74,6 +74,9 @@ class DiscordBot(discord.Client):
         asyncio.ensure_future(self.poll_status())
 
     async def update_status(self) -> None:
+        """
+        Poll server player info.
+        """
         playerlist = rcon("list")
 
         if not playerlist:
@@ -92,12 +95,15 @@ class DiscordBot(discord.Client):
 
         await self.change_presence(
             activity=discord.Activity(
-                type=discord.ActivityType.watching,
-                name=f"{self.players} player{'' if self.players == 1 else 's'}",
+                type=discord.ActivityType.playing,
+                name=f"with {self.players} player{'' if self.players == 1 else 's'}",
             )
         )
 
     async def poll_status(self, frequency: int = 60) -> None:
+        """
+        Poll server status every `frequency` seconds for player info.
+        """
         while True:
             await self.update_status()
             await asyncio.sleep(frequency)
@@ -264,7 +270,7 @@ class DiscordBot(discord.Client):
         :returns: URL for icon of `username`
         """
         if not SERVER_PLAYER_RE.match(username):
-            return
+            return False
 
         if username not in self.AVATAR_CACHE:
             HEADERS = {"User-Agent": "github.com/jack-avery/fmcs-server"}
@@ -273,8 +279,10 @@ class DiscordBot(discord.Client):
             )
             if r.status_code != 200:
                 return False
-
             r = r.json()
+
+            if r["code"] != "player.found":
+                return False
             self.AVATAR_CACHE[username] = r["data"]["player"]["avatar"]
 
         return self.AVATAR_CACHE[username]
