@@ -66,6 +66,7 @@ class DiscordBot(discord.Client):
 
             # begin checking log file for changes
             if "debug" not in sys.argv:
+                await self.reconnect_logs()
                 asyncio.ensure_future(self.poll_logs())
 
             logging.info("Ready!")
@@ -108,18 +109,21 @@ class DiscordBot(discord.Client):
             await self.update_status()
             await asyncio.sleep(frequency)
 
+    async def reconnect_logs(self) -> None:
+        """
+        Reconnect the bot to the logs file
+        """
+        self.log = open("logs/latest.log", "r")
+        self.log.readlines()
+
     async def poll_logs(self) -> None:
         """
         Poll the logs every `CONFIG["poll_rate"]` seconds for new messages, connects, or disconnects.
         """
-        # consume existing lines
-        log = open("logs/latest.log", "r")
-        log.readlines()
-
         while True:
             last_poll_start_date = date.today()
 
-            lines = log.readlines()
+            lines = self.log.readlines()
             for line in lines:
                 raw = line
 
@@ -254,12 +258,8 @@ class DiscordBot(discord.Client):
 
             # grab new log file if day changed
             if date.today() != last_poll_start_date:
-                # force new file to be opened
-                rcon("list")
-                # wait 1 second to be sure
                 await asyncio.sleep(1)
-                # grab it
-                log = open("logs/latest.log", "r")
+                self.reconnect_logs()
 
     async def get_player_avatar(self, username: str) -> str:
         """
@@ -396,6 +396,15 @@ async def _help(interaction: discord.Interaction) -> None:
 
     embed = discord.embeds.Embed(
         color=discord.Color.og_blurple(), title="Commands", description=listing
+    )
+    await interaction.response.send_message(embed=embed)
+
+
+@client.tree.command(name="reconnect", description="Reconnect the bot to the log file")
+async def _reconnect(interaction: discord.Interaction) -> None:
+    await client.reconnect_logs()
+    embed = discord.embeds.Embed(
+        color=discord.Color.og_blurple(), description="Logfile reconnected"
     )
     await interaction.response.send_message(embed=embed)
 
