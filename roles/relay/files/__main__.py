@@ -10,6 +10,7 @@ import yaml
 from datetime import date
 
 from rcon.source import Client
+from file_read_backwards import FileReadBackwards
 
 from src.regex import *
 
@@ -74,6 +75,9 @@ class DiscordBot(discord.Client):
         asyncio.ensure_future(self.poll_status())
 
     async def update_status(self) -> None:
+        """
+        Poll server player info.
+        """
         playerlist = rcon("list")
 
         if not playerlist:
@@ -86,16 +90,21 @@ class DiscordBot(discord.Client):
             return
 
         info = SERVER_LIST_RE.findall(playerlist)[0]
-        current = int(info[0])
+        self.players = int(info[0])
+        self.players_max = int(info[1])
+        self.playerlist = info[2].split(", ")
 
         await self.change_presence(
             activity=discord.Activity(
-                type=discord.ActivityType.watching,
-                name=f"{current} player{'' if current == 1 else 's'}",
+                type=discord.ActivityType.playing,
+                name=f"with {self.players} player{'' if self.players == 1 else 's'}",
             )
         )
 
     async def poll_status(self, frequency: int = 60) -> None:
+        """
+        Poll server status every `frequency` seconds for player info.
+        """
         while True:
             await self.update_status()
             await asyncio.sleep(frequency)
@@ -104,14 +113,27 @@ class DiscordBot(discord.Client):
         """
         Poll the logs every `CONFIG["poll_rate"]` seconds for new messages, connects, or disconnects.
         """
-        # consume existing lines
-        log = open("logs/latest.log", "r")
-        log.readlines()
+        last_line = ""
+
+        with FileReadBackwards("logs/latest.log", encoding="utf-8") as f:
+            for _, line in zip([0], f):
+                last_line = line
 
         while True:
-            last_poll_start_date = date.today()
+            with FileReadBackwards("logs/latest.log", encoding="utf-8") as f:
+                lines = []
+                for i, line in enumerate(f):
+                    if i == 0:
+                        last_line_new = line
 
-            lines = log.readlines()
+                    if line == last_line:
+                        break
+
+                    lines.append(line)
+
+            last_line = last_line_new
+            lines = lines[::-1]
+
             for line in lines:
                 raw = line
 
@@ -244,15 +266,6 @@ class DiscordBot(discord.Client):
 
             await asyncio.sleep(CONFIG["poll_rate"])
 
-            # grab new log file if day changed
-            if date.today() != last_poll_start_date:
-                # force new file to be opened
-                rcon("list")
-                # wait 1 second to be sure
-                await asyncio.sleep(1)
-                # grab it
-                log = open("logs/latest.log", "r")
-
     async def get_player_avatar(self, username: str) -> str:
         """
         Get the URL for an icon of given user's Minecraft avatar.
@@ -262,7 +275,7 @@ class DiscordBot(discord.Client):
         :returns: URL for icon of `username`
         """
         if not SERVER_PLAYER_RE.match(username):
-            return
+            return False
 
         if username not in self.AVATAR_CACHE:
             HEADERS = {"User-Agent": "github.com/jack-avery/fmcs-server"}
@@ -271,8 +284,10 @@ class DiscordBot(discord.Client):
             )
             if r.status_code != 200:
                 return False
-
             r = r.json()
+
+            if r["code"] != "player.found":
+                return False
             self.AVATAR_CACHE[username] = r["data"]["player"]["avatar"]
 
         return self.AVATAR_CACHE[username]
@@ -341,28 +356,14 @@ client = DiscordBot()
 
 @client.tree.command(name="list", description="See online players")
 async def _list(interaction: discord.Interaction) -> None:
-    playerlist = rcon("list")
-
-    if not playerlist:
-        embed = discord.embeds.Embed(
-            color=discord.Color.red(),
-            description="The server is not online!",
-        )
-        await interaction.response.send_message(embed=embed)
-        return
-
-    info = SERVER_LIST_RE.findall(playerlist)[0]
-    current = int(info[0])
-    max = int(info[1])
-    if current != 0:
-        listing = info[2].split(", ")
-        listing = "- " + "\n- ".join(listing)
+    if client.players != 0:
+        listing = "- " + "\n- ".join(client.playerlist)
     else:
         listing = "There are no players online..."
 
     embed = discord.embeds.Embed(
         color=discord.Color.og_blurple(),
-        title=f"Players ({current}/{max})",
+        title=f"Players ({client.players}/{client.players_max})",
         description=listing,
     )
     await interaction.response.send_message(embed=embed)
