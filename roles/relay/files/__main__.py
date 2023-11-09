@@ -67,7 +67,6 @@ class DiscordBot(discord.Client):
 
             # begin checking log file for changes
             if "debug" not in sys.argv:
-                await self.reconnect_logs()
                 asyncio.ensure_future(self.poll_logs())
 
             logging.info("Ready!")
@@ -114,16 +113,22 @@ class DiscordBot(discord.Client):
         """
         Poll the logs every `CONFIG["poll_rate"]` seconds for new messages, connects, or disconnects.
         """
-        last_line = False
+        last_line = ""
+
+        with FileReadBackwards("logs/latest.log", encoding="utf-8") as f:
+            for _, line in zip([0], f):
+                last_line = line
+
         while True:
             with FileReadBackwards("logs/latest.log", encoding="utf-8") as f:
-                for _, line in zip([0], f):
-                    last_line_new = line
-
                 lines = []
-                for line in f:
+                for i, line in enumerate(f):
+                    if i == 0:
+                        last_line_new = line
+
                     if line == last_line:
                         break
+
                     lines.append(line)
 
             last_line = last_line_new
