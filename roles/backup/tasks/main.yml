@@ -27,6 +27,7 @@
   loop: "{{ instances_secrets }}"
   loop_control:
     index_var: loop0
+  timeout: 10
   delegate_to: localhost
 
 - name: (Attempt to?) save current world state
@@ -39,6 +40,7 @@
   loop: "{{ instances_secrets }}"
   loop_control:
     index_var: loop0
+  timeout: 10
   delegate_to: localhost
 
 - name: Create root backup directory
@@ -93,4 +95,5 @@
   loop: "{{ instances_secrets }}"
   loop_control:
     index_var: loop0
+  timeout: 10
   delegate_to: localhost

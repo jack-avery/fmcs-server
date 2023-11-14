@@ -119,7 +119,7 @@ instances:
 
   - name: "chili-smp"
     minecraft_ver: "1.20.1"
-    fabric: "0.14.21"
+    fabric: "0.14.24"
     ram: "8G"
 
     relay_bot:
@@ -152,6 +152,7 @@ instances:
       cloth-config:
       inventory-sorting:
       emotecraft:
+      voice-chat-interaction:
       simple-voice-chat:
         properties:
           spectator_interaction: "true"
@@ -210,3 +211,5 @@ instances:
       - cabeab84-0680-4ed0-b3cb-be2335f122ff # Chazzie__
       - 70c2ddac-10c7-4820-8940-b392576117e0 # recollision
       - 99487e23-e9cd-47d2-a8ad-3f7d25f950cf # KillerDino200
+      - 01356428-684d-46d8-b42c-bb1c14c4c49c # NotMinecraftPro
+      - dd615f82-300d-4dc3-90e0-0a41c4078608 # Rutilantcat68

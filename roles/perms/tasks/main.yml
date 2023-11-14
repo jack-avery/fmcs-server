@@ -34,6 +34,7 @@
   loop: "{{ instances|zip(instances_secrets) }}"
   loop_control:
     index_var: loop0
+  timeout: 10
   delegate_to: localhost
   when: '"whitelist" in item.0'
 
@@ -46,6 +47,7 @@
   loop: "{{ instances|zip(instances_secrets) }}"
   loop_control:
     index_var: loop0
+  timeout: 10
   delegate_to: localhost
   when: '"whitelist" in item.0'
 
@@ -58,6 +60,7 @@
   loop: "{{ instances|zip(instances_secrets) }}"
   loop_control:
     index_var: loop0
+  timeout: 10
   delegate_to: localhost
   when: 'not "whitelist" in item.0'
 
@@ -71,4 +74,5 @@
   loop: "{{ instances_secrets }}"
   loop_control:
     index_var: loop0
+  timeout: 10
   delegate_to: localhost

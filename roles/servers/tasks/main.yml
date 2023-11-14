@@ -12,6 +12,7 @@
   loop: "{{ instances_secrets }}"
   loop_control:
     index_var: loop0
+  timeout: 10
   delegate_to: localhost
 
 - name: Delete old build data
@@ -181,6 +182,7 @@
   loop: "{{ instances_secrets }}"
   loop_control:
     index_var: loop0
+  timeout: 10
   delegate_to: localhost
 
 - name: (Attempt to?) save current world state
@@ -193,6 +195,7 @@
   loop: "{{ instances_secrets }}"
   loop_control:
     index_var: loop0
+  timeout: 10
   delegate_to: localhost
 
 - name: Create network for relay
