@@ -128,9 +128,8 @@ instances:
         - 97441955893477376
 
     properties:
-      seed: "4888621265641200900"
       max-players: 20
-      motd: "\u00A72\u00A7lChili SMP | \u00A7rSeason \u00A762\u00A7r\n\u00A7bHopefully with less lag now!"
+      motd: "\u00A72\u00A7lChili SMP | \u00A7rSeason \u00A763"
       view-distance: 16
 
     operators:
@@ -200,7 +199,6 @@ instances:
       - f9ac419e-7515-4764-89ea-c4575a458293 # Octopus3535
       - 3fcc3347-309d-4b5d-ba12-a959bd7a4d04 # BlueTAO
       - 69759d37-6e22-40e3-a9e2-3d03af945283 # hell's
-      - 434fe80d-e945-4acb-ab4a-d180982b54ab # Marcus
       - dfb731bb-55b8-4d7e-ad25-9902f0edb295 # hootie1939
       - 567264b0-c240-483e-a35d-18bf6f3dcd4e # id_rotatcepS
       - 704205d3-cd3c-4d54-9da8-d5f199f83d70 # Let_us_dance
