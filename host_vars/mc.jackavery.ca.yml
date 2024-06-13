@@ -118,8 +118,8 @@ instances:
 
 
   - name: "chili-smp"
-    minecraft_ver: "1.20.1"
-    fabric: "0.15.6"
+    minecraft_ver: "1.21"
+    fabric: "0.15.11"
     ram: "8G"
 
     relay_bot:
@@ -138,19 +138,20 @@ instances:
         bypassesPlayerLimit: true
 
     mods:
+      #TODO: re-add removed mods
       sound-physics-remastered:
       presence-footsteps:
-      xaeros-world-map:
-        mode: client
+      # xaeros-world-map:
+      #   mode: client
 
       sodium:
-      lithium:
+      # lithium:
       iris:
 
       fabric-api:
       cloth-config:
-      inventory-sorting:
-      emotecraft:
+      # inventory-sorting:
+      # emotecraft:
       voice-chat-interaction:
       simple-voice-chat:
         properties:
@@ -158,10 +159,10 @@ instances:
           spectator_player_possession: "true"
 
       fabric-language-kotlin:
-      ledger:
-      terralith:
-      tectonic:
-      chunky:
+      # ledger:
+      # terralith:
+      # tectonic:
+      # chunky:
 
     resource_packs:
       # faithless:
@@ -213,3 +214,4 @@ instances:
       - 99487e23-e9cd-47d2-a8ad-3f7d25f950cf # KillerDino200
       - 01356428-684d-46d8-b42c-bb1c14c4c49c # NotMinecraftPro
       - dd615f82-300d-4dc3-90e0-0a41c4078608 # Rutilantcat68
+      - bdd6e47e-38b4-4360-a840-a4efd89ddaac # toes
