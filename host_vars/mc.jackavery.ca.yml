@@ -129,7 +129,7 @@ instances:
 
     properties:
       max-players: 20
-      motd: "\u00A72\u00A7lChili SMP | \u00A7rSeason \u00A763"
+      motd: "\u00A72\u00A7lChili SMP | \u00A7rSeason \u00A764"
       view-distance: 16
 
     operators:
