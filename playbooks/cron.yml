@@ -10,11 +10,11 @@
           mcs-{{ item.name }} {% if 'relay_bot' in item %}
           mcr-{{ item.name }} {% endif %}{% endfor %}
     
-    - name: Install cronjob (10AM UTC)
+    - name: Install cronjob (1200 UTC)
       ansible.builtin.cron:
         name: "mcs-restart"
         weekday: "*"
         minute: "0"
-        hour: "10"
+        hour: "12"
         job: "{{ cron }}"
       when: ansible_distribution == 'Ubuntu'
