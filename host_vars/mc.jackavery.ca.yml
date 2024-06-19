@@ -141,11 +141,11 @@ instances:
       #TODO: re-add removed mods
       sound-physics-remastered:
       presence-footsteps:
-      # xaeros-world-map:
-      #   mode: client
+      xaeros-world-map:
+        mode: client
 
       sodium:
-      # lithium:
+      lithium:
       iris:
 
       fabric-api:
@@ -162,7 +162,7 @@ instances:
       # ledger:
       # terralith:
       # tectonic:
-      # chunky:
+      chunky:
 
     resource_packs:
       # faithless:
@@ -215,3 +215,5 @@ instances:
       - 01356428-684d-46d8-b42c-bb1c14c4c49c # NotMinecraftPro
       - dd615f82-300d-4dc3-90e0-0a41c4078608 # Rutilantcat68
       - bdd6e47e-38b4-4360-a840-a4efd89ddaac # toes
+      - 342268d7-0835-4cce-8e34-8115bc6aa9e7 # kacey2k
+      - 40e55949-1056-4ead-acb3-8630372ae0e7 # Frimpimy
