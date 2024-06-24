@@ -70,7 +70,7 @@
     address: "{{ ansible_host }}"
     port: "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}"
     password: "{{ item.rcon_pass }}"
-    command: "say Whitelist updated."
+    command: "say Permissions updated."
   loop: "{{ instances_secrets }}"
   loop_control:
     index_var: loop0
