@@ -164,6 +164,9 @@ instances:
       # tectonic:
       chunky:
 
+      # fine, we'll add a mod, this project got big enough
+      worldedit:
+
     resource_packs:
       # faithless:
       # faithless got removed from modrinth??
