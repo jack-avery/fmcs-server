@@ -1,3 +1,7 @@
+mcs_base_port: 25565
+mcs_reserve_ports: 10
+daily_restart_hour_utc: 12
+
 instances:
   # - name: "fungus"
   #   minecraft_ver: "1.20.1"
@@ -159,7 +163,7 @@ instances:
           spectator_player_possession: "true"
 
       fabric-language-kotlin:
-      # ledger:
+      ledger:
       # terralith:
       # tectonic:
       chunky:
@@ -168,8 +172,7 @@ instances:
       worldedit:
 
     resource_packs:
-      # faithless:
-      # faithless got removed from modrinth??
+      faithless:
 
     shaders:
       complementary-unbound:
