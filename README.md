@@ -17,12 +17,10 @@ In this folder in Linux or WSL (instructions are for Ubuntu):
 1. Run `sudo apt-get update && sudo apt-get upgrade`
 2. Install Python and Pip: `sudo apt-get install python3 python3-pip`
 3. Install Python requirements: `pip install -r requirements.txt`
-On the server, run:
+4. On the server, run:
 - `sudo apt-get install openjdk-21-jre-headless python3 python3-pip` - install java and python
 - `useradd -Um fmcs` - add the "fmcs" user
 - `sudo loginctl enable-linger fmcs` - enable systemd service lingering for the user
-> If you are hosting on your own machine, you must have Python, Ansible and Docker installed on your machine<br/>
-> You can install docker using: `sudo apt-get install docker.io`
 5. Build your Ansible inventory and global/host variables using the samples:
 > * host_vars/mc.myhost.com.secret.yml.sample
 > * host_vars/mc.myhost.com.yml.sample
@@ -69,6 +67,6 @@ There is a pre-commit hook that you should enable to ensure you don't commit any
 ## Bug reports & feature suggestions 🐛
 Has something gone **horribly** wrong? *Or do you just think something's missing?*
 
-Feel free to [create a new issue](https://github.com/jack-avery/fmcs-server/issues), join the [Discord](https://discord.gg/qpyT4zx), or message me directly on Discord about it: `raspy#0292`.
+Feel free to [create a new issue](https://github.com/jack-avery/fmcs-server/issues) or join the [Discord](https://discord.gg/qpyT4zx).
 
 > If you're reporting a bug, it's most useful to me if you can find a way to consistently replicate the issue.<br/>
