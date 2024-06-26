@@ -1,0 +1,14 @@
+[Unit]
+Description=Minecraft Relay {{ instance.0.name }}
+After=network.target
+
+[Service]
+Type=simple
+Restart=on-failure
+ExecStart=python3 __main__.py
+WorkingDirectory=/home/fmcs/relay/{{ instance.0.name }}
+StandardOutput=inherit
+StandardError=inherit
+
+[Install]
+WantedBy=default.target

@@ -69,7 +69,7 @@
 
 - name: Create backups
   ansible.builtin.archive:
-    path: ~/worlds/{{ item.name }}
+    path: ~/{{ item.name }}/world
     dest: ~/backups/{{ item.name }}/{{ date.stdout_lines.0 }}.tar.gz
   loop: "{{ instances }}"
 

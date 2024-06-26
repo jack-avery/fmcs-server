@@ -1,0 +1,14 @@
+[Unit]
+Description=Minecraft Server {{ item.name }}
+After=network.target
+
+[Service]
+Type=simple
+Restart=on-failure
+ExecStart=java -Xmx{{ item.ram }} -Xms{{ item.ram }} -jar server.jar nogui
+WorkingDirectory=/home/fmcs/{{ item.name }}
+StandardOutput=inherit
+StandardError=inherit
+
+[Install]
+WantedBy=default.target

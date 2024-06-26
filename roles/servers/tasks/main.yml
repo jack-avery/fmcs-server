@@ -2,30 +2,38 @@
 - name: Load secrets
   ansible.builtin.include_tasks: secrets.yml
 
-- name: Warn update
+- name: Announce update now!!
   ignore_errors: true
   rcon:
     address: "{{ ansible_host }}"
     port: "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}"
     password: "{{ item.rcon_pass }}"
-    command: "say Update triggered, restart soon..."
+    command: "say Server is shutting down for updates."
   loop: "{{ instances_secrets }}"
   loop_control:
     index_var: loop0
-  timeout: 10
+  timeout: 5
   delegate_to: localhost
 
-- name: Delete old build data
-  ansible.builtin.file:
-    state: absent
-    path: ~/build/{{ item.name }}
-  loop: "{{ instances }}"
+- name: (Attempt to?) save current world state
+  ignore_errors: true
+  rcon:
+    address: "{{ ansible_host }}"
+    port: "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}"
+    password: "{{ item.rcon_pass }}"
+    command: "save-all"
+  loop: "{{ instances_secrets }}"
+  loop_control:
+    index_var: loop0
+  timeout: 5
+  delegate_to: localhost
 
-- name: Create build directory
-  ansible.builtin.file:
-    path: ~/build/{{ item.name }}
-    state: directory
-    mode: 0755
+- name: Shut down server for maintenance
+  ignore_errors: true
+  systemd_service:
+    scope: user
+    name: mcs-{{ item.name }}
+    state: stopped
   loop: "{{ instances }}"
 
 ##
@@ -41,24 +49,31 @@
   set_fact:
     fabric_installer_version: "{{ fabric_api_installers.json[0].version }}"
 
-# - name: Copy files
-#   ansible.posix.synchronize:
-#     src: "{{ role_path }}/files/"
-#     dest: ~/build/{{ item.name }}
-#     recursive: true
-#   loop: "{{ instances }}"
-
 ##
 # Basic config
 
+- name: Create server folder
+  ansible.builtin.file:
+    path: ~/{{ item.name }}
+    state: directory
+    mode: 0755
+  loop: "{{ instances }}"
+
+- name: Download server .jar
+  get_url:
+    url: "https://meta.fabricmc.net/v2/versions/loader/{{ item.minecraft_ver }}/{{ item.fabric }}/{{ fabric_installer_version }}/server/jar"
+    dest: ~/{{ item.name }}/server.jar
+    mode: 0700
+  loop: "{{ instances }}"
+
 - name: Accept EULA
-  shell: echo eula=true > ~/build/{{ item.name }}/eula.txt
+  shell: echo eula=true > ~/{{ item.name }}/eula.txt
   loop: "{{ instances }}"
 
 - name: /server.properties
   ansible.builtin.template:
     src: server.properties.j2
-    dest: ~/build/{{ item.0.name }}/server.properties
+    dest: ~/{{ item.0.name }}/server.properties
     mode: 0755
   loop: "{{ instances|zip(instances_secrets) }}"
   loop_control:
@@ -68,21 +83,7 @@
   ignore_errors: true
   ansible.builtin.copy:
     src: "{{ role_path }}/files/{{ inventory_hostname }}/icons/{{ item.name }}.png"
-    dest: ~/build/{{ item.name }}/server-icon.png
-    mode: 0755
-  loop: "{{ instances }}"
-
-- name: /Dockerfile
-  ansible.builtin.template:
-    src: Dockerfile.j2
-    dest: ~/build/{{ item.name }}/Dockerfile
-    mode: 0755
-  loop: "{{ instances }}"
-
-- name: /run.sh
-  ansible.builtin.template:
-    src: run.sh.j2
-    dest: ~/build/{{ item.name }}/run.sh
+    dest: ~/{{ item.name }}/server-icon.png
     mode: 0755
   loop: "{{ instances }}"
 
@@ -104,7 +105,7 @@
 
 - name: /config/voicechat
   file:
-    path: ~/build/{{ item.name }}/config/voicechat/
+    path: ~/{{ item.name }}/config/voicechat/
     state: directory
   loop: "{{ instances }}"
   loop_control:
@@ -114,7 +115,7 @@
 - name: /config/voicechat/voicechat-server.properties
   ansible.builtin.template:
     src: mods/voicechat-server.properties.j2
-    dest: ~/build/{{ item.name }}/config/voicechat/voicechat-server.properties
+    dest: ~/{{ item.name }}/config/voicechat/voicechat-server.properties
     mode: 0755
   loop: "{{ instances }}"
   loop_control:
@@ -123,7 +124,7 @@
 
 - name: /dynmap
   file:
-    path: ~/build/{{ item.name }}/dynmap/
+    path: ~/{{ item.name }}/dynmap/
     state: directory
   loop: "{{ instances }}"
   loop_control:
@@ -133,7 +134,7 @@
 - name: /dynmap/configuration.txt
   ansible.builtin.template:
     src: mods/dynmap.txt.j2
-    dest: ~/build/{{ item.name }}/dynmap/configuration.txt
+    dest: ~/{{ item.name }}/dynmap/configuration.txt
     mode: 0755
   loop: "{{ instances }}"
   loop_control:
@@ -144,7 +145,7 @@
 - name: /config/localizedchat.toml
   ansible.builtin.template:
     src: mods/localizedchat.toml.j2
-    dest: ~/build/{{ item.name }}/config/localizedchat.toml
+    dest: ~/{{ item.name }}/config/localizedchat.toml
     mode: 0755
   loop: "{{ instances }}"
   loop_control:
@@ -154,73 +155,23 @@
 ##
 # Build and run
 
-- name: Prune space before building
-  community.docker.docker_prune:
-    images: true
-    containers: true
+- name: Make .config/systemd/user folder
+  ansible.builtin.file:
+    path: ~/.config/systemd/user
+    state: directory
+    mode: 0700
 
-- name: Build images
-  community.docker.docker_image:
-    name: "mcs-{{ item.name }}"
-    tag: "latest"
-    source: build
-    build:
-      path: ~/build/{{ item.name }}
-      pull: true
-    state: present
-    force_source: true
-    force_tag: true
+- name: Template systemd service
+  ansible.builtin.template:
+    src: service.j2
+    dest: ~/.config/systemd/user/mcs-{{ item.name }}.service
+    mode: 0755
   loop: "{{ instances }}"
 
-- name: Announce update now!!
-  ignore_errors: true
-  rcon:
-    address: "{{ ansible_host }}"
-    port: "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}"
-    password: "{{ item.rcon_pass }}"
-    command: "say Server is restarting for updates."
-  loop: "{{ instances_secrets }}"
-  loop_control:
-    index_var: loop0
-  timeout: 10
-  delegate_to: localhost
-
-- name: (Attempt to?) save current world state
-  ignore_errors: true
-  rcon:
-    address: "{{ ansible_host }}"
-    port: "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}"
-    password: "{{ item.rcon_pass }}"
-    command: "save-all"
-  loop: "{{ instances_secrets }}"
-  loop_control:
-    index_var: loop0
-  timeout: 10
-  delegate_to: localhost
-
-- name: Create network for relay
-  community.docker.docker_network:
-    name: "network-mcs-{{ item.name }}"
-  loop: "{{ instances }}"
-
-- name: Start
-  community.docker.docker_container:
-    name: "mcs-{{ item.name }}"
-    image: "mcs-{{ item.name }}:latest"
+- name: Start server
+  systemd_service:
+    scope: user
+    name: mcs-{{ item.name }}
+    enabled: true
     state: started
-    restart: true
-    restart_policy: "unless-stopped"
-    networks:
-      - name: "network-mcs-{{ item.name }}"
-    volumes:
-      - "~/worlds/{{ item.name }}:/server/world"
-      - "~/logs/{{ item.name }}:/server/logs"
-    ports:
-      - "{{ mcs_base_port + (loop0 * mcs_reserve_ports) }}:{{ mcs_base_port + (loop0 * mcs_reserve_ports) }}"
-      - "{{ mcs_base_port + (loop0 * mcs_reserve_ports) }}:{{ mcs_base_port + (loop0 * mcs_reserve_ports) }}/udp"
-      - "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}:{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}"
-      - "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 2 }}:{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 2 }}/udp"
-      - "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 3 }}:{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 3 }}/tcp"
   loop: "{{ instances }}"
-  loop_control:
-    index_var: loop0

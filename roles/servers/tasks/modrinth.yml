@@ -6,16 +6,21 @@
     mods: "{{ instance.mods }}"
   register: modrinth
 
-- name: Create mod folder
+- name: Delete old mods
   ansible.builtin.file:
-    path: ~/build/{{ instance.name }}/mods
+    path: ~/{{ instance.name }}/mods
+    state: absent
+
+- name: Create mods folder
+  ansible.builtin.file:
+    path: ~/{{ instance.name }}/mods
     state: directory
     mode: 0755
 
 - name: Download mods
   get_url:
     url: "{{ mod.link }}"
-    dest: ~/build/{{ instance.name }}/mods/{{ mod.name }}.jar
+    dest: ~/{{ instance.name }}/mods/{{ mod.name }}.jar
   loop: "{{ modrinth.dls }}"
   loop_control:
     loop_var: mod
@@ -23,7 +28,7 @@
 - name: Download overrides
   get_url:
     url: "{{ instance.mods[mod].source }}"
-    dest: ~/build/{{ instance.name }}/mods/{{ mod }}.jar
+    dest: ~/{{ instance.name }}/mods/{{ mod }}.jar
   when: 'not instance.mods[mod] == None and "source" in instance.mods[mod]'
   loop: "{{ instance.mods.keys() }}"
   loop_control:

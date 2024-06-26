@@ -2,57 +2,48 @@
 - name: Delete old build data
   ansible.builtin.file:
     state: absent
-    path: ~/build-relay/{{ instance.0.name }}
+    path: ~/relay/{{ instance.0.name }}
 
 - name: Create build directory
   ansible.builtin.file:
-    path: ~/build-relay/{{ instance.0.name }}
+    path: ~/relay/{{ instance.0.name }}
     state: directory
     mode: 0755
 
 - name: Copy files
   ansible.posix.synchronize:
     src: "{{ role_path }}/files/"
-    dest: ~/build-relay/{{ instance.0.name }}
+    dest: ~/relay/{{ instance.0.name }}
     recursive: true
 
 - name: Copy instance .mrpack
   ansible.posix.synchronize:
     src: "{{ role_path }}/../../mrpacks/{{ inventory_hostname }}-{{ instance.0.name }}.mrpack"
-    dest: ~/build-relay/{{ instance.0.name }}/{{ inventory_hostname }}-{{ instance.0.name }}.mrpack
+    dest: ~/relay/{{ instance.0.name }}/{{ inventory_hostname }}-{{ instance.0.name }}.mrpack
     recursive: true
 
 - name: Generate config.yml
   ansible.builtin.template:
     src: config.yml.j2
-    dest: ~/build-relay/{{ instance.0.name }}/config.yml
+    dest: ~/relay/{{ instance.0.name }}/config.yml
     mode: 0755
 
-- name: Prune space before building
-  community.docker.docker_prune:
-    images: true
-    containers: true
+- name: Link log directory
+  ansible.builtin.file:
+    src: /home/fmcs/{{ instance.0.name }}/logs
+    path: /home/fmcs/relay/{{ instance.0.name }}/logs
+    state: link
+    mode: 0755
 
-- name: Build image
-  community.docker.docker_image:
-    name: "mcr-{{ instance.0.name }}"
-    tag: "latest"
-    source: build
-    build:
-      path: ~/build-relay/{{ instance.0.name }}
-      pull: true
-    state: present
-    force_source: true
-    force_tag: true
+- name: Template systemd service
+  ansible.builtin.template:
+    src: service.j2
+    dest: ~/.config/systemd/user/mcr-{{ instance.0.name }}.service
+    mode: 0755
 
-- name: Start
-  community.docker.docker_container:
-    name: "mcr-{{ instance.0.name }}"
-    image: "mcr-{{ instance.0.name }}:latest"
-    state: started
-    restart: true
-    restart_policy: "unless-stopped"
-    networks:
-      - name: "network-mcs-{{ instance.0.name }}"
-    volumes:
-      - "~/logs/{{ instance.0.name }}:/bot/logs"
+- name: Start relay bot
+  systemd_service:
+    scope: user
+    name: mcr-{{ instance.0.name }}
+    enabled: true
+    state: restarted
