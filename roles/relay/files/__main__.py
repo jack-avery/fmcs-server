@@ -31,7 +31,7 @@ logging.basicConfig(handlers=log_handlers, level=logging.DEBUG)
 def rcon(cmd: str) -> str:
     try:
         with Client(
-            CONFIG["rcon_addr"], CONFIG["port"] + 1, passwd=CONFIG["rcon_pass"]
+            "127.0.0.1", CONFIG["port"] + 1, passwd=CONFIG["rcon_pass"]
         ) as client:
             response = client.run(cmd)
         return response
@@ -162,10 +162,12 @@ class DiscordBot(discord.Client):
                             user = info[0]
                             msg = info[1]
 
-                            embed = discord.embeds.Embed(description=msg)
+                            # is this enough? it should stop @ing...
+                            msg = msg.replace("@", "＠")
+                            msg = msg.replace('"', "'")
 
                             await self.WEBHOOK.send(
-                                embed=embed,
+                                content=msg,
                                 username=user,
                                 avatar_url=await self.get_player_avatar(user),
                             )
