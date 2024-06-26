@@ -156,6 +156,7 @@ instances:
       cloth-config:
       # inventory-sorting:
       # emotecraft:
+      horsebuff:
       voice-chat-interaction:
       simple-voice-chat:
         properties:
