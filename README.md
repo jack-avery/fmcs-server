@@ -17,7 +17,7 @@ In this folder in Linux or WSL (instructions are for Ubuntu):
 1. Run `sudo apt-get update && sudo apt-get upgrade`
 2. Install Python and Pip: `sudo apt-get install python3 python3-pip`
 3. Install Python requirements: `pip install -r requirements.txt`
-4. Ensure your servers have Python and Docker installed, and a user named `fmcs` with the `docker` role.
+4. Ensure your servers have Python and Docker installed, and a user named `fmcs`.
 > If you are hosting on your own machine, you must have Python, Ansible and Docker installed on your machine<br/>
 > You can install docker using: `sudo apt-get install docker.io`
 5. Build your Ansible inventory and global/host variables using the samples:
