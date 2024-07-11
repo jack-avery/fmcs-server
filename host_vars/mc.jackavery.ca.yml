@@ -140,6 +140,9 @@ instances:
       - uuid: 773e05b1-44fe-47be-b61d-95de8e691832
         level: 4
         bypassesPlayerLimit: true
+      - uuid: bdd6e47e-38b4-4360-a840-a4efd89ddaac
+        level: 2
+        bypassesPlayerLimit: true
 
     mods:
       #TODO: re-add removed mods
@@ -171,6 +174,7 @@ instances:
 
       # fine, we'll add a mod, this project got big enough
       worldedit:
+      no-chat-reports:
 
     resource_packs:
       faithless:
@@ -224,3 +228,7 @@ instances:
       - bdd6e47e-38b4-4360-a840-a4efd89ddaac # toes
       - 342268d7-0835-4cce-8e34-8115bc6aa9e7 # kacey2k
       - 40e55949-1056-4ead-acb3-8630372ae0e7 # Frimpimy
+      - a55cb393-1875-46d1-8d2d-eb1a7445b78e # CityyyNo
+      - 70001745-67d0-4720-8be0-b2776f8d8975 # yodeston (via CityyyNo)
+      - 3e1ed425-9591-43f5-a46e-a0835174c7cd # creamicemint (via CityyyNo)
+      - 36658a9d-e8bc-4ec0-9d51-b9733dc017d8 # loog
