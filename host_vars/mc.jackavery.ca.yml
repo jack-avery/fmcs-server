@@ -145,35 +145,42 @@ instances:
         bypassesPlayerLimit: true
 
     mods:
-      #TODO: re-add removed mods
-      sound-physics-remastered:
-      presence-footsteps:
-      xaeros-world-map:
-        mode: client
-
-      sodium:
-      lithium:
-      iris:
-
+      # dependency mods
       fabric-api:
       cloth-config:
-      # inventory-sorting:
-      # emotecraft:
+      fabric-language-kotlin:
+
+      # client mods
+      sound-physics-remastered:
+      presence-footsteps:
+      not-enough-animations:
+      cameraoverhaul:
+      first-person-model:
+      sodium:
+      iris:
+
+      # server mods
+      inventory-sorting:
+        # inventory-sorting is not updated to 1.21, BUT https://github.com/paulzzh has graciously updated it for us
+        # this is a discord link because the github action produced a .zip that i'm too lazy to script in inflating
+        source: https://cdn.discordapp.com/attachments/313119058616778752/1263325579101601956/inventory-sorting.jar?ex=6699d321&is=669881a1&hm=ab52cda10dc411344bcaec28de870afa14930f0373f362f6e65cb37694bcc99c&
+        mode: server
       horsebuff:
       voice-chat-interaction:
       simple-voice-chat:
         properties:
           spectator_interaction: "true"
           spectator_player_possession: "true"
-
-      fabric-language-kotlin:
-      ledger:
+      # for season 5
       # terralith:
       # tectonic:
-      chunky:
 
-      # fine, we'll add a mod, this project got big enough
-      worldedit:
+      # administrative mods
+      ledger:
+      chunky:
+      dynmap:
+        mode: server
+      lithium:
       no-chat-reports:
 
     resource_packs:
@@ -232,3 +239,4 @@ instances:
       - 70001745-67d0-4720-8be0-b2776f8d8975 # yodeston (via CityyyNo)
       - 3e1ed425-9591-43f5-a46e-a0835174c7cd # creamicemint (via CityyyNo)
       - 36658a9d-e8bc-4ec0-9d51-b9733dc017d8 # loog
+      - fd413877-be2f-4966-8693-76a4fcc043a9 # aprimdal
