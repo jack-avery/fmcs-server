@@ -370,7 +370,7 @@ async def _list(interaction: discord.Interaction) -> None:
 
 
 @client.tree.command(
-    name="info", description="Get info for the server and the ATLauncher manifest"
+    name="info", description="Get info for the server and the .mrpack"
 )
 async def _info(interaction: discord.Interaction) -> None:
     description = f"Connect at `{CONFIG['address']}:{CONFIG['port']}`"
@@ -382,7 +382,7 @@ async def _info(interaction: discord.Interaction) -> None:
     if CONFIG["has_dynmap"]:
         description += f"\nThe server has Dynmap available at: http://{CONFIG['address']}:{CONFIG['port'] + 3}"
 
-    description += "\n\n> *ATLauncher manifest with used mods is attached.*"
+    description += "\n\n> *Importable .mrpack is attached.*"
 
     embed = discord.embeds.Embed(
         color=discord.Color.og_blurple(), title=f"Server info", description=description

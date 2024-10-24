@@ -4,7 +4,7 @@
 
 </div>
 
-Automatic set-up [Fabric](https://fabricmc.net/) or [Forge](https://forums.minecraftforge.net/) modded Minecraft dedicated servers, supporting `.mrpack` exports for import with [ATLauncher](https://atlauncher.com/) and a Server <-> Discord relay bot.
+Automatic set-up [Fabric](https://fabricmc.net/) or [Forge](https://forums.minecraftforge.net/) modded Minecraft dedicated servers, supporting `.mrpack` exports for import with [Prism Launcher](https://prismlauncher.org/) and a Server <-> Discord relay bot.
 
 Found the playbooks useful? [Buy me a coffee ☕](https://ko-fi.com/raspy)!
 
@@ -34,7 +34,7 @@ In this folder in Linux or WSL (instructions are for Ubuntu):
 1. Trigger `make perms`.<br/>
 -- Define ops/whitelist in `{host}.yml`
 
-### Creating ATLauncher .mrpacks
+### Creating .mrpacks
 1. Trigger `make mrpack`.<br/>
 -- The files are put into the `mrpacks` folder
 
