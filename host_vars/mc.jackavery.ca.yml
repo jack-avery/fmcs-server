@@ -163,7 +163,7 @@ instances:
       inventory-sorting:
         # inventory-sorting is not updated to 1.21, BUT https://github.com/paulzzh has graciously updated it for us
         # this is a discord link because the github action produced a .zip that i'm too lazy to script in inflating
-        source: https://cdn.discordapp.com/attachments/313119058616778752/1263325579101601956/inventory-sorting.jar?ex=6699d321&is=669881a1&hm=ab52cda10dc411344bcaec28de870afa14930f0373f362f6e65cb37694bcc99c&
+        source: https://cdn.discordapp.com/attachments/313119058616778752/1291521122554347613/inventory-sorting.jar?ex=67006646&is=66ff14c6&hm=636210cec5628c99c84ab0f011346564f11eb986ba15db32c5f896227af6aecd&
         mode: server
       horsebuff:
       voice-chat-interaction:
@@ -240,3 +240,7 @@ instances:
       - 3e1ed425-9591-43f5-a46e-a0835174c7cd # creamicemint (via CityyyNo)
       - 36658a9d-e8bc-4ec0-9d51-b9733dc017d8 # loog
       - fd413877-be2f-4966-8693-76a4fcc043a9 # aprimdal
+      - dcb128a8-a088-414d-a70f-59a90d6d6b3f # Blight
+      - 1f6cefb5-cc39-4e30-b141-3f2b1605aff2 # ImKirb (via toes)
+      - 4a6173a7-5806-46d1-9353-4bee0f14a61b # peachingly (via vulc)
+      - 1f9291d2-a3fb-48e3-9864-aa1f639b139b # pyrotechnic1377 (via vulc)
