@@ -195,7 +195,7 @@ def main():
             with open(f"mrpacks/_/modrinth.index.json", "w") as file:
                 file.write(json.dumps(manifest, indent=4))
 
-            # zip and rename to .mrpack so ATLauncher accepts it
+            # zip and rename to .mrpack
             shutil.make_archive(f"mrpacks/{name}", "zip", "mrpacks/_")
             shutil.move(f"mrpacks/{name}.zip", f"mrpacks/{name}.mrpack")
 
