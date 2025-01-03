@@ -30,6 +30,19 @@
   timeout: 10
   delegate_to: localhost
 
+- name: Turn off automatic saving
+  ignore_errors: true
+  rcon:
+    address: "{{ ansible_host }}"
+    port: "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}"
+    password: "{{ item.rcon_pass }}"
+    command: "save-off"
+  loop: "{{ instances_secrets }}"
+  loop_control:
+    index_var: loop0
+  timeout: 10
+  delegate_to: localhost
+
 - name: (Attempt to?) save current world state
   ignore_errors: true
   rcon:
@@ -84,6 +97,19 @@
     state: absent
     path: ~/backups/{{ item.name }}
   loop: "{{ instances }}"
+
+- name: Turn on automatic saving
+  ignore_errors: true
+  rcon:
+    address: "{{ ansible_host }}"
+    port: "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}"
+    password: "{{ item.rcon_pass }}"
+    command: "save-on"
+  loop: "{{ instances_secrets }}"
+  loop_control:
+    index_var: loop0
+  timeout: 10
+  delegate_to: localhost
 
 - name: Inform backup complete
   ignore_errors: true
