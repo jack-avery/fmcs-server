@@ -27,6 +27,20 @@
   loop: "{{ instances_secrets }}"
   loop_control:
     index_var: loop0
+  timeout: 10
+  delegate_to: localhost
+
+- name: Turn off automatic saving
+  ignore_errors: true
+  rcon:
+    address: "{{ ansible_host }}"
+    port: "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}"
+    password: "{{ item.rcon_pass }}"
+    command: "save-off"
+  loop: "{{ instances_secrets }}"
+  loop_control:
+    index_var: loop0
+  timeout: 10
   delegate_to: localhost
 
 - name: (Attempt to?) save current world state
@@ -39,6 +53,7 @@
   loop: "{{ instances_secrets }}"
   loop_control:
     index_var: loop0
+  timeout: 10
   delegate_to: localhost
 
 - name: Create root backup directory
@@ -67,7 +82,7 @@
 
 - name: Create backups
   ansible.builtin.archive:
-    path: ~/worlds/{{ item.name }}
+    path: ~/{{ item.name }}/world
     dest: ~/backups/{{ item.name }}/{{ date.stdout_lines.0 }}.tar.gz
   loop: "{{ instances }}"
 
@@ -83,6 +98,19 @@
     path: ~/backups/{{ item.name }}
   loop: "{{ instances }}"
 
+- name: Turn on automatic saving
+  ignore_errors: true
+  rcon:
+    address: "{{ ansible_host }}"
+    port: "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}"
+    password: "{{ item.rcon_pass }}"
+    command: "save-on"
+  loop: "{{ instances_secrets }}"
+  loop_control:
+    index_var: loop0
+  timeout: 10
+  delegate_to: localhost
+
 - name: Inform backup complete
   ignore_errors: true
   rcon:
@@ -93,4 +121,5 @@
   loop: "{{ instances_secrets }}"
   loop_control:
     index_var: loop0
+  timeout: 10
   delegate_to: localhost

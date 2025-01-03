@@ -12,11 +12,11 @@
 
 - name: Generate whitelist.json
   copy:
-    dest: ~/build/{{ instance.name }}/whitelist.json
+    dest: ~/{{ instance.name }}/whitelist.json
     content: "{{ whitelist | to_json }}"
   when: '"whitelist" in instance'
 
 - name: Generate ops.json
   copy:
-    dest: ~/build/{{ instance.name }}/ops.json
+    dest: ~/{{ instance.name }}/ops.json
     content: "{{ operators | to_json }}"

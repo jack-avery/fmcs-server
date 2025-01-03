@@ -2,6 +2,12 @@
 - name: Load secrets
   ansible.builtin.include_tasks: secrets.yml
 
+- name: Create Relay bot holding dir
+  ansible.builtin.file:
+    path: ~/relay
+    state: directory
+    mode: 0755
+
 - name: Create Relay bot (if enabled)
   ansible.builtin.include_tasks: relay.yml
   loop: "{{ instances|zip(instances_secrets) }}"

@@ -8,23 +8,6 @@
   loop_control:
     loop_var: instance
 
-- name: Move whitelist.json into container
-  community.docker.docker_container_copy_into:
-    container: "mcs-{{ item.name }}"
-    path: ~/build/{{ item.name }}/whitelist.json
-    container_path: /server/whitelist.json
-  loop: "{{ instances }}"
-  delegate_to: "{{ ansible_host }}"
-  when: '"whitelist" in item'
-
-- name: Move ops.json into container
-  community.docker.docker_container_copy_into:
-    container: "mcs-{{ item.name }}"
-    path: ~/build/{{ item.name }}/ops.json
-    container_path: /server/ops.json
-  loop: "{{ instances }}"
-  delegate_to: "{{ ansible_host }}"
-
 - name: Enable whitelist if whitelist is created
   rcon:
     address: "{{ ansible_host }}"
@@ -34,6 +17,7 @@
   loop: "{{ instances|zip(instances_secrets) }}"
   loop_control:
     index_var: loop0
+  timeout: 10
   delegate_to: localhost
   when: '"whitelist" in item.0'
 
@@ -46,6 +30,7 @@
   loop: "{{ instances|zip(instances_secrets) }}"
   loop_control:
     index_var: loop0
+  timeout: 10
   delegate_to: localhost
   when: '"whitelist" in item.0'
 
@@ -58,6 +43,7 @@
   loop: "{{ instances|zip(instances_secrets) }}"
   loop_control:
     index_var: loop0
+  timeout: 10
   delegate_to: localhost
   when: 'not "whitelist" in item.0'
 
@@ -67,8 +53,9 @@
     address: "{{ ansible_host }}"
     port: "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}"
     password: "{{ item.rcon_pass }}"
-    command: "say Whitelist updated."
+    command: "say Permissions updated."
   loop: "{{ instances_secrets }}"
   loop_control:
     index_var: loop0
+  timeout: 10
   delegate_to: localhost

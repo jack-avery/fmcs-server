@@ -1,7 +1,6 @@
 token: {{ instance.1.relay_bot_token }}
 address: {{ inventory_hostname }}
 port: {{ mcs_base_port + (loop0 * mcs_reserve_ports) }}
-rcon_addr: mcs-{{ instance.0.name }}
 rcon_pass: {{ instance.1.rcon_pass }}
 channel: {{ instance.0.relay_bot.channel }}
 atl_manifest: "{{ inventory_hostname }}-{{ instance.0.name }}.mrpack"

@@ -54,7 +54,8 @@ def get_modrinth_project(name) -> dict:
 
 def get_modrinth_version(name: str, game_version: str, loader: str = None) -> dict:
     mod = requests.get(
-        f'https://api.modrinth.com/v2/project/{name}/version?game_versions=["{game_version}"]'
+        f"https://api.modrinth.com/v2/project/{name}/version"
+        + (f'?game_versions=["{game_version}"]' if game_version else "")
         + (f'&loaders=["{loader}"]' if loader else "")
     ).json()
     if len(mod) == 0:

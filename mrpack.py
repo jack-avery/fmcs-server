@@ -44,6 +44,7 @@ def get_mrpack_file(name: str, game_version: str, loader: str = None) -> dict:
                 )
         case "resourcepack":
             folder = "resourcepacks"
+            game_version = None
 
     if not (version := dict.get(CACHE[name], f"{game_version}-{loader}", None)):
         logging.info(f"... and info on {game_version}-{loader}...")
