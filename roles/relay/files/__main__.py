@@ -6,6 +6,7 @@ import discord
 import logging
 import requests
 import sys
+import traceback
 import yaml
 from datetime import date
 
@@ -255,10 +256,10 @@ class DiscordBot(discord.Client):
                                 await self.CHANNEL.send(embed=embed)
                                 break
 
-                except Exception as err:
+                except Exception:
                     embed = discord.embeds.Embed(
                         color=discord.Color.red(),
-                        description=f"{raw}\n\n{err.with_traceback()}",
+                        description=f"{raw}\n\n{traceback.format_exc()}",
                     )
                     embed.set_author(
                         name=f"Failed to send message from server",
