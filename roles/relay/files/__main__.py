@@ -23,10 +23,10 @@ formatter = logging.Formatter(
     "%(asctime)s | %(module)s [%(levelname)s] %(message)s",
 )
 stdout_handler = logging.StreamHandler(sys.stdout)
-stdout_handler.setLevel(logging.DEBUG)
+stdout_handler.setLevel(logging.INFO)
 stdout_handler.setFormatter(formatter)
 log_handlers.append(stdout_handler)
-logging.basicConfig(handlers=log_handlers, level=logging.DEBUG)
+logging.basicConfig(handlers=log_handlers, level=logging.INFO)
 
 
 def rcon(cmd: str) -> str:
