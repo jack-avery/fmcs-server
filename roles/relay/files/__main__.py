@@ -385,7 +385,10 @@ async def _info(interaction: discord.Interaction) -> None:
     if CONFIG["has_dynmap"]:
         description += f"\nThe server has Dynmap available at: http://{CONFIG['address']}:{CONFIG['port'] + 3}"
 
-    description += "\n\n> *ATLauncher manifest with used mods is attached.*"
+    description += (
+        "\n\n> *.mrpack for import into your preferred launcher is attached.*"
+        + "\n> *Confused? See here: <https://youtu.be/EqenOITGvis>"
+    )
 
     embed = discord.embeds.Embed(
         color=discord.Color.og_blurple(), title=f"Server info", description=description
