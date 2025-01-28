@@ -161,10 +161,6 @@ instances:
 
       # server mods
       inventory-sorting:
-        # inventory-sorting is not updated to 1.21, BUT https://github.com/paulzzh has graciously updated it for us
-        # this is a discord link because the github action produced a .zip that i'm too lazy to script in inflating
-        source: https://cdn.discordapp.com/attachments/313119058616778752/1333224553404567592/inventory-sorting.jar?ex=67981d9f&is=6796cc1f&hm=dff3b40f22b20c854fae0d6b5bc5740fbb2cdd435e39bac17d343a39e71033cd&
-        mode: server
       horsebuff:
       voice-chat-interaction:
       simple-voice-chat:
