@@ -387,7 +387,7 @@ async def _info(interaction: discord.Interaction) -> None:
 
     description += (
         "\n\n> *.mrpack for import into your preferred launcher is attached.*"
-        + "\n> *Confused? See here: <https://youtu.be/EqenOITGvis>"
+        + "\n> *Confused? See here: <https://youtu.be/EqenOITGvis>*"
     )
 
     embed = discord.embeds.Embed(
