@@ -122,8 +122,8 @@ instances:
 
 
   - name: "chili-smp"
-    minecraft_ver: "1.21"
-    fabric: "0.15.11"
+    minecraft_ver: "1.21.4"
+    fabric: "0.16.10"
     ram: "8G"
 
     relay_bot:
@@ -133,14 +133,14 @@ instances:
 
     properties:
       max-players: 20
-      motd: "\u00A72\u00A7lChili SMP | \u00A7rSeason \u00A764"
+      motd: "\u00A72\u00A7lChili SMP | \u00A7rSeason \u00A765"
       view-distance: 16
 
     operators:
-      - uuid: 773e05b1-44fe-47be-b61d-95de8e691832
+      - uuid: 773e05b1-44fe-47be-b61d-95de8e691832 # raspy
         level: 4
         bypassesPlayerLimit: true
-      - uuid: bdd6e47e-38b4-4360-a840-a4efd89ddaac
+      - uuid: bdd6e47e-38b4-4360-a840-a4efd89ddaac # toes
         level: 2
         bypassesPlayerLimit: true
 
@@ -163,7 +163,7 @@ instances:
       inventory-sorting:
         # inventory-sorting is not updated to 1.21, BUT https://github.com/paulzzh has graciously updated it for us
         # this is a discord link because the github action produced a .zip that i'm too lazy to script in inflating
-        source: https://cdn.discordapp.com/attachments/313119058616778752/1291521122554347613/inventory-sorting.jar?ex=67006646&is=66ff14c6&hm=636210cec5628c99c84ab0f011346564f11eb986ba15db32c5f896227af6aecd&
+        source: https://cdn.discordapp.com/attachments/313119058616778752/1333224553404567592/inventory-sorting.jar?ex=67981d9f&is=6796cc1f&hm=dff3b40f22b20c854fae0d6b5bc5740fbb2cdd435e39bac17d343a39e71033cd&
         mode: server
       horsebuff:
       voice-chat-interaction:
@@ -171,9 +171,8 @@ instances:
         properties:
           spectator_interaction: "true"
           spectator_player_possession: "true"
-      # for season 5
-      # terralith:
-      # tectonic:
+      terralith:
+      tectonic:
 
       # administrative mods
       ledger:
