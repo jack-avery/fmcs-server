@@ -54,6 +54,7 @@ instances:
       terralith:
       tectonic:
       image2map:
+        mode: server
 
       # administrative mods
       ledger: # logging
