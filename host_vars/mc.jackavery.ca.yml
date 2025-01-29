@@ -53,6 +53,7 @@ instances:
           spectator_player_possession: "true"
       terralith:
       tectonic:
+      image2map:
 
       # administrative mods
       ledger: # logging
