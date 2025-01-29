@@ -17,20 +17,22 @@ instances:
       max-players: 20
       motd: "\u00A72\u00A7lChili SMP | \u00A7rSeason \u00A765"
       view-distance: 16
+      level-seed: 
 
     operators:
       - uuid: 773e05b1-44fe-47be-b61d-95de8e691832 # raspy
         level: 4
         bypassesPlayerLimit: true
-      - uuid: bdd6e47e-38b4-4360-a840-a4efd89ddaac # toes
-        level: 2
-        bypassesPlayerLimit: true
+      # - uuid: bdd6e47e-38b4-4360-a840-a4efd89ddaac # toes
+      #   level: 2
+      #   bypassesPlayerLimit: true
 
     mods:
       # dependency mods
       fabric-api:
       cloth-config:
       fabric-language-kotlin:
+      modmenu:
 
       # client mods
       sound-physics-remastered:
@@ -68,58 +70,58 @@ instances:
 
     whitelist:
       - 773e05b1-44fe-47be-b61d-95de8e691832 # raspy
-      - 541ec34c-a01f-4df8-a63e-07e1867d7148 # AFox
-      - a3875dc6-73f1-4e84-a6d8-9f507c78df80 # camp3r
+      # - 541ec34c-a01f-4df8-a63e-07e1867d7148 # AFox
+      # - a3875dc6-73f1-4e84-a6d8-9f507c78df80 # camp3r
       - 3fd45f24-7143-4ef5-af7d-1b6d952ab129 # Chili
-      - 479d1d70-651b-485e-afea-da9640a6414b # DavidAndrewGee
-      - 3f66933b-fdf1-4960-856e-22c701d90073 # Durazorn
-      - a9d9fc38-234b-4a34-83ce-b18ce09c36ad # edwr
-      - f5800261-64f7-4092-9fc0-c14cf85668a5 # Killrpanda15
-      - a99033f9-9572-4e02-911b-830dda8ef429 # megamosquitoast
-      - 8a76e1e5-3a14-44ac-8f5c-abcb552b0320 # n0tloc
-      - e7991140-8652-40e5-9666-5353ebeeb921 # NEBUL4
-      - 9a39e61e-4abb-4e73-9c0f-4e304ca94f87 # ohpapper
-      - 10679261-cd4e-4c46-b235-ca30a2ae19b1 # retecer
-      - 8e47971f-1c7d-4fc5-9e24-60aca0f2972f # Thunder_Prophet
-      - 483a75e4-8614-4cd8-8d1c-b4c3bf30fdc2 # TriBeam17
-      - ee674f01-82b3-415c-8820-0ae02053b00e # vulc
-      - 99bed82c-f203-4de7-a466-c048ab752b89 # Xenagoose
-      - c0c888d2-780c-40f7-84f2-50d610e9b597 # freak
-      - cc869079-8c17-4cef-b191-117fd7d9c3dc # morgan/nova
-      - fd413877-be2f-4966-8693-76a4fcc043a9 # aprimdal
-      - a3a4d226-dca3-465e-a906-9302633833a4 # jon
-      - d2dbf2d3-f984-4267-b72b-952488092211 # PositiveKICKTTV
-      - 4755658a-0016-4563-8e50-aa6e4b319f05 # DaddyxAshley
-      - fa91e95d-7422-490e-883d-eab0c5337889 # Hogman7
-      - baa66154-5599-4995-9974-c84438376cb0 # reclaimmd
-      - 5ca08775-1e83-4ae3-bc51-aecf495a6d57 # A_shorty
-      - d1404c60-b833-481c-baec-d22a58e61f2f # cheez
-      - f9ac419e-7515-4764-89ea-c4575a458293 # Octopus3535
-      - 3fcc3347-309d-4b5d-ba12-a959bd7a4d04 # BlueTAO
-      - 69759d37-6e22-40e3-a9e2-3d03af945283 # hell's
-      - dfb731bb-55b8-4d7e-ad25-9902f0edb295 # hootie1939
-      - 567264b0-c240-483e-a35d-18bf6f3dcd4e # id_rotatcepS
-      - 704205d3-cd3c-4d54-9da8-d5f199f83d70 # Let_us_dance
-      - de12c48a-b840-46c6-bd1f-0445be8f32bf # Xabuza7
-      - 333fb790-ca9f-418c-b1e4-142f5a38dd7d # lolTSM
-      - 2b169b0f-167d-4628-9a0a-25ea88f8bfe5 # Dealta
-      - 159fd80b-467b-497a-b3dc-fce36ceda2b0 # StarStrile
-      - cabeab84-0680-4ed0-b3cb-be2335f122ff # Chazzie__
-      - 70c2ddac-10c7-4820-8940-b392576117e0 # recollision
-      - 99487e23-e9cd-47d2-a8ad-3f7d25f950cf # KillerDino200
-      - 01356428-684d-46d8-b42c-bb1c14c4c49c # NotMinecraftPro
-      - dd615f82-300d-4dc3-90e0-0a41c4078608 # Rutilantcat68
-      - bdd6e47e-38b4-4360-a840-a4efd89ddaac # toes
-      - 342268d7-0835-4cce-8e34-8115bc6aa9e7 # kacey2k
-      - 40e55949-1056-4ead-acb3-8630372ae0e7 # Frimpimy
-      - a55cb393-1875-46d1-8d2d-eb1a7445b78e # CityyyNo
-      - 70001745-67d0-4720-8be0-b2776f8d8975 # yodeston (via CityyyNo)
-      - 3e1ed425-9591-43f5-a46e-a0835174c7cd # creamicemint (via CityyyNo)
-      - 36658a9d-e8bc-4ec0-9d51-b9733dc017d8 # loog
-      - fd413877-be2f-4966-8693-76a4fcc043a9 # aprimdal
-      - dcb128a8-a088-414d-a70f-59a90d6d6b3f # Blight
-      - 1f6cefb5-cc39-4e30-b141-3f2b1605aff2 # ImKirb (via toes)
-      - 4a6173a7-5806-46d1-9353-4bee0f14a61b # peachingly (via vulc)
-      - 1f9291d2-a3fb-48e3-9864-aa1f639b139b # pyrotechnic1377 (via vulc)
-      - a24af649-68be-4e96-bbd7-b0b00bcf3325 # Lottel
-      - 7ad85304-84fa-4d5d-ab86-41fde6741c2b # halohardline
+      # - 479d1d70-651b-485e-afea-da9640a6414b # DavidAndrewGee
+      # - 3f66933b-fdf1-4960-856e-22c701d90073 # Durazorn
+      # - a9d9fc38-234b-4a34-83ce-b18ce09c36ad # edwr
+      # - f5800261-64f7-4092-9fc0-c14cf85668a5 # Killrpanda15
+      # - a99033f9-9572-4e02-911b-830dda8ef429 # megamosquitoast
+      # - 8a76e1e5-3a14-44ac-8f5c-abcb552b0320 # n0tloc
+      # - e7991140-8652-40e5-9666-5353ebeeb921 # NEBUL4
+      # - 9a39e61e-4abb-4e73-9c0f-4e304ca94f87 # ohpapper
+      # - 10679261-cd4e-4c46-b235-ca30a2ae19b1 # retecer
+      # - 8e47971f-1c7d-4fc5-9e24-60aca0f2972f # Thunder_Prophet
+      # - 483a75e4-8614-4cd8-8d1c-b4c3bf30fdc2 # TriBeam17
+      # - ee674f01-82b3-415c-8820-0ae02053b00e # vulc
+      # - 99bed82c-f203-4de7-a466-c048ab752b89 # Xenagoose
+      # - c0c888d2-780c-40f7-84f2-50d610e9b597 # freak
+      # - cc869079-8c17-4cef-b191-117fd7d9c3dc # morgan/nova
+      # - fd413877-be2f-4966-8693-76a4fcc043a9 # aprimdal
+      # - a3a4d226-dca3-465e-a906-9302633833a4 # jon
+      # - d2dbf2d3-f984-4267-b72b-952488092211 # PositiveKICKTTV
+      # - 4755658a-0016-4563-8e50-aa6e4b319f05 # DaddyxAshley
+      # - fa91e95d-7422-490e-883d-eab0c5337889 # Hogman7
+      # - baa66154-5599-4995-9974-c84438376cb0 # reclaimmd
+      # - 5ca08775-1e83-4ae3-bc51-aecf495a6d57 # A_shorty
+      # - d1404c60-b833-481c-baec-d22a58e61f2f # cheez
+      # - f9ac419e-7515-4764-89ea-c4575a458293 # Octopus3535
+      # - 3fcc3347-309d-4b5d-ba12-a959bd7a4d04 # BlueTAO
+      # - 69759d37-6e22-40e3-a9e2-3d03af945283 # hell's
+      # - dfb731bb-55b8-4d7e-ad25-9902f0edb295 # hootie1939
+      # - 567264b0-c240-483e-a35d-18bf6f3dcd4e # id_rotatcepS
+      # - 704205d3-cd3c-4d54-9da8-d5f199f83d70 # Let_us_dance
+      # - de12c48a-b840-46c6-bd1f-0445be8f32bf # Xabuza7
+      # - 333fb790-ca9f-418c-b1e4-142f5a38dd7d # lolTSM
+      # - 2b169b0f-167d-4628-9a0a-25ea88f8bfe5 # Dealta
+      # - 159fd80b-467b-497a-b3dc-fce36ceda2b0 # StarStrile
+      # - cabeab84-0680-4ed0-b3cb-be2335f122ff # Chazzie__
+      # - 70c2ddac-10c7-4820-8940-b392576117e0 # recollision
+      # - 99487e23-e9cd-47d2-a8ad-3f7d25f950cf # KillerDino200
+      # - 01356428-684d-46d8-b42c-bb1c14c4c49c # NotMinecraftPro
+      # - dd615f82-300d-4dc3-90e0-0a41c4078608 # Rutilantcat68
+      # - bdd6e47e-38b4-4360-a840-a4efd89ddaac # toes
+      # - 342268d7-0835-4cce-8e34-8115bc6aa9e7 # kacey2k
+      # - 40e55949-1056-4ead-acb3-8630372ae0e7 # Frimpimy
+      # - a55cb393-1875-46d1-8d2d-eb1a7445b78e # CityyyNo
+      # - 70001745-67d0-4720-8be0-b2776f8d8975 # yodeston (via CityyyNo)
+      # - 3e1ed425-9591-43f5-a46e-a0835174c7cd # creamicemint (via CityyyNo)
+      # - 36658a9d-e8bc-4ec0-9d51-b9733dc017d8 # loog
+      # - fd413877-be2f-4966-8693-76a4fcc043a9 # aprimdal
+      # - dcb128a8-a088-414d-a70f-59a90d6d6b3f # Blight
+      # - 1f6cefb5-cc39-4e30-b141-3f2b1605aff2 # ImKirb (via toes)
+      # - 4a6173a7-5806-46d1-9353-4bee0f14a61b # peachingly (via vulc)
+      # - 1f9291d2-a3fb-48e3-9864-aa1f639b139b # pyrotechnic1377 (via vulc)
+      # - a24af649-68be-4e96-bbd7-b0b00bcf3325 # Lottel
+      # - 7ad85304-84fa-4d5d-ab86-41fde6741c2b # halohardline
