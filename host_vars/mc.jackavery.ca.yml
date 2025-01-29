@@ -45,9 +45,9 @@ instances:
 
       # server mods
       inventory-sorting:
-      horsebuff:
-      voice-chat-interaction:
-      simple-voice-chat:
+      horsebuff: # mostly for the stairs fix
+      voice-chat-interaction: # shhh...
+      simple-voice-chat: # voip
         properties:
           spectator_interaction: "true"
           spectator_player_possession: "true"
@@ -55,12 +55,24 @@ instances:
       tectonic:
 
       # administrative mods
-      ledger:
-      chunky:
-      dynmap:
+      ledger: # logging
         mode: server
-      lithium:
-      no-chat-reports:
+      chunky: # pregeneration
+        mode: server
+      faster-random: # use better random builtins
+        source: https://cdn.modrinth.com/data/RfFxanNh/versions/BbFqiKvi/fasterrandom-5.1.0.jar
+        mode: server
+      dynmap: # agony
+        mode: server
+      lithium: # general optimizations
+        mode: server
+      c2me: # chunkgen multithreading
+        mode: server
+      noisium: # noise optimization
+        mode: server
+      krypton: # packet serialization microoptimizations
+        mode: server
+      no-chat-reports: # no worries of being banned
 
     resource_packs:
       faithless:
