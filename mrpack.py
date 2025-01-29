@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import base64
+import hashlib
 import json
 import logging
 import os
@@ -44,7 +46,6 @@ def get_mrpack_file(name: str, game_version: str, loader: str = None) -> dict:
                 )
         case "resourcepack":
             folder = "resourcepacks"
-            game_version = None
 
     if not (version := dict.get(CACHE[name], f"{game_version}-{loader}", None)):
         logging.info(f"... and info on {game_version}-{loader}...")
@@ -192,12 +193,19 @@ def main():
             manifest = make_mrpack(
                 minecraft_ver, loader, name, mods, resource_packs, shaders
             )
+            manifest_json = json.dumps(manifest, indent=4)
             with open(f"mrpacks/_/modrinth.index.json", "w") as file:
-                file.write(json.dumps(manifest, indent=4))
+                file.write(manifest_json)
+            manifest_hash = base64.encodebytes(
+                hashlib.sha256(manifest_json.encode("utf-8")).digest()
+            )[:7].decode("ascii")
 
             # zip and rename to .mrpack so ATLauncher accepts it
             shutil.make_archive(f"mrpacks/{name}", "zip", "mrpacks/_")
-            shutil.move(f"mrpacks/{name}.zip", f"mrpacks/{name}.mrpack")
+            shutil.move(f"mrpacks/{name}.zip", f"mrpacks/{name}-{manifest_hash}.mrpack")
+            # store hash separately for ansible to handle
+            with open(f"mrpacks/{name}.hash", "w") as file:
+                file.write(manifest_hash)
 
             logging.info(f"{name} completed")
 
