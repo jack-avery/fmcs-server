@@ -67,7 +67,7 @@ instances:
         mode: server
       lithium: # general optimizations
         mode: server
-      c2me: # chunkgen multithreading
+      c2me-fabric: # chunkgen multithreading
         mode: server
       noisium: # noise optimization
         mode: server
