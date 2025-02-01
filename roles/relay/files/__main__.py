@@ -261,10 +261,7 @@ class DiscordBot(discord.Client):
                         color=discord.Color.red(),
                         description=f"{raw}\n\n{traceback.format_exc()}",
                     )
-                    embed.set_author(
-                        name=f"Failed to send message from server",
-                        icon_url=self.application.icon.url,
-                    )
+                    embed.set_author(name=f"Failed to send message from server")
                     await self.CHANNEL.send(embed=embed)
 
             await asyncio.sleep(CONFIG["poll_rate"])
