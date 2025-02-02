@@ -9,6 +9,7 @@ relay_messages: {{ instance.0.relay_bot.relay_messages | default(defaults.relay_
 relay_deaths: {{ instance.0.relay_bot.relay_deaths | default(defaults.relay_bot.relay_deaths) }}
 relay_advancements: {{ instance.0.relay_bot.relay_advancements | default(defaults.relay_bot.relay_advancements) }}
 relay_connections: {{ instance.0.relay_bot.relay_connections | default(defaults.relay_bot.relay_connections) }}
+relay_dates: {{ instance.0.relay_bot.relay_connections | default(defaults.relay_bot.relay_connections) }}
 poll_rate: {{ instance.0.relay_bot.poll_rate | default(defaults.relay_bot.poll_rate) }}
 has_dynmap: {{ "dynmap" in instance.0.mods | default(False) }}
 

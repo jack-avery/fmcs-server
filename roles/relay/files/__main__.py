@@ -8,7 +8,6 @@ import requests
 import sys
 import traceback
 import yaml
-from datetime import date
 
 from rcon.source import Client
 from file_read_backwards import FileReadBackwards
@@ -61,6 +60,7 @@ class DiscordBot(discord.Client):
                 self.WEBHOOK = await self.CHANNEL.create_webhook(name="fmcs-server")
 
             self.AVATAR_CACHE = dict()
+            self.CURRENT_DAY: int = None
 
             # get guild from channel; add commands
             self.tree.copy_global_to(guild=discord.Object(id=self.CHANNEL.guild.id))
@@ -73,7 +73,7 @@ class DiscordBot(discord.Client):
             logging.info("Ready!")
             self.SETUP = True
 
-        asyncio.ensure_future(self.poll_status())
+        asyncio.ensure_future(self.poll_state())
 
     async def update_status(self) -> None:
         """
@@ -102,12 +102,52 @@ class DiscordBot(discord.Client):
             )
         )
 
-    async def poll_status(self, frequency: int = 60) -> None:
+    async def check_date(self) -> None:
+        """
+        Check date on the server. If it's a new day, announce it.
+        """
+        date_query = rcon("time query day")
+        date = SERVER_TIME_RE.findall(date_query)[0][0]
+
+        if not self.CURRENT_DAY:
+            self.CURRENT_DAY = date
+            return
+
+        if self.CURRENT_DAY < date:
+            self.CURRENT_DAY = date
+
+            # reverse
+            date_text = str(date)[::-1]
+            # split into groups of 3
+            date_text = [date_text[i : i + 3] for i in range(0, len(date_text), 3)]
+            # add commas and reverse
+            date_text = ",".join(date_text)[::-1]
+
+            match date_text[-1]:
+                case "1":
+                    date_text += "st"
+                case "2":
+                    date_text += "nd"
+                case "3":
+                    date_text += "rd"
+                case _:
+                    date_text += "th"
+
+            announcement = f":sunrise_over_mountains: Dawn of the {date_text} day."
+
+            embed = discord.embeds.Embed(color=discord.Color.gold(), title=announcement)
+            await self.CHANNEL.send(embed=embed)
+
+    async def poll_state(self, frequency: int = 10) -> None:
         """
         Poll server status every `frequency` seconds for player info.
         """
         while True:
             await self.update_status()
+
+            if CONFIG["relay_dates"]:
+                await self.check_date()
+
             await asyncio.sleep(frequency)
 
     async def poll_logs(self) -> None:

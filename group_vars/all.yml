@@ -2,11 +2,12 @@ delete_backups_after_days: 7
 
 defaults:
   relay_bot:
-    poll_rate: 1
+    poll_rate: 1 # poll messages every x seconds
     relay_messages: true # will not work with 'localized-chat' mod
-    relay_deaths: true
-    relay_advancements: true
-    relay_connections: true
+    relay_deaths: true # announce deaths
+    relay_advancements: true # announce advancements
+    relay_connections: true # announce connections/disconnects
+    relay_dates: true # announce new days
 
   properties:
     # Minecraft server properties
