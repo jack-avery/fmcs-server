@@ -17,7 +17,9 @@ logging.basicConfig(
 CACHE = {}
 
 
-def get_mrpack_file(name: str, game_version: str, loader: str = None) -> dict:
+def get_mrpack_file(
+    name: str, game_version: str, version: str = None, loader: str = None
+) -> dict:
     if not (project := dict.get(CACHE, name, None)):
         logging.info(f"Getting project info for {name}...")
         project = get_modrinth_project(name)
@@ -47,28 +49,35 @@ def get_mrpack_file(name: str, game_version: str, loader: str = None) -> dict:
         case "resourcepack":
             folder = "resourcepacks"
 
-    if not (version := dict.get(CACHE[name], f"{game_version}-{loader}", None)):
+    if file := dict.get(CACHE[name], f"{game_version}-{loader}", None):
+        logging.info(f"~~~ and cached info on {game_version}-{loader}...")
+    elif version:
+        logging.info(f"... and info on explicit version {version}...")
+        mod = get_modrinth_version(name, None, version=version, loader=loader)
+        if not mod:
+            raise ValueError(f"{name} has no version {version}")
+        file = mod["files"][0]
+        CACHE[name][f"{game_version}-{loader}"] = file
+    else:
         logging.info(f"... and info on {game_version}-{loader}...")
-        mod = get_modrinth_version(name, game_version, loader)
+        mod = get_modrinth_version(name, game_version, version=version, loader=loader)
         if not mod:
             raise ValueError(f"{name} is not available for {game_version}-{loader}")
-        version = mod[0]["files"][0]
-        CACHE[name][f"{game_version}-{loader}"] = version
-    else:
-        logging.info(f"~ ... and cached info on {game_version}-{loader}...")
+        file = mod[0]["files"][0]
+        CACHE[name][f"{game_version}-{loader}"] = file
 
     return {
-        "path": f"{folder}/{version['filename']}",
+        "path": f"{folder}/{file['filename']}",
         "hashes": {
-            "sha1": version["hashes"]["sha1"],
-            "sha512": version["hashes"]["sha512"],
+            "sha1": file["hashes"]["sha1"],
+            "sha512": file["hashes"]["sha512"],
         },
         "env": {
             "server": project["server_side"],
             "client": project["client_side"],
         },
-        "downloads": [version["url"]],
-        "filesize": version["size"],
+        "downloads": [file["url"]],
+        "filesize": file["size"],
     }
 
 
@@ -105,40 +114,27 @@ def make_mrpack(
                     open(f"mrpacks/_/overrides/mods/{name}.jar", "wb").write(
                         file.content
                     )
+                    continue
 
             manifest["files"].append(
-                get_mrpack_file(name, minecraft_ver, loader["type"])
+                get_mrpack_file(name, minecraft_ver, loader=loader["type"])
             )
 
     if resource_packs:
         for name, info in resource_packs.items():
             if info:
                 # curseforge, discord links, etc.
-                if "source" in info:
-                    file = requests.get(info["source"])
-                    open(f"mrpacks/_/overrides/resourcepacks/{name}.zip", "wb").write(
-                        file.content
+                if "version" in info:
+                    manifest["files"].append(
+                        get_mrpack_file(name, None, version=info["version"])
                     )
-                    shutil.unpack_archive(
-                        f"mrpacks/_/overrides/resourcepacks/{name}.zip",
-                        f"mrpacks/_/overrides/resourcepacks/{name}",
-                        "zip",
-                    )
-                    os.remove(f"mrpacks/_/overrides/resourcepacks/{name}.zip")
+                    continue
 
             manifest["files"].append(get_mrpack_file(name, minecraft_ver))
 
     if shaders:
         for name, info in shaders.items():
-            if info:
-                # curseforge, discord links, etc.
-                if "source" in info:
-                    file = requests.get(info["source"])
-                    open(f"mrpacks/_/overrides/shaderpacks/{name}.zip", "wb").write(
-                        file.content
-                    )
-
-        manifest["files"].append(get_mrpack_file(name, minecraft_ver))
+            manifest["files"].append(get_mrpack_file(name, minecraft_ver))
 
     return manifest
 

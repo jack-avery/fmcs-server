@@ -45,16 +45,19 @@ from ansible.module_utils.basic import *
 import requests
 
 
-def get_modrinth_project(name) -> dict:
-    project = requests.get(f"https://api.modrinth.com/v2/project/{name}")
-    if project.status_code == 404:
+def get_modrinth_project(project) -> dict:
+    req = requests.get(f"https://api.modrinth.com/v2/project/{project}")
+    if req.status_code == 404:
         return None
-    return project.json()
+    return req.json()
 
 
-def get_modrinth_version(name: str, game_version: str, loader: str = None) -> dict:
+def get_modrinth_version(
+    project: str, game_version: str, version: str = None, loader: str = None
+) -> dict:
     mod = requests.get(
-        f"https://api.modrinth.com/v2/project/{name}/version"
+        f"https://api.modrinth.com/v2/project/{project}/version"
+        + (f"/{version}" if version else "")
         + (f'?game_versions=["{game_version}"]' if game_version else "")
         + (f'&loaders=["{loader}"]' if loader else "")
     ).json()

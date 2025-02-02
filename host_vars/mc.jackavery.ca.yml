@@ -76,6 +76,10 @@ instances:
         mode: server
       no-chat-reports: # no worries of being banned
 
+    resource_packs:
+      faithless:
+        version: "1.0"
+
     shaders:
       complementary-unbound:
 
