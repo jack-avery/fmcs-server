@@ -107,6 +107,9 @@ class DiscordBot(discord.Client):
         Check date on the server. If it's a new day, announce it.
         """
         date_query: str = rcon("time query day")
+        if date_query is None:
+            return
+
         date: int = int(SERVER_TIME_RE.findall(date_query)[0])
 
         if not self.CURRENT_DAY:
