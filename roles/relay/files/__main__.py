@@ -298,12 +298,9 @@ class DiscordBot(discord.Client):
                                 break
 
                 except Exception:
-                    embed = discord.embeds.Embed(
-                        color=discord.Color.red(),
-                        description=f"{raw}\n\n{traceback.format_exc()}",
+                    logging.warning(
+                        f"Failed to send message due to the following: {traceback.print_exc()}"
                     )
-                    embed.set_author(name=f"Failed to send message from server")
-                    await self.CHANNEL.send(embed=embed)
 
             await asyncio.sleep(CONFIG["poll_rate"])
 
