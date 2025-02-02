@@ -74,6 +74,10 @@ instances:
         mode: server
       krypton: # packet serialization microoptimizations
         mode: server
+      servercore: # general optimizations
+        mode: server
+      ferritecore: # RAM optimizations
+        mode: server
       no-chat-reports: # no worries of being banned
 
     resource_packs:
