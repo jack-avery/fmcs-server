@@ -106,8 +106,8 @@ class DiscordBot(discord.Client):
         """
         Check date on the server. If it's a new day, announce it.
         """
-        date_query = rcon("time query day")
-        date = SERVER_TIME_RE.findall(date_query)[0][0]
+        date_query: str = rcon("time query day")
+        date: int = int(SERVER_TIME_RE.findall(date_query)[0])
 
         if not self.CURRENT_DAY:
             self.CURRENT_DAY = date
@@ -133,14 +133,14 @@ class DiscordBot(discord.Client):
                 case _:
                     date_text += "th"
 
-            announcement = f":sunrise_over_mountains: Dawn of the {date_text} day."
+            announcement = f":sunrise_over_mountains: Dawn of the {date_text} day"
 
             embed = discord.embeds.Embed(color=discord.Color.gold(), title=announcement)
             await self.CHANNEL.send(embed=embed)
 
     async def poll_state(self, frequency: int = 10) -> None:
         """
-        Poll server status every `frequency` seconds for player info.
+        Poll server state every `frequency` seconds.
         """
         while True:
             await self.update_status()
@@ -236,7 +236,6 @@ class DiscordBot(discord.Client):
                             )
 
                             await self.CHANNEL.send(embed=embed)
-                            await self.update_status()
                             continue
 
                         if SERVER_LEAVE_RE.match(line):
@@ -249,7 +248,6 @@ class DiscordBot(discord.Client):
                             )
 
                             await self.CHANNEL.send(embed=embed)
-                            await self.update_status()
                             continue
 
                     if CONFIG["relay_advancements"]:
