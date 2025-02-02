@@ -73,7 +73,7 @@ def get_modrinth_dl(name: str, game_version: str, loader: str) -> dict:
     if project["server_side"] == "unsupported":
         return None
 
-    mod = get_modrinth_version(name, game_version, loader)
+    mod = get_modrinth_version(name, game_version, loader=loader)
     if not mod:
         raise ValueError(f"mod {name} is not available for {game_version}-{loader}")
 
