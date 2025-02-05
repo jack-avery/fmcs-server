@@ -17,7 +17,6 @@ instances:
       max-players: 20
       motd: "\u00A72\u00A7lChili SMP | \u00A7rSeason \u00A765"
       view-distance: 16
-      level-seed: 
 
     operators:
       - uuid: 773e05b1-44fe-47be-b61d-95de8e691832 # raspy
@@ -80,6 +79,9 @@ instances:
       ferrite-core: # RAM optimizations
         mode: server
       no-chat-reports: # no worries of being banned
+    
+    datapacks:
+      ketkets-player-shops:
 
     shaders:
       complementary-unbound:
