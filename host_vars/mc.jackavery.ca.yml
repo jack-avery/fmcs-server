@@ -53,6 +53,7 @@ instances:
           spectator_player_possession: "true"
       terralith:
       tectonic:
+      emotecraft:
       image2map:
         mode: server
 

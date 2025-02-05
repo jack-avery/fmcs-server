@@ -6,10 +6,10 @@
     - name: Add servers to cron
       set_fact:
         cron: |
-          systemctl --user restart {% for item in instances %}
+          /usr/bin/systemctl --user restart {% for item in instances %}
           mcs-{{ item.name }} {% if 'relay_bot' in item %}
           mcr-{{ item.name }} {% endif %}{% endfor %}
-    
+
     - name: Install cron
       ansible.builtin.cron:
         name: "mcs-restart"
