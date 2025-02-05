@@ -28,7 +28,11 @@ log_handlers.append(stdout_handler)
 logging.basicConfig(handlers=log_handlers, level=logging.INFO)
 
 
-def rcon(cmd: str) -> str:
+def rcon(cmd: str) -> str | None:
+    """
+    Issues a command to the server.
+    Returns `None` if the command fails for any reason.
+    """
     try:
         with Client(
             "127.0.0.1", CONFIG["port"] + 1, passwd=CONFIG["rcon_pass"]
@@ -61,6 +65,8 @@ class DiscordBot(discord.Client):
 
             self.AVATAR_CACHE = dict()
             self.CURRENT_DAY: int = None
+            # assume the server is online at start, otherwise it will always announce as if the server had restarted
+            self.SERVER_IS_ONLINE: bool = True
 
             # get guild from channel; add commands
             self.tree.copy_global_to(guild=discord.Object(id=self.CHANNEL.guild.id))
@@ -81,6 +87,7 @@ class DiscordBot(discord.Client):
         """
         playerlist = rcon("list")
 
+        # assume server is offline if failed to fetch playerlist
         if not playerlist:
             await self.change_presence(
                 activity=discord.Activity(
@@ -88,7 +95,19 @@ class DiscordBot(discord.Client):
                     name="for server restart...",
                 )
             )
+            self.SERVER_IS_ONLINE = False
             return
+
+        # announce restart if server was offline last poll
+        if self.SERVER_IS_ONLINE is False:
+            embed = discord.embeds.Embed(
+                color=discord.Color.dark_magenta(), description="Server is ready."
+            )
+            embed.set_author(
+                name="System Message", icon_url=self.user.display_avatar.url
+            )
+            self.SERVER_IS_ONLINE = True
+            await self.CHANNEL.send(embed=embed)
 
         info = SERVER_LIST_RE.findall(playerlist)[0]
         self.players = int(info[0])
