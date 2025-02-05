@@ -18,7 +18,11 @@ options:
         type: str
     mods:
         description: dict (converted yml) of Modrinth mods as configured in host_vars
-        required: true
+        required: false
+        type: dict
+    datapacks:
+        description: dict (converted yml) of datapacks to get download links for
+        required: false
         type: dict
 author:
     - raspy (github.com/jack-avery)
@@ -34,11 +38,14 @@ EXAMPLES = r"""
       lithium:
       sound-physics-remastered:
         source: (override link, checking this will be ignored!)
+    datapacks:
+      ketkets-player-shops:
 """
 
 RETURN = r"""
 response:
-    dls: list of dict (format: [{"name": "name", "link": "<link>"}, ...])
+    mods: list of dict (format: [{"name": "name", "link": "<link>"}, ...])
+    datapacks: list of dict (format same as above)
 """
 
 from ansible.module_utils.basic import *
@@ -75,7 +82,7 @@ def get_modrinth_dl(name: str, game_version: str, loader: str) -> dict:
 
     mod = get_modrinth_version(name, game_version, loader=loader)
     if not mod:
-        raise ValueError(f"mod {name} is not available for {game_version}-{loader}")
+        raise ValueError(f"{name} is not available for {game_version}-{loader}")
 
     return mod[0]["files"][0]["url"]
 
@@ -84,12 +91,14 @@ def main():
     fields = {
         "game_version": {"required": True, "type": "str"},
         "loader": {"required": True, "type": "str"},
-        "mods": {"required": True, "type": "dict"},
+        "mods": {"required": False, "type": "dict"},
+        "datapacks": {"required": False, "type": "dict"},
     }
 
     module = AnsibleModule(argument_spec=fields)
 
-    dls = []
+    mods = []
+    datapacks = []
     missing = []
     for mod, info in module.params["mods"].items():
         if info:
@@ -112,12 +121,27 @@ def main():
             missing.append(str(e))
 
         if mrpmod:
-            dls.append({"name": mod, "link": mrpmod})
+            mods.append({"name": mod, "link": mrpmod})
+
+    for pack, info in module.params["datapacks"].items():
+        if info:
+            if "source" in info:
+                continue
+
+        mrdp = None
+        try:
+            mrdp = get_modrinth_dl(pack, module.params["game_version"], None)
+
+        except ValueError as e:
+            missing.append(str(e))
+
+        if mrdp:
+            datapacks.append({"name": pack, "link": mrdp})
 
     if len(missing) > 0:
         module.fail_json(", ".join(missing))
 
-    module.exit_json(changed=True, dls=dls)
+    module.exit_json(changed=True, mods=mods, datapacks=datapacks)
 
 
 if __name__ == "__main__":

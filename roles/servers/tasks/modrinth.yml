@@ -3,7 +3,8 @@
   modrinth:
     game_version: "{{ instance.minecraft_ver }}"
     loader: "{{ 'fabric' if 'fabric' in instance else 'forge' if 'forge' in instance }}"
-    mods: "{{ instance.mods }}"
+    mods: "{{ instance.mods | default([]) }}"
+    datapacks: "{{ instance.datapacks | default([]) }}"
   register: modrinth
 
 - name: Delete old mods
@@ -21,11 +22,11 @@
   get_url:
     url: "{{ mod.link }}"
     dest: ~/{{ instance.name }}/mods/{{ mod.name }}.jar
-  loop: "{{ modrinth.dls }}"
+  loop: "{{ modrinth.mods }}"
   loop_control:
     loop_var: mod
 
-- name: Download overrides
+- name: Download mod overrides
   get_url:
     url: "{{ instance.mods[mod].source }}"
     dest: ~/{{ instance.name }}/mods/{{ mod }}.jar
@@ -33,3 +34,37 @@
   loop: "{{ instance.mods.keys() }}"
   loop_control:
     loop_var: mod
+
+- name: Ensure world folder exists (for datapacks)
+  file:
+    path: ~/{{ instance.name }}/world
+    state: directory
+    mode: 0775
+
+- name: Delete old datapacks
+  file:
+    path: ~/{{ instance.name }}/world/datapacks
+    state: absent
+
+- name: Create datapacks folder
+  file:
+    path: ~/{{ instance.name }}/world/datapacks
+    state: directory
+    mode: 0775
+
+- name: Download datapacks
+  get_url:
+    url: "{{ pack.link }}"
+    dest: ~/{{ instance.name }}/world/datapacks/{{ pack.name }}.zip
+  loop: "{{ modrinth.datapacks }}"
+  loop_control:
+    loop_var: pack
+
+- name: Download datapack overrides
+  get_url:
+    url: "{{ instance.datapacks[pack].source }}"
+    dest: ~/{{ instance.name }}/world/datapacks/{{ pack }}.zip
+  when: 'instance.datapacks and not instance.datapacks[pack] == None and "source" in instance.datapacks[pack]'
+  loop: "{{ instance.datapacks.keys() }}"
+  loop_control:
+    loop_var: pack
