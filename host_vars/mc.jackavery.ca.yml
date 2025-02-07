@@ -79,9 +79,6 @@ instances:
       ferrite-core: # RAM optimizations
         mode: server
       no-chat-reports: # no worries of being banned
-    
-    datapacks:
-      ketkets-player-shops:
 
     shaders:
       complementary-unbound:
