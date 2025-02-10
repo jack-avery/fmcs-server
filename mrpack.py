@@ -192,7 +192,7 @@ def main():
             manifest_json = json.dumps(manifest, indent=4)
             with open(f"mrpacks/_/modrinth.index.json", "w") as file:
                 file.write(manifest_json)
-            manifest_hash = base64.encodebytes(
+            manifest_hash = base64.urlsafe_b64encode(
                 hashlib.sha256(manifest_json.encode("utf-8")).digest()
             )[:7].decode("ascii")
 
