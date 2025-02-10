@@ -4,6 +4,7 @@
 import asyncio
 import discord
 import logging
+import os
 import requests
 import sys
 import traceback
@@ -182,13 +183,19 @@ class DiscordBot(discord.Client):
         """
         Poll the logs every `CONFIG["poll_rate"]` seconds for new messages, connects, or disconnects.
         """
-        last_line = ""
+        last_line = None
 
-        with FileReadBackwards("logs/latest.log", encoding="utf-8") as f:
-            for _, line in zip([0], f):
-                last_line = line
+        while last_line is None:
+            with FileReadBackwards("logs/latest.log", encoding="utf-8") as f:
+                for _, line in zip([0], f):
+                    last_line = line
+            await asyncio.sleep(CONFIG["poll_rate"])
 
         while True:
+            if not os.path.exists("logs/latest.log"):
+                await asyncio.sleep(CONFIG["poll_rate"])
+                continue
+
             with FileReadBackwards("logs/latest.log", encoding="utf-8") as f:
                 lines = []
                 for i, line in enumerate(f):
