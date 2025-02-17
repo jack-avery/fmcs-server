@@ -166,6 +166,7 @@ class DiscordBot(discord.Client):
         Poll server state every `frequency` seconds.
         """
         init = frequency
+
         while True:
             try:
                 await self.update_status()
@@ -174,7 +175,8 @@ class DiscordBot(discord.Client):
                     await self.check_date()
 
                 frequency = init  # reset backoff on no ConnectionResetError
-            except ConnectionResetError:
+
+            except:
                 frequency = frequency * 2  # backoff on ConnectionResetError
 
             await asyncio.sleep(frequency)
