@@ -15,6 +15,8 @@ from file_read_backwards import FileReadBackwards
 
 from src.regex import *
 
+from aiohttp.client_exceptions import ClientConnectionError
+
 with open("config.yml", "r") as f:
     CONFIG = yaml.safe_load(f.read())
 
@@ -174,10 +176,10 @@ class DiscordBot(discord.Client):
                 if CONFIG["relay_dates"]:
                     await self.check_date()
 
-                frequency = init  # reset backoff on no ConnectionResetError
+                frequency = init
 
-            except:
-                frequency = frequency * 2  # backoff on ConnectionResetError
+            except ConnectionError | ClientConnectionError:
+                frequency = frequency * 2  # backoff on connection error
 
             await asyncio.sleep(frequency)
 
