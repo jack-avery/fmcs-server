@@ -3,8 +3,8 @@
   modrinth:
     game_version: "{{ instance.minecraft_ver }}"
     loader: "{{ 'fabric' if 'fabric' in instance else 'forge' if 'forge' in instance }}"
-    mods: "{{ instance.mods | default([]) }}"
-    datapacks: "{{ instance.datapacks | default([]) }}"
+    mods: "{{ instance.mods | default(dict()) }}"
+    datapacks: "{{ instance.datapacks | default(dict()) }}"
   register: modrinth
 
 - name: Delete old mods
@@ -64,7 +64,7 @@
   get_url:
     url: "{{ instance.datapacks[pack].source }}"
     dest: ~/{{ instance.name }}/world/datapacks/{{ pack }}.zip
-  when: 'instance.datapacks and not instance.datapacks[pack] == None and "source" in instance.datapacks[pack]'
+  when: '"datapacks" in instance and not instance.datapacks[pack] == None and "source" in instance.datapacks[pack]'
   loop: "{{ instance.datapacks.keys() }}"
   loop_control:
     loop_var: pack
