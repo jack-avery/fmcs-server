@@ -69,8 +69,6 @@ instances:
         mode: server
       noisium: # noise optimization
         mode: server
-      ferrite-core: # RAM optimizations
-        mode: server
       no-chat-reports: # no worries of being banned
 
     shaders:
