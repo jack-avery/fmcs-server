@@ -78,6 +78,8 @@ instances:
         mode: server
       ferrite-core: # RAM optimizations
         mode: server
+      spark:
+        mode: server
       no-chat-reports: # no worries of being banned
 
     shaders:
