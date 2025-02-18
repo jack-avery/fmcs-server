@@ -32,6 +32,7 @@ instances:
       cloth-config:
       fabric-language-kotlin:
       modmenu:
+      lithostitched:
 
       # client mods
       sound-physics-remastered:
