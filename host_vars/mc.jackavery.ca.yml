@@ -61,6 +61,9 @@ instances:
         mode: server
       chunky: # pregeneration
         mode: server
+      faster-random: # use better random builtins
+        source: https://cdn.modrinth.com/data/RfFxanNh/versions/BbFqiKvi/fasterrandom-5.1.0.jar
+        mode: server
       dynmap: # agony
         mode: server
       lithium: # general optimizations
@@ -68,6 +71,12 @@ instances:
       c2me-fabric: # chunkgen multithreading
         mode: server
       noisium: # noise optimization
+        mode: server
+      krypton: # packet serialization microoptimizations
+        mode: server
+      servercore: # general optimizations
+        mode: server
+      ferrite-core: # RAM optimizations
         mode: server
       no-chat-reports: # no worries of being banned
 
