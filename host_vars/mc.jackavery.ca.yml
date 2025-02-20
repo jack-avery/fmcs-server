@@ -82,6 +82,10 @@ instances:
       spark:
         mode: server
       no-chat-reports: # no worries of being banned
+    
+    datapacks:
+      use-item-detect:
+        source: https://jackavery.ca/fastdl/use-item-detect.zip
 
     shaders:
       complementary-unbound:
