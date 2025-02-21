@@ -178,8 +178,8 @@ class DiscordBot(discord.Client):
 
                 frequency = init
 
-            except ConnectionError | ClientConnectionError:
-                frequency = frequency * 2  # backoff on connection error
+            except:
+                frequency = frequency * 2  # backoff and retry on any error
 
             await asyncio.sleep(frequency)
 
