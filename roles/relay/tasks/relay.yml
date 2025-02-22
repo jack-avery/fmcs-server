@@ -18,8 +18,8 @@
 
 - name: Copy instance .mrpack
   ansible.posix.synchronize:
-    src: "{{ role_path }}/../../mrpacks/{{ inventory_hostname }}-{{ instance.0.name }}.mrpack"
-    dest: ~/relay/{{ instance.0.name }}/{{ inventory_hostname }}-{{ instance.0.name }}.mrpack
+    src: "{{ role_path }}/../../mrpacks/{{ inventory_hostname }}-{{ instance.0.name }}-{{ lookup('file', role_path + '/../../mrpacks/' + inventory_hostname + '-' + instance[0].name + '.hash') }}.mrpack"
+    dest: ~/relay/{{ instance.0.name }}/{{ inventory_hostname }}-{{ instance.0.name }}-{{ lookup('file', role_path + '/../../mrpacks/' + inventory_hostname + '-' + instance[0].name + '.hash') }}.mrpack
     recursive: true
 
 - name: Generate config.yml

@@ -18,7 +18,11 @@ options:
         type: str
     mods:
         description: dict (converted yml) of Modrinth mods as configured in host_vars
-        required: true
+        required: false
+        type: dict
+    datapacks:
+        description: dict (converted yml) of datapacks to get download links for
+        required: false
         type: dict
 author:
     - raspy (github.com/jack-avery)
@@ -34,27 +38,33 @@ EXAMPLES = r"""
       lithium:
       sound-physics-remastered:
         source: (override link, checking this will be ignored!)
+    datapacks:
+      ketkets-player-shops:
 """
 
 RETURN = r"""
 response:
-    dls: list of dict (format: [{"name": "name", "link": "<link>"}, ...])
+    mods: list of dict (format: [{"name": "name", "link": "<link>"}, ...])
+    datapacks: list of dict (format same as above)
 """
 
 from ansible.module_utils.basic import *
 import requests
 
 
-def get_modrinth_project(name) -> dict:
-    project = requests.get(f"https://api.modrinth.com/v2/project/{name}")
-    if project.status_code == 404:
+def get_modrinth_project(project) -> dict:
+    req = requests.get(f"https://api.modrinth.com/v2/project/{project}")
+    if req.status_code == 404:
         return None
-    return project.json()
+    return req.json()
 
 
-def get_modrinth_version(name: str, game_version: str, loader: str = None) -> dict:
+def get_modrinth_version(
+    project: str, game_version: str, version: str = None, loader: str = None
+) -> dict:
     mod = requests.get(
-        f"https://api.modrinth.com/v2/project/{name}/version"
+        f"https://api.modrinth.com/v2/project/{project}/version"
+        + (f"/{version}" if version else "")
         + (f'?game_versions=["{game_version}"]' if game_version else "")
         + (f'&loaders=["{loader}"]' if loader else "")
     ).json()
@@ -70,9 +80,9 @@ def get_modrinth_dl(name: str, game_version: str, loader: str) -> dict:
     if project["server_side"] == "unsupported":
         return None
 
-    mod = get_modrinth_version(name, game_version, loader)
+    mod = get_modrinth_version(name, game_version, loader=loader)
     if not mod:
-        raise ValueError(f"mod {name} is not available for {game_version}-{loader}")
+        raise ValueError(f"{name} is not available for {game_version}-{loader}")
 
     return mod[0]["files"][0]["url"]
 
@@ -81,12 +91,14 @@ def main():
     fields = {
         "game_version": {"required": True, "type": "str"},
         "loader": {"required": True, "type": "str"},
-        "mods": {"required": True, "type": "dict"},
+        "mods": {"required": False, "type": "dict"},
+        "datapacks": {"required": False, "type": "dict"},
     }
 
     module = AnsibleModule(argument_spec=fields)
 
-    dls = []
+    mods = []
+    datapacks = []
     missing = []
     for mod, info in module.params["mods"].items():
         if info:
@@ -109,12 +121,27 @@ def main():
             missing.append(str(e))
 
         if mrpmod:
-            dls.append({"name": mod, "link": mrpmod})
+            mods.append({"name": mod, "link": mrpmod})
+
+    for pack, info in module.params["datapacks"].items():
+        if info:
+            if "source" in info:
+                continue
+
+        mrdp = None
+        try:
+            mrdp = get_modrinth_dl(pack, module.params["game_version"], None)
+
+        except ValueError as e:
+            missing.append(str(e))
+
+        if mrdp:
+            datapacks.append({"name": pack, "link": mrdp})
 
     if len(missing) > 0:
         module.fail_json(", ".join(missing))
 
-    module.exit_json(changed=True, dls=dls)
+    module.exit_json(changed=True, mods=mods, datapacks=datapacks)
 
 
 if __name__ == "__main__":

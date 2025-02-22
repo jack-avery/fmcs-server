@@ -3,12 +3,13 @@ address: {{ inventory_hostname }}
 port: {{ mcs_base_port + (loop0 * mcs_reserve_ports) }}
 rcon_pass: {{ instance.1.rcon_pass }}
 channel: {{ instance.0.relay_bot.channel }}
-atl_manifest: "{{ inventory_hostname }}-{{ instance.0.name }}.mrpack"
+atl_manifest: "{{ inventory_hostname }}-{{ instance.0.name }}-{{ lookup('file', role_path + '/../../mrpacks/' + inventory_hostname + '-' + instance[0].name + '.hash') }}.mrpack"
 is_whitelist: {{ true if 'whitelist' in instance.0 else false }}
 relay_messages: {{ instance.0.relay_bot.relay_messages | default(defaults.relay_bot.relay_messages) }}
 relay_deaths: {{ instance.0.relay_bot.relay_deaths | default(defaults.relay_bot.relay_deaths) }}
 relay_advancements: {{ instance.0.relay_bot.relay_advancements | default(defaults.relay_bot.relay_advancements) }}
 relay_connections: {{ instance.0.relay_bot.relay_connections | default(defaults.relay_bot.relay_connections) }}
+relay_dates: {{ instance.0.relay_bot.relay_connections | default(defaults.relay_bot.relay_connections) }}
 poll_rate: {{ instance.0.relay_bot.poll_rate | default(defaults.relay_bot.poll_rate) }}
 has_dynmap: {{ "dynmap" in instance.0.mods | default(False) }}
 

@@ -145,6 +145,7 @@ SERVER_INFO_RE = re.compile(
     r"\[(?:[a-zA-Z0-9]+ )?[0-9:.]+\] \[Server thread/INFO\](?: \[net.minecraft.server.MinecraftServer\/\])?: (.+)"
 )
 SERVER_LIST_RE = re.compile(r"There are (\d+) of a max of (\d+) players online: (.+)?")
+SERVER_TIME_RE = re.compile(r"The time is (\d+)")
 SERVER_MESSAGE_RE = re.compile(r"<([a-zA-Z0-9_]+)> (.+)")
 SERVER_SYSTEM_MESSAGE_RE = re.compile(r"(?:\[Not Secure\] )?\[Rcon\] (.+)")
 SERVER_ACTION_RE = re.compile(r"\* ([a-zA-Z0-9_]+) .+")

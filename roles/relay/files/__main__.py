@@ -4,15 +4,18 @@
 import asyncio
 import discord
 import logging
+import os
 import requests
 import sys
+import traceback
 import yaml
-from datetime import date
 
 from rcon.source import Client
 from file_read_backwards import FileReadBackwards
 
 from src.regex import *
+
+from aiohttp.client_exceptions import ClientConnectionError
 
 with open("config.yml", "r") as f:
     CONFIG = yaml.safe_load(f.read())
@@ -22,13 +25,17 @@ formatter = logging.Formatter(
     "%(asctime)s | %(module)s [%(levelname)s] %(message)s",
 )
 stdout_handler = logging.StreamHandler(sys.stdout)
-stdout_handler.setLevel(logging.DEBUG)
+stdout_handler.setLevel(logging.INFO)
 stdout_handler.setFormatter(formatter)
 log_handlers.append(stdout_handler)
-logging.basicConfig(handlers=log_handlers, level=logging.DEBUG)
+logging.basicConfig(handlers=log_handlers, level=logging.INFO)
 
 
-def rcon(cmd: str) -> str:
+def rcon(cmd: str) -> str | None:
+    """
+    Issues a command to the server.
+    Returns `None` if the command fails for any reason.
+    """
     try:
         with Client(
             "127.0.0.1", CONFIG["port"] + 1, passwd=CONFIG["rcon_pass"]
@@ -60,6 +67,9 @@ class DiscordBot(discord.Client):
                 self.WEBHOOK = await self.CHANNEL.create_webhook(name="fmcs-server")
 
             self.AVATAR_CACHE = dict()
+            self.CURRENT_DAY: int = None
+            # assume the server is online at start, otherwise it will always announce as if the server had restarted
+            self.SERVER_IS_ONLINE: bool = True
 
             # get guild from channel; add commands
             self.tree.copy_global_to(guild=discord.Object(id=self.CHANNEL.guild.id))
@@ -72,7 +82,7 @@ class DiscordBot(discord.Client):
             logging.info("Ready!")
             self.SETUP = True
 
-        asyncio.ensure_future(self.poll_status())
+        asyncio.ensure_future(self.poll_state())
 
     async def update_status(self) -> None:
         """
@@ -80,6 +90,7 @@ class DiscordBot(discord.Client):
         """
         playerlist = rcon("list")
 
+        # assume server is offline if failed to fetch playerlist
         if not playerlist:
             await self.change_presence(
                 activity=discord.Activity(
@@ -87,7 +98,19 @@ class DiscordBot(discord.Client):
                     name="for server restart...",
                 )
             )
+            self.SERVER_IS_ONLINE = False
             return
+
+        # announce restart if server was offline last poll
+        if self.SERVER_IS_ONLINE is False:
+            embed = discord.embeds.Embed(
+                color=discord.Color.dark_magenta(), description="Server is ready."
+            )
+            embed.set_author(
+                name="System Message", icon_url=self.user.display_avatar.url
+            )
+            self.SERVER_IS_ONLINE = True
+            await self.CHANNEL.send(embed=embed)
 
         info = SERVER_LIST_RE.findall(playerlist)[0]
         self.players = int(info[0])
@@ -101,25 +124,82 @@ class DiscordBot(discord.Client):
             )
         )
 
-    async def poll_status(self, frequency: int = 60) -> None:
+    async def check_date(self) -> None:
         """
-        Poll server status every `frequency` seconds for player info.
+        Check date on the server. If it's a new day, announce it.
         """
+        date_query: str = rcon("time query day")
+        if date_query is None:
+            return
+
+        date: int = int(SERVER_TIME_RE.findall(date_query)[0])
+
+        if not self.CURRENT_DAY:
+            self.CURRENT_DAY = date
+            return
+
+        if self.CURRENT_DAY < date:
+            self.CURRENT_DAY = date
+
+            # reverse
+            date_text = str(date)[::-1]
+            # split into groups of 3
+            date_text = [date_text[i : i + 3] for i in range(0, len(date_text), 3)]
+            # add commas and reverse
+            date_text = ",".join(date_text)[::-1]
+
+            match date_text[-1]:
+                case "1":
+                    date_text += "st"
+                case "2":
+                    date_text += "nd"
+                case "3":
+                    date_text += "rd"
+                case _:
+                    date_text += "th"
+
+            announcement = f":sunrise_over_mountains: Dawn of the {date_text} day"
+
+            embed = discord.embeds.Embed(color=discord.Color.gold(), title=announcement)
+            await self.CHANNEL.send(embed=embed)
+
+    async def poll_state(self, frequency: int = 10) -> None:
+        """
+        Poll server state every `frequency` seconds.
+        """
+        init = frequency
+
         while True:
-            await self.update_status()
+            try:
+                await self.update_status()
+
+                if CONFIG["relay_dates"]:
+                    await self.check_date()
+
+                frequency = init
+
+            except:
+                frequency = frequency * 2  # backoff and retry on any error
+
             await asyncio.sleep(frequency)
 
     async def poll_logs(self) -> None:
         """
         Poll the logs every `CONFIG["poll_rate"]` seconds for new messages, connects, or disconnects.
         """
-        last_line = ""
+        last_line = None
 
-        with FileReadBackwards("logs/latest.log", encoding="utf-8") as f:
-            for _, line in zip([0], f):
-                last_line = line
+        while last_line is None:
+            with FileReadBackwards("logs/latest.log", encoding="utf-8") as f:
+                for _, line in zip([0], f):
+                    last_line = line
+            await asyncio.sleep(CONFIG["poll_rate"])
 
         while True:
+            if not os.path.exists("logs/latest.log"):
+                await asyncio.sleep(CONFIG["poll_rate"])
+                continue
+
             with FileReadBackwards("logs/latest.log", encoding="utf-8") as f:
                 lines = []
                 for i, line in enumerate(f):
@@ -195,7 +275,6 @@ class DiscordBot(discord.Client):
                             )
 
                             await self.CHANNEL.send(embed=embed)
-                            await self.update_status()
                             continue
 
                         if SERVER_LEAVE_RE.match(line):
@@ -208,7 +287,6 @@ class DiscordBot(discord.Client):
                             )
 
                             await self.CHANNEL.send(embed=embed)
-                            await self.update_status()
                             continue
 
                     if CONFIG["relay_advancements"]:
@@ -255,16 +333,10 @@ class DiscordBot(discord.Client):
                                 await self.CHANNEL.send(embed=embed)
                                 break
 
-                except Exception as err:
-                    embed = discord.embeds.Embed(
-                        color=discord.Color.red(),
-                        description=f"{raw}\n\n{err.with_traceback()}",
+                except Exception:
+                    logging.warning(
+                        f"Failed to send message due to the following: {traceback.print_exc()}"
                     )
-                    embed.set_author(
-                        name=f"Failed to send message from server",
-                        icon_url=self.application.icon.url,
-                    )
-                    await self.CHANNEL.send(embed=embed)
 
             await asyncio.sleep(CONFIG["poll_rate"])
 
@@ -371,9 +443,7 @@ async def _list(interaction: discord.Interaction) -> None:
     await interaction.response.send_message(embed=embed)
 
 
-@client.tree.command(
-    name="info", description="Get info for the server and the .mrpack"
-)
+@client.tree.command(name="info", description="Get info for the server and the .mrpack")
 async def _info(interaction: discord.Interaction) -> None:
     description = f"Connect at `{CONFIG['address']}:{CONFIG['port']}`"
 
@@ -384,7 +454,10 @@ async def _info(interaction: discord.Interaction) -> None:
     if CONFIG["has_dynmap"]:
         description += f"\nThe server has Dynmap available at: http://{CONFIG['address']}:{CONFIG['port'] + 3}"
 
-    description += "\n\n> *Importable .mrpack is attached.*"
+    description += (
+        "\n\n> *.mrpack for import into your preferred launcher is attached.*"
+        + "\n> *Confused? See here: <https://youtu.be/EqenOITGvis>*"
+    )
 
     embed = discord.embeds.Embed(
         color=discord.Color.og_blurple(), title=f"Server info", description=description
