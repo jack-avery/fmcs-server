@@ -38,8 +38,8 @@ def get_mrpack_file(
             # verify shader has loader
             # shaders are processed after mods, so this should be ok
             shader_has_loader = False
-            for l in project["loaders"]:
-                if l in CACHE:
+            for loader in project["loaders"]:
+                if loader in CACHE:
                     shader_has_loader = True
                     break
             if not shader_has_loader:
@@ -190,7 +190,7 @@ def main():
                 minecraft_ver, loader, name, mods, resource_packs, shaders
             )
             manifest_json = json.dumps(manifest, indent=4)
-            with open(f"mrpacks/_/modrinth.index.json", "w") as file:
+            with open("mrpacks/_/modrinth.index.json", "w") as file:
                 file.write(manifest_json)
             manifest_hash = base64.urlsafe_b64encode(
                 hashlib.sha256(manifest_json.encode("utf-8")).digest()
@@ -208,7 +208,7 @@ def main():
             # clean up for next
             shutil.rmtree("mrpacks/_")
 
-    logging.info(f"Done")
+    logging.info("Done")
     return 0
 
 
