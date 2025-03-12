@@ -84,7 +84,11 @@ instances:
       spark:
         mode: server
       no-chat-reports: # no worries of being banned
-    
+
+    resource_packs:
+      faithless:
+        source: https://mediafilez.forgecdn.net/files/6269/137/Faithless.zip
+
     datapacks:
       use-item-detect:
         source: https://jackavery.ca/fastdl/use-item-detect.zip
