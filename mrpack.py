@@ -77,7 +77,7 @@ def get_mrpack_file(
             "client": project["client_side"],
         },
         "downloads": [file["url"]],
-        "filesize": file["size"],
+        "fileSize": file["size"],
     }
 
 
