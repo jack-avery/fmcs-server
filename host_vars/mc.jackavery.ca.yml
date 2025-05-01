@@ -159,3 +159,94 @@ instances:
       - bc106d7c-0593-4c9f-922a-173250fa9778 # rolnurio
       - 9f2613e0-2f78-48fd-9ed0-a3415e018eba # Laicer
       - da4e6528-30c3-487e-bb4b-ceffd7c52e5f # overlord6644
+
+  - name: "creachurs"
+    minecraft_ver: "1.21.4"
+    fabric: "0.16.10"
+    ram: "8G"
+
+    relay_bot:
+      channel: 1367524315402211358
+      rcon_users:
+        - 97441955893477376
+
+    properties:
+      max-players: 10
+      motd: "Creachur Craft"
+      view-distance: 10
+
+    operators:
+      - uuid: 773e05b1-44fe-47be-b61d-95de8e691832 # raspy
+        level: 4
+        bypassesPlayerLimit: true
+
+    mods:
+      # dependency mods
+      fabric-api:
+      cloth-config:
+      fabric-language-kotlin:
+      modmenu:
+      lithostitched:
+
+      # client mods
+      sound-physics-remastered:
+      presence-footsteps:
+      sodium:
+      iris:
+      custom-player-models:
+      distanthorizons:
+        mode: client
+
+      # server mods
+      inventory-sorting:
+      horsebuff: # mostly for the stairs fix
+      voice-chat-interaction: # shhh...
+      simple-voice-chat: # voip
+        properties:
+          spectator_interaction: "true"
+          spectator_player_possession: "true"
+      terralith:
+        mode: server
+      tectonic:
+        mode: server
+      image2map:
+        mode: server
+
+      # administrative mods
+      ledger: # logging
+        mode: server
+      chunky: # pregeneration
+        mode: server
+      faster-random: # use better random builtins
+        source: https://cdn.modrinth.com/data/RfFxanNh/versions/BbFqiKvi/fasterrandom-5.1.0.jar
+        mode: server
+      lithium: # general optimizations
+        mode: server
+      c2me-fabric: # chunkgen multithreading
+        mode: server
+      noisium: # noise optimization
+        mode: server
+      krypton: # packet serialization microoptimizations
+        mode: server
+      servercore: # general optimizations
+        mode: server
+      ferrite-core: # RAM optimizations
+        mode: server
+      no-chat-reports: # no worries of being banned
+
+    resource_packs:
+      faithless:
+        source: https://mediafilez.forgecdn.net/files/6269/137/Faithless.zip
+
+    datapacks:
+      use-item-detect:
+        source: https://jackavery.ca/fastdl/use-item-detect.zip
+
+    shaders:
+      complementary-unbound:
+
+    whitelist:
+      - 773e05b1-44fe-47be-b61d-95de8e691832 # raspy
+      - d88e80b0-ed87-48b7-aa05-44d73adfd8b5 # wawa
+      - 97eb87c4-71eb-4375-b3b3-53e6390f3f7f # vren
+      - b9a321d4-7abf-49d0-8c2b-2e8904a54455 # Kiran
