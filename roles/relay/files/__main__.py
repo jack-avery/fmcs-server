@@ -140,7 +140,7 @@ class DiscordBot(discord.Client):
 
         if self.CURRENT_DAY < date:
             self.CURRENT_DAY = date
-
+                
             # reverse
             date_text = str(date)[::-1]
             # split into groups of 3
@@ -148,15 +148,18 @@ class DiscordBot(discord.Client):
             # add commas and reverse
             date_text = ",".join(date_text)[::-1]
 
-            match date_text[-1]:
-                case "1":
-                    date_text += "st"
-                case "2":
-                    date_text += "nd"
-                case "3":
-                    date_text += "rd"
-                case _:
-                    date_text += "th"
+            if date > 9 and date < 21:
+                date_text += "th"
+            else:
+                match date_text[-1]:
+                    case "1":
+                        date_text += "st"
+                    case "2":
+                        date_text += "nd"
+                    case "3":
+                        date_text += "rd"
+                    case _:
+                        date_text += "th"
 
             announcement = f":sunrise_over_mountains: Dawn of the {date_text} day"
 
