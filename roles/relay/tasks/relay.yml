@@ -33,6 +33,7 @@
     src: /home/fmcs/{{ instance.0.name }}/logs
     path: /home/fmcs/relay/{{ instance.0.name }}/logs
     state: link
+    force: yes
     mode: 0755
 
 - name: Template systemd service

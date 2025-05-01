@@ -1,14 +1,14 @@
 # Minecraft server properties
-rcon.password={{ item.1.rcon_pass }}
-rcon.port={{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}
-server-port={{ mcs_base_port + (loop0 * mcs_reserve_ports) }}
-white-list={{ "true" if 'whitelist' in item.0 else "false" }}
-enforce-whitelist={{ "true" if 'whitelist' in item.0 else "false" }}
+rcon.password={{ item.secrets.rcon_pass }}
+rcon.port={{ item.port + 1 }}
+server-port={{ item.port }}
+white-list={{ "true" if 'whitelist' in item else "false" }}
+enforce-whitelist={{ "true" if 'whitelist' in item else "false" }}
 
 {% for k, v in defaults.properties.items() %}
-{% if 'properties' in item.0 %}
-{% if k in item.0.properties %}
-{{ k }}={{ item.0.properties[k] }}
+{% if 'properties' in item %}
+{% if k in item.properties %}
+{{ k }}={{ item.properties[k] }}
 {% else %}
 {{ k }}={{ v }}
 {% endif %}

@@ -1,61 +1,53 @@
 ---
-- name: Load secrets
-  include_tasks: secrets.yml
+- name: Setup
+  include_tasks: setup.yml
 
 - name: Generate perms
   include_tasks: gen_perms.yml
-  loop: "{{ instances }}"
+  loop: "{{ targets.instances }}"
   loop_control:
     loop_var: instance
 
 - name: Enable whitelist if whitelist is created
   rcon:
     address: "{{ ansible_host }}"
-    port: "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}"
-    password: "{{ item.1.rcon_pass }}"
+    port: "{{ item.port + 1 }}"
+    password: "{{ item.secrets.rcon_pass }}"
     command: "whitelist on"
-  loop: "{{ instances|zip(instances_secrets) }}"
-  loop_control:
-    index_var: loop0
+  loop: "{{ targets.instances }}"
   timeout: 10
   delegate_to: localhost
-  when: '"whitelist" in item.0'
+  when: '"whitelist" in item'
 
 - name: Tell servers to reload whitelist
   rcon:
     address: "{{ ansible_host }}"
-    port: "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}"
-    password: "{{ item.1.rcon_pass }}"
+    port: "{{ item.port + 1 }}"
+    password: "{{ item.secrets.rcon_pass }}"
     command: "whitelist reload"
-  loop: "{{ instances|zip(instances_secrets) }}"
-  loop_control:
-    index_var: loop0
+  loop: "{{ targets.instances }}"
   timeout: 10
   delegate_to: localhost
-  when: '"whitelist" in item.0'
+  when: '"whitelist" in item'
 
 - name: Disable whitelist if whitelist is removed
   rcon:
     address: "{{ ansible_host }}"
-    port: "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}"
-    password: "{{ item.1.rcon_pass }}"
+    port: "{{ item.port + 1 }}"
+    password: "{{ item.secrets.rcon_pass }}"
     command: "whitelist off"
-  loop: "{{ instances|zip(instances_secrets) }}"
-  loop_control:
-    index_var: loop0
+  loop: "{{ targets.instances }}"
   timeout: 10
   delegate_to: localhost
-  when: 'not "whitelist" in item.0'
+  when: 'not "whitelist" in item'
 
 - name: Inform whitelist update
   ignore_errors: true
   rcon:
     address: "{{ ansible_host }}"
-    port: "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}"
-    password: "{{ item.rcon_pass }}"
+    port: "{{ item.port + 1 }}"
+    password: "{{ item.secrets.rcon_pass }}"
     command: "say Permissions updated."
-  loop: "{{ instances_secrets }}"
-  loop_control:
-    index_var: loop0
+  loop: "{{ targets.instances }}"
   timeout: 10
   delegate_to: localhost
