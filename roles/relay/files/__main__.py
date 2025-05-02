@@ -148,7 +148,7 @@ class DiscordBot(discord.Client):
             # add commas and reverse
             date_text = ",".join(date_text)[::-1]
 
-            if date > 9 and date < 21:
+            if len(str(date)) > 1 and date_text[-2] == "1":
                 date_text += "th"
             else:
                 match date_text[-1]:
