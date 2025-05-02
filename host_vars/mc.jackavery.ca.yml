@@ -16,7 +16,7 @@ instances:
     properties:
       max-players: 20
       motd: "\u00A72\u00A7lChili SMP | \u00A7rSeason \u00A765"
-      view-distance: 16
+      view-distance: 12
 
     operators:
       - uuid: 773e05b1-44fe-47be-b61d-95de8e691832 # raspy
@@ -58,6 +58,7 @@ instances:
       emotecraft:
       image2map:
         mode: server
+      distanthorizons:
 
       # administrative mods
       ledger: # logging
@@ -194,8 +195,6 @@ instances:
       sodium:
       iris:
       custom-player-models:
-      distanthorizons:
-        mode: client
 
       # server mods
       inventory-sorting:
@@ -211,6 +210,7 @@ instances:
         mode: server
       image2map:
         mode: server
+      distanthorizons:
 
       # administrative mods
       ledger: # logging
