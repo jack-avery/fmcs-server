@@ -151,10 +151,33 @@
     mode: 0755
   loop: "{{ targets.instances }}"
 
+- name: Template systemd restart service
+  ansible.builtin.template:
+    src: restart_service.j2
+    dest: ~/.config/systemd/user/mcs-{{ item.name }}-restart.service
+    mode: 0755
+  loop: "{{ targets.instances }}"
+
+- name: Template systemd restart timer
+  ansible.builtin.template:
+    src: restart_timer.j2
+    dest: ~/.config/systemd/user/mcs-{{ item.name }}-restart.timer
+    mode: 0755
+  loop: "{{ targets.instances }}"
+
 - name: Start server
   systemd_service:
     scope: user
+    daemon_reload: true
     name: mcs-{{ item.name }}
+    enabled: true
+    state: started
+  loop: "{{ targets.instances }}"
+
+- name: Enable restart timer
+  systemd_service:
+    scope: user
+    name: mcs-{{ item.name }}-restart.timer
     enabled: true
     state: started
   loop: "{{ targets.instances }}"
