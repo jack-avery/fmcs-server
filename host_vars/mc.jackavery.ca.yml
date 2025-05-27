@@ -1,9 +1,9 @@
 mcs_base_port: 25565
 mcs_reserve_ports: 10
-daily_restart_hour_utc: 12
 
 instances:
   - name: "chili-smp"
+    systemd_restart_OnCalendar_UTC: "12:00"
     minecraft_ver: "1.21.4"
     fabric: "0.16.10"
     ram: "8G"
@@ -162,6 +162,7 @@ instances:
       - da4e6528-30c3-487e-bb4b-ceffd7c52e5f # overlord6644
 
   - name: "creachurs"
+    systemd_restart_OnCalendar_UTC: "12:00"
     minecraft_ver: "1.21.4"
     fabric: "0.16.10"
     ram: "8G"
@@ -250,3 +251,6 @@ instances:
       - d88e80b0-ed87-48b7-aa05-44d73adfd8b5 # wawa
       - 97eb87c4-71eb-4375-b3b3-53e6390f3f7f # vren
       - b9a321d4-7abf-49d0-8c2b-2e8904a54455 # Kiran
+      - b25fd966-0cad-47f3-8433-baba618e3939 # agri
+      - ec52fcc7-4698-45b4-b7ff-ca201c58605a # zoey
+      - 0637419a-8209-4d76-910a-8d0a96c82486 # ray
