@@ -338,7 +338,7 @@ exportpath: export
 #webserver-bindaddress: 0.0.0.0
 
 # The TCP-port the webserver will listen on.
-webserver-port: {{ mcs_base_port + (loop0 * mcs_reserve_ports) + 3 }}
+webserver-port: {{ item.port + 3 }}
 
 # Maximum concurrent session on internal web server - limits resources used in Bukkit server
 max-sessions: 30

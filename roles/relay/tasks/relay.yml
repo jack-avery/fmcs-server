@@ -2,48 +2,53 @@
 - name: Delete old build data
   ansible.builtin.file:
     state: absent
-    path: ~/relay/{{ instance.0.name }}
+    path: ~/relay/{{ instance.name }}
 
 - name: Create build directory
   ansible.builtin.file:
-    path: ~/relay/{{ instance.0.name }}
+    path: ~/relay/{{ instance.name }}
     state: directory
     mode: 0755
 
-- name: Copy files
+- name: Build server binary
+  shell: "cd {{ role_path }}/files && go build ."
+  delegate_to: localhost
+
+- name: Copy server binary
   ansible.posix.synchronize:
-    src: "{{ role_path }}/files/"
-    dest: ~/relay/{{ instance.0.name }}
-    recursive: true
+    src: "{{ role_path }}/files/fmcs-server-relay"
+    dest: ~/relay/{{ instance.name }}/fmcs-server-relay
 
 - name: Copy instance .mrpack
   ansible.posix.synchronize:
-    src: "{{ role_path }}/../../mrpacks/{{ inventory_hostname }}-{{ instance.0.name }}-{{ lookup('file', role_path + '/../../mrpacks/' + inventory_hostname + '-' + instance[0].name + '.hash') }}.mrpack"
-    dest: ~/relay/{{ instance.0.name }}/{{ inventory_hostname }}-{{ instance.0.name }}-{{ lookup('file', role_path + '/../../mrpacks/' + inventory_hostname + '-' + instance[0].name + '.hash') }}.mrpack
+    src: "{{ role_path }}/../../mrpacks/{{ inventory_hostname }}-{{ instance.name }}-{{ lookup('file', role_path + '/../../mrpacks/' + inventory_hostname + '-' + instance.name + '.hash') }}.mrpack"
+    dest: ~/relay/{{ instance.name }}/{{ inventory_hostname }}-{{ instance.name }}-{{ lookup('file', role_path + '/../../mrpacks/' + inventory_hostname + '-' + instance.name + '.hash') }}.mrpack
     recursive: true
 
 - name: Generate config.yml
   ansible.builtin.template:
     src: config.yml.j2
-    dest: ~/relay/{{ instance.0.name }}/config.yml
+    dest: ~/relay/{{ instance.name }}/config.yml
     mode: 0755
 
 - name: Link log directory
   ansible.builtin.file:
-    src: /home/fmcs/{{ instance.0.name }}/logs
-    path: /home/fmcs/relay/{{ instance.0.name }}/logs
+    src: /home/fmcs/{{ instance.name }}/logs
+    path: /home/fmcs/relay/{{ instance.name }}/logs
     state: link
+    force: yes
     mode: 0755
 
 - name: Template systemd service
   ansible.builtin.template:
     src: service.j2
-    dest: ~/.config/systemd/user/mcr-{{ instance.0.name }}.service
+    dest: ~/.config/systemd/user/mcr-{{ instance.name }}.service
     mode: 0755
 
 - name: Start relay bot
   systemd_service:
     scope: user
-    name: mcr-{{ instance.0.name }}
+    daemon_reload: true
+    name: mcr-{{ instance.name }}
     enabled: true
     state: restarted

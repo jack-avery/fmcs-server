@@ -1,17 +1,15 @@
 ---
-- name: Load secrets
-  ansible.builtin.include_tasks: secrets.yml
+- name: Setup
+  ansible.builtin.include_tasks: setup.yml
 
 - name: Announce update now!!
   ignore_errors: true
   rcon:
     address: "{{ ansible_host }}"
-    port: "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}"
-    password: "{{ item.rcon_pass }}"
+    port: "{{ item.port }}"
+    password: "{{ item.secrets.rcon_pass }}"
     command: "say Server is shutting down for updates."
-  loop: "{{ instances_secrets }}"
-  loop_control:
-    index_var: loop0
+  loop: "{{ targets.instances }}"
   timeout: 5
   delegate_to: localhost
 
@@ -19,12 +17,10 @@
   ignore_errors: true
   rcon:
     address: "{{ ansible_host }}"
-    port: "{{ mcs_base_port + (loop0 * mcs_reserve_ports) + 1 }}"
-    password: "{{ item.rcon_pass }}"
+    port: "{{ item.port }}"
+    password: "{{ item.secrets.rcon_pass }}"
     command: "save-all"
-  loop: "{{ instances_secrets }}"
-  loop_control:
-    index_var: loop0
+  loop: "{{ targets.instances }}"
   timeout: 5
   delegate_to: localhost
 
@@ -34,7 +30,7 @@
     scope: user
     name: mcs-{{ item.name }}
     state: stopped
-  loop: "{{ instances }}"
+  loop: "{{ targets.instances }}"
 
 ##
 # Set up mod-related
@@ -57,27 +53,25 @@
     path: ~/{{ item.name }}
     state: directory
     mode: 0755
-  loop: "{{ instances }}"
+  loop: "{{ targets.instances }}"
 
 - name: Download server .jar
   get_url:
     url: "https://meta.fabricmc.net/v2/versions/loader/{{ item.minecraft_ver }}/{{ item.fabric }}/{{ fabric_installer_version }}/server/jar"
     dest: ~/{{ item.name }}/server.jar
     mode: 0700
-  loop: "{{ instances }}"
+  loop: "{{ targets.instances }}"
 
 - name: Accept EULA
   shell: echo eula=true > ~/{{ item.name }}/eula.txt
-  loop: "{{ instances }}"
+  loop: "{{ targets.instances }}"
 
 - name: /server.properties
   ansible.builtin.template:
     src: server.properties.j2
-    dest: ~/{{ item.0.name }}/server.properties
+    dest: ~/{{ item.name }}/server.properties
     mode: 0755
-  loop: "{{ instances|zip(instances_secrets) }}"
-  loop_control:
-    index_var: loop0
+  loop: "{{ targets.instances }}"
 
 - name: /server-icon.png
   ignore_errors: true
@@ -85,11 +79,11 @@
     src: "{{ role_path }}/files/{{ inventory_hostname }}/icons/{{ item.name }}.png"
     dest: ~/{{ item.name }}/server-icon.png
     mode: 0755
-  loop: "{{ instances }}"
+  loop: "{{ targets.instances }}"
 
 - name: Generate perms
   include_tasks: gen_perms.yml
-  loop: "{{ instances }}"
+  loop: "{{ targets.instances }}"
   loop_control:
     loop_var: instance
 
@@ -98,18 +92,15 @@
 
 - name: Get Modrinth mods
   ansible.builtin.include_tasks: modrinth.yml
-  loop: "{{ instances }}"
+  loop: "{{ targets.instances }}"
   loop_control:
     loop_var: instance
-    index_var: loop0
 
 - name: /config/voicechat
   file:
     path: ~/{{ item.name }}/config/voicechat/
     state: directory
-  loop: "{{ instances }}"
-  loop_control:
-    index_var: loop0
+  loop: "{{ targets.instances }}"
   when: '"simple-voice-chat" in item.mods'
 
 - name: /config/voicechat/voicechat-server.properties
@@ -117,18 +108,14 @@
     src: mods/voicechat-server.properties.j2
     dest: ~/{{ item.name }}/config/voicechat/voicechat-server.properties
     mode: 0755
-  loop: "{{ instances }}"
-  loop_control:
-    index_var: loop0
+  loop: "{{ targets.instances }}"
   when: '"simple-voice-chat" in item.mods'
 
 - name: /dynmap
   file:
     path: ~/{{ item.name }}/dynmap/
     state: directory
-  loop: "{{ instances }}"
-  loop_control:
-    index_var: loop0
+  loop: "{{ targets.instances }}"
   when: '"dynmap" in item.mods'
 
 - name: /dynmap/configuration.txt
@@ -136,9 +123,7 @@
     src: mods/dynmap.txt.j2
     dest: ~/{{ item.name }}/dynmap/configuration.txt
     mode: 0755
-  loop: "{{ instances }}"
-  loop_control:
-    index_var: loop0
+  loop: "{{ targets.instances }}"
   when: '"dynmap" in item.mods'
 
   # TODO: figure out some way to easily reformat yml to this toml format
@@ -147,9 +132,7 @@
     src: mods/localizedchat.toml.j2
     dest: ~/{{ item.name }}/config/localizedchat.toml
     mode: 0755
-  loop: "{{ instances }}"
-  loop_control:
-    index_var: loop0
+  loop: "{{ targets.instances }}"
   when: '"localized-chat" in item.mods'
 
 ##
@@ -166,12 +149,35 @@
     src: service.j2
     dest: ~/.config/systemd/user/mcs-{{ item.name }}.service
     mode: 0755
-  loop: "{{ instances }}"
+  loop: "{{ targets.instances }}"
+
+- name: Template systemd restart service
+  ansible.builtin.template:
+    src: restart_service.j2
+    dest: ~/.config/systemd/user/mcs-{{ item.name }}-restart.service
+    mode: 0755
+  loop: "{{ targets.instances }}"
+
+- name: Template systemd restart timer
+  ansible.builtin.template:
+    src: restart_timer.j2
+    dest: ~/.config/systemd/user/mcs-{{ item.name }}-restart.timer
+    mode: 0755
+  loop: "{{ targets.instances }}"
 
 - name: Start server
   systemd_service:
     scope: user
+    daemon_reload: true
     name: mcs-{{ item.name }}
     enabled: true
     state: started
-  loop: "{{ instances }}"
+  loop: "{{ targets.instances }}"
+
+- name: Enable restart timer
+  systemd_service:
+    scope: user
+    name: mcs-{{ item.name }}-restart.timer
+    enabled: true
+    state: started
+  loop: "{{ targets.instances }}"

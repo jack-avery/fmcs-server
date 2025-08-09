@@ -4,8 +4,8 @@ import hashlib
 import json
 import logging
 import os
-import requests
 import shutil
+import urllib.request
 import yaml
 
 from library.modrinth import get_modrinth_project, get_modrinth_version
@@ -38,8 +38,8 @@ def get_mrpack_file(
             # verify shader has loader
             # shaders are processed after mods, so this should be ok
             shader_has_loader = False
-            for l in project["loaders"]:
-                if l in CACHE:
+            for loader in project["loaders"]:
+                if loader in CACHE:
                     shader_has_loader = True
                     break
             if not shader_has_loader:
@@ -77,9 +77,47 @@ def get_mrpack_file(
             "client": project["client_side"],
         },
         "downloads": [file["url"]],
-        "filesize": file["size"],
+        "fileSize": file["size"],
     }
 
+
+def generate_files_source(source: str, name: str, folder: str) -> dict:
+    """
+    Generate the source for insertion directly into the .mrpack `files`.
+    """
+    logging.info(f"Generating files source for {name}...")
+    # download file for metadata
+    urllib.request.urlretrieve(source, "mrpacks/_/file")
+
+    # get required metadata
+    size_b = os.path.getsize(f"mrpacks/_/file")
+    sha1 = hashlib.sha1()
+    sha512 = hashlib.sha512()
+    with open(f"mrpacks/_/file", "rb") as f:
+        while True:
+            data = f.read(65535)
+            if not data:
+                break
+            sha1.update(data)
+            sha512.update(data)
+    sha1 = sha1.hexdigest()
+    sha512 = sha512.hexdigest()
+
+    # cleanup and return source
+    os.remove("mrpacks/_/file")
+    return {
+        "downloads": [source],
+        "env": {
+            "client": "required", # .mrpacks are for clients, so always set this
+            "server": "unsupported"
+        },
+        "fileSize": size_b,
+        "hashes": {
+            "sha1": sha1,
+            "sha512": sha512
+        },
+        "path": f"{folder}/{name.capitalize()}.zip"
+    }
 
 def make_mrpack(
     minecraft_ver: str,
@@ -107,12 +145,14 @@ def make_mrpack(
                 if "mode" in info:
                     if info["mode"] == "server":
                         continue
-
-                # curseforge, discord links, etc.
                 if "source" in info:
-                    file = requests.get(info["source"])
-                    open(f"mrpacks/_/overrides/mods/{name}.jar", "wb").write(
-                        file.content
+                    manifest["files"].append(
+                        generate_files_source(info["source"], name, "mods")
+                    )
+                    continue
+                if "version" in info:
+                    manifest["files"].append(
+                        get_mrpack_file(name, None, version=info["version"])
                     )
                     continue
 
@@ -123,7 +163,11 @@ def make_mrpack(
     if resource_packs:
         for name, info in resource_packs.items():
             if info:
-                # curseforge, discord links, etc.
+                if "source" in info:
+                    manifest["files"].append(
+                        generate_files_source(info["source"], name, "resourcepacks")
+                    )
+                    continue
                 if "version" in info:
                     manifest["files"].append(
                         get_mrpack_file(name, None, version=info["version"])
@@ -134,6 +178,17 @@ def make_mrpack(
 
     if shaders:
         for name, info in shaders.items():
+            if info:
+                if "source" in info:
+                    manifest["files"].append(
+                        generate_files_source(info["source"], name, "resourcepacks")
+                    )
+                    continue
+                if "version" in info:
+                    manifest["files"].append(
+                        get_mrpack_file(name, None, version=info["version"])
+                    )
+                    continue
             manifest["files"].append(get_mrpack_file(name, minecraft_ver))
 
     return manifest
@@ -190,7 +245,7 @@ def main():
                 minecraft_ver, loader, name, mods, resource_packs, shaders
             )
             manifest_json = json.dumps(manifest, indent=4)
-            with open(f"mrpacks/_/modrinth.index.json", "w") as file:
+            with open("mrpacks/_/modrinth.index.json", "w") as file:
                 file.write(manifest_json)
             manifest_hash = base64.urlsafe_b64encode(
                 hashlib.sha256(manifest_json.encode("utf-8")).digest()
@@ -208,7 +263,7 @@ def main():
             # clean up for next
             shutil.rmtree("mrpacks/_")
 
-    logging.info(f"Done")
+    logging.info("Done")
     return 0
 
 

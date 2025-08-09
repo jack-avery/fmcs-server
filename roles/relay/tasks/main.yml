@@ -1,6 +1,6 @@
 ---
-- name: Load secrets
-  ansible.builtin.include_tasks: secrets.yml
+- name: Setup
+  ansible.builtin.include_tasks: setup.yml
 
 - name: Create Relay bot holding dir
   ansible.builtin.file:
@@ -10,8 +10,7 @@
 
 - name: Create Relay bot (if enabled)
   ansible.builtin.include_tasks: relay.yml
-  loop: "{{ instances|zip(instances_secrets) }}"
+  loop: "{{ targets.instances }}"
   loop_control:
     loop_var: instance
-    index_var: loop0
-  when: '"relay_bot" in instance.0'
+  when: '"relay_bot" in instance'

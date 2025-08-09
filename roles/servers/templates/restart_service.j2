@@ -1,0 +1,5 @@
+[Unit]
+Description=mcs-{{ item.name }}: Restart service
+
+[Service]
+ExecStart=/usr/bin/systemctl --user restart mcs-{{ item.name }}.service

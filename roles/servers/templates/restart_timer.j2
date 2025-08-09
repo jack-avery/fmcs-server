@@ -1,0 +1,9 @@
+[Unit]
+Description=mcs-{{ item.name }}: Restart timer
+
+[Timer]
+OnCalendar={{ item.systemd_restart_OnCalendar_UTC }}
+AccuracySec=5min
+
+[Install]
+WantedBy=timers.target

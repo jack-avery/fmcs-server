@@ -2,6 +2,8 @@ __pycache__
 
 .vault_pass.sh
 .become_pass.sh
+.envrc
 mrpacks
 roles/backup/files
 roles/relay/files/config.yml
+roles/relay/files/fmcs-server-relay
