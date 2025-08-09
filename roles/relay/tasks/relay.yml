@@ -10,11 +10,14 @@
     state: directory
     mode: 0755
 
-- name: Copy files
+- name: Build server binary
+  shell: "cd {{ role_path }}/files && go build ."
+  delegate_to: localhost
+
+- name: Copy server binary
   ansible.posix.synchronize:
-    src: "{{ role_path }}/files/"
-    dest: ~/relay/{{ instance.name }}
-    recursive: true
+    src: "{{ role_path }}/files/fmcs-server-relay"
+    dest: ~/relay/{{ instance.name }}/fmcs-server-relay
 
 - name: Copy instance .mrpack
   ansible.posix.synchronize:
@@ -45,6 +48,7 @@
 - name: Start relay bot
   systemd_service:
     scope: user
+    daemon_reload: true
     name: mcr-{{ instance.name }}
     enabled: true
     state: restarted

@@ -1,6 +1,0 @@
-asyncio
-discord
-file_read_backwards
-pyyaml
-rcon
-requests

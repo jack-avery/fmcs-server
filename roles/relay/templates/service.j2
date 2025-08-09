@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=simple
 Restart=on-failure
-ExecStart=python3 __main__.py
+ExecStart=/home/fmcs/relay/{{ instance.name }}/fmcs-server-relay
 WorkingDirectory=/home/fmcs/relay/{{ instance.name }}
 StandardOutput=inherit
 StandardError=inherit
