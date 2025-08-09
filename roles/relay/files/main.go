@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
 	"os/signal"
@@ -8,6 +9,8 @@ import (
 )
 
 func main() {
+	ctx := context.Context(context.Background())
+
 	config, err := ParseConfig("config.yml")
 	if err != nil {
 		panic(err)
@@ -17,10 +20,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	bot.Start(ctx)
 	defer bot.Close()
 
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-sc
+
 	log.Println("Exiting...")
 }
