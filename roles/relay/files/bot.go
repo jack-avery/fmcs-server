@@ -67,7 +67,10 @@ func (b *Bot) ready(s *discordgo.Session, event *discordgo.Ready) {
 			h(b, i)
 		}
 	})
-	s.ApplicationCommandBulkOverwrite(s.State.User.ID, "", commands)
+	_, err := s.ApplicationCommandBulkOverwrite(s.State.User.ID, "", commands)
+	if err != nil {
+		panic("failed to apply commands")
+	}
 	log.Println("Applied commands")
 
 	webhooks, err := s.ChannelWebhooks(b.config.Channel)
@@ -97,8 +100,8 @@ func (b *Bot) ready(s *discordgo.Session, event *discordgo.Ready) {
 	log.Println("Ready!")
 }
 
-func (b *Bot) Close() {
-	b.StopAll()
+func (b *Bot) Close() (err error) {
+	return b.StopAll()
 }
 
 func (b *Bot) sendRcon(command string) (response string, err error) {
@@ -106,8 +109,8 @@ func (b *Bot) sendRcon(command string) (response string, err error) {
 	return res, err
 }
 
-func (b *Bot) systemMessage(message string) {
-	b.session.ChannelMessageSendEmbed(
+func (b *Bot) sendSystemMessage(message string) {
+	_, err := b.session.ChannelMessageSendEmbed(
 		b.config.Channel,
 		&discordgo.MessageEmbed{
 			Author: &discordgo.MessageEmbedAuthor{
@@ -118,6 +121,9 @@ func (b *Bot) systemMessage(message string) {
 			Color:       0xFF00FF,
 		},
 	)
+	if err != nil {
+		log.Println("failed to send system message: ", err)
+	}
 }
 
 func (b *Bot) getPlayerAvatar(ctx context.Context, username string) (url string, err error) {
@@ -170,14 +176,17 @@ func (b *Bot) updateStatus() {
 
 	// assume server is offline
 	if err != nil {
-		b.session.UpdateWatchStatus(0, "for server restart...")
+		err = b.session.UpdateWatchStatus(0, "for server restart...")
+		if err != nil {
+			log.Println("failed to update status: ", err)
+		}
 		b.state.ServerIsOnline = false
 		return
 	}
 
 	if !b.state.ServerIsOnline {
 		b.state.ServerIsOnline = true
-		b.systemMessage("Server is ready.")
+		b.sendSystemMessage("Server is ready.")
 	}
 
 	// update player list
@@ -197,7 +206,10 @@ func (b *Bot) updateStatus() {
 	if players_current != 1 {
 		status += "s"
 	}
-	b.session.UpdateGameStatus(0, status)
+	err = b.session.UpdateGameStatus(0, status)
+	if err != nil {
+		log.Println("failed to update status: ", err)
+	}
 }
 
 func (b *Bot) updateDate() {
@@ -253,13 +265,16 @@ func (b *Bot) updateDate() {
 			}
 		}
 
-		b.session.ChannelMessageSendEmbed(
+		_, err = b.session.ChannelMessageSendEmbed(
 			b.config.Channel,
 			&discordgo.MessageEmbed{
 				Title: fmt.Sprintf(":sunrise_over_mountains: Dawn of the %s day", date_text),
 				Color: 0xF1C40F,
 			},
 		)
+		if err != nil {
+			log.Println("failed to announce new day: ", err)
+		}
 	}
 }
 
@@ -307,7 +322,7 @@ func (b *Bot) pollMinecraftLogsLoop(ctx context.Context) {
 
 			if results := serverSystemMessageRe.FindStringSubmatch(raw); results != nil {
 				msg := results[1]
-				b.systemMessage(msg)
+				b.sendSystemMessage(msg)
 				continue
 			}
 
@@ -321,7 +336,7 @@ func (b *Bot) pollMinecraftLogsLoop(ctx context.Context) {
 					msg = strings.ReplaceAll(msg, "@", "＠")
 					msg = strings.ReplaceAll(msg, "\"", "'")
 
-					b.session.WebhookExecute(
+					_, err = b.session.WebhookExecute(
 						b.state.Webhook.ID,
 						b.state.Webhook.Token,
 						false,
@@ -331,6 +346,9 @@ func (b *Bot) pollMinecraftLogsLoop(ctx context.Context) {
 							AvatarURL: avatar,
 						},
 					)
+					if err != nil {
+						log.Println("failed to relay message: ", err)
+					}
 					continue
 				}
 
@@ -342,7 +360,7 @@ func (b *Bot) pollMinecraftLogsLoop(ctx context.Context) {
 					msg := strings.ReplaceAll(results[0], "@", "＠")
 					msg = strings.ReplaceAll(msg, "\"", "'")
 
-					b.session.ChannelMessageSendEmbed(
+					_, err = b.session.ChannelMessageSendEmbed(
 						b.config.Channel,
 						&discordgo.MessageEmbed{
 							Author: &discordgo.MessageEmbedAuthor{
@@ -352,6 +370,9 @@ func (b *Bot) pollMinecraftLogsLoop(ctx context.Context) {
 							Color: 0x444444,
 						},
 					)
+					if err != nil {
+						log.Println("failed to relay action: ", err)
+					}
 					continue
 				}
 			}
@@ -360,7 +381,7 @@ func (b *Bot) pollMinecraftLogsLoop(ctx context.Context) {
 				if results := serverJoinRe.FindStringSubmatch(raw); results != nil {
 					avatar, _ := b.getPlayerAvatar(ctx, results[1])
 
-					b.session.ChannelMessageSendEmbed(
+					_, err = b.session.ChannelMessageSendEmbed(
 						b.config.Channel,
 						&discordgo.MessageEmbed{
 							Author: &discordgo.MessageEmbedAuthor{
@@ -370,13 +391,16 @@ func (b *Bot) pollMinecraftLogsLoop(ctx context.Context) {
 							Color: 0x00FF00,
 						},
 					)
+					if err != nil {
+						log.Println("failed to relay join: ", err)
+					}
 					continue
 				}
 
 				if results := serverLeaveRe.FindStringSubmatch(raw); results != nil {
 					avatar, _ := b.getPlayerAvatar(ctx, results[1])
 
-					b.session.ChannelMessageSendEmbed(
+					_, err = b.session.ChannelMessageSendEmbed(
 						b.config.Channel,
 						&discordgo.MessageEmbed{
 							Author: &discordgo.MessageEmbedAuthor{
@@ -386,6 +410,9 @@ func (b *Bot) pollMinecraftLogsLoop(ctx context.Context) {
 							Color: 0xFF0000,
 						},
 					)
+					if err != nil {
+						log.Println("failed to relay leave: ", err)
+					}
 					continue
 				}
 			}
@@ -394,7 +421,7 @@ func (b *Bot) pollMinecraftLogsLoop(ctx context.Context) {
 				if results := serverAdvancementRe.FindStringSubmatch(raw); results != nil {
 					avatar, _ := b.getPlayerAvatar(ctx, results[1])
 
-					b.session.ChannelMessageSendEmbed(
+					_, err := b.session.ChannelMessageSendEmbed(
 						b.config.Channel,
 						&discordgo.MessageEmbed{
 							Author: &discordgo.MessageEmbedAuthor{
@@ -404,13 +431,16 @@ func (b *Bot) pollMinecraftLogsLoop(ctx context.Context) {
 							Color: 0x8888FF,
 						},
 					)
+					if err != nil {
+						log.Println("failed to relay advancement: ", err)
+					}
 					continue
 				}
 
 				if results := serverChallengeRe.FindStringSubmatch(raw); results != nil {
 					avatar, _ := b.getPlayerAvatar(ctx, results[1])
 
-					b.session.ChannelMessageSendEmbed(
+					_, err := b.session.ChannelMessageSendEmbed(
 						b.config.Channel,
 						&discordgo.MessageEmbed{
 							Author: &discordgo.MessageEmbedAuthor{
@@ -420,6 +450,9 @@ func (b *Bot) pollMinecraftLogsLoop(ctx context.Context) {
 							Color: 0xF1C40F,
 						},
 					)
+					if err != nil {
+						log.Println("failed to relay challenge: ", err)
+					}
 					continue
 				}
 			}
@@ -430,7 +463,7 @@ func (b *Bot) pollMinecraftLogsLoop(ctx context.Context) {
 						user := results[1]
 						avatar, _ := b.getPlayerAvatar(ctx, user)
 
-						b.session.ChannelMessageSendEmbed(
+						_, err := b.session.ChannelMessageSendEmbed(
 							b.config.Channel,
 							&discordgo.MessageEmbed{
 								Author: &discordgo.MessageEmbedAuthor{
@@ -440,6 +473,9 @@ func (b *Bot) pollMinecraftLogsLoop(ctx context.Context) {
 								Color: 0xAA0000,
 							},
 						)
+						if err != nil {
+							log.Println("failed to relay death: ", err)
+						}
 						break
 					}
 				}
@@ -533,7 +569,10 @@ func (b *Bot) onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
 		msg += " (attachment)"
 	}
 
-	b.sendRcon(
+	_, err := b.sendRcon(
 		fmt.Sprintf(`tellraw @a [{"text":"(Discord) ", "color":"blue"}, {"text":"%s", "color":"white"}]`, msg),
 	)
+	if err != nil {
+		b.sendSystemMessage("Failed to send your message: " + err.Error())
+	}
 }
