@@ -11,7 +11,9 @@ perms:
 backup:
 	@ansible-playbook playbooks/backup.yml --extra-vars "only=$(ONLY)"
 
-relay: mrpack
+relay: mrpack relay_nopack
+
+relay_nopack:
 	@ansible-playbook playbooks/relay.yml --extra-vars "only=$(ONLY)"
 
 cron:
