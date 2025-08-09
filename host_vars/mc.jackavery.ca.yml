@@ -9,7 +9,7 @@ instances:
     ram: "8G"
 
     relay_bot:
-      channel: 1151768150510149642
+      channel: 1397683798895755264
       rcon_users:
         - 97441955893477376
 
