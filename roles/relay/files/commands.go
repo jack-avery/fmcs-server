@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"slices"
 	"strconv"
@@ -11,19 +12,22 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func sendError(b *Bot, i *discordgo.InteractionCreate, context string, err error) {
-	b.session.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+func sendError(b *Bot, i *discordgo.InteractionCreate, context string, e error) {
+	err := b.session.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Embeds: []*discordgo.MessageEmbed{
 				{
 					Title:       "Error",
-					Description: fmt.Sprintf("Context: %s, Error: %s", context, err.Error()),
+					Description: fmt.Sprintf("Context: %s, Error: %s", context, e.Error()),
 					Color:       0xFF0000,
 				},
 			},
 		},
 	})
+	if err != nil {
+		log.Println("error sending error (", e, ") as response to interaction: ", err)
+	}
 }
 
 var (
@@ -63,7 +67,7 @@ var (
 				listing += fmt.Sprintf("- %s: %s\n", v.Name, v.Description)
 			}
 
-			b.session.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			err := b.session.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 				Type: discordgo.InteractionResponseChannelMessageWithSource,
 				Data: &discordgo.InteractionResponseData{
 					Embeds: []*discordgo.MessageEmbed{
@@ -75,6 +79,9 @@ var (
 					},
 				},
 			})
+			if err != nil {
+				log.Println("error responding to /help: ", err)
+			}
 		},
 
 		"info": func(b *Bot, i *discordgo.InteractionCreate) {
@@ -105,7 +112,7 @@ var (
 			description += "\n> .mrpack for import into your preferred launcher is attached above.\n"
 			description += "> Confused? See here: https://youtu.be/EqenOITGvis"
 
-			b.session.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			err = b.session.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 				Type: discordgo.InteractionResponseChannelMessageWithSource,
 				Data: &discordgo.InteractionResponseData{
 					Files: []*discordgo.File{
@@ -124,6 +131,9 @@ var (
 					},
 				},
 			})
+			if err != nil {
+				log.Println("error responding to /info: ", err)
+			}
 		},
 
 		"list": func(b *Bot, i *discordgo.InteractionCreate) {
@@ -134,7 +144,7 @@ var (
 				listing = "There are no players online."
 			}
 
-			b.session.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			err := b.session.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 				Type: discordgo.InteractionResponseChannelMessageWithSource,
 				Data: &discordgo.InteractionResponseData{
 					Embeds: []*discordgo.MessageEmbed{
@@ -150,6 +160,9 @@ var (
 					},
 				},
 			})
+			if err != nil {
+				log.Println("error responding to /list: ", err)
+			}
 		},
 
 		"rcon": func(b *Bot, i *discordgo.InteractionCreate) {
@@ -171,7 +184,7 @@ var (
 				response = "*Success; no response*"
 			}
 
-			b.session.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+			err = b.session.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 				Type: discordgo.InteractionResponseChannelMessageWithSource,
 				Data: &discordgo.InteractionResponseData{
 					Embeds: []*discordgo.MessageEmbed{
@@ -183,6 +196,9 @@ var (
 					},
 				},
 			})
+			if err != nil {
+				log.Println("error responding to /rcon: ", err)
+			}
 		},
 	}
 )
