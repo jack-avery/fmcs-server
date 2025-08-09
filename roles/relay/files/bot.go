@@ -122,7 +122,6 @@ func (b *Bot) getPlayerAvatar(username string) (url string, err error) {
 	// cached: return it
 	url, ok := b.state.AvatarURLCache[username]
 	if ok {
-		fmt.Println("cached")
 		return url, nil
 	}
 
