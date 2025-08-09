@@ -1,23 +1,21 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
-	"os"
-	"slices"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/fsnotify/fsnotify"
-	"github.com/icza/backscanner"
 	"github.com/jltobler/go-rcon"
 	"github.com/jonas747/dshardmanager"
+	"github.com/nxadm/tail"
 )
 
 type Bot struct {
@@ -41,7 +39,14 @@ func NewBot(config *Config) (bot *Bot, err error) {
 	bot.AddHandler(bot.ready)
 	bot.AddHandler(bot.onMessage)
 
-	return bot, bot.Start()
+	return bot, nil
+}
+
+func (b *Bot) Start(ctx context.Context) {
+	b.Manager.Start()
+
+	go b.pollStatusLoop(ctx)
+	go b.pollMinecraftLogsLoop(ctx)
 }
 
 func (b *Bot) ready(s *discordgo.Session, event *discordgo.Ready) {
@@ -87,9 +92,6 @@ func (b *Bot) ready(s *discordgo.Session, event *discordgo.Ready) {
 	log.Println("Acquired webhook")
 
 	log.Println("Ready!")
-
-	go b.pollStatusLoop()
-	go b.pollMinecraftLogsLoop()
 }
 
 func (b *Bot) Close() {
@@ -115,7 +117,7 @@ func (b *Bot) systemMessage(message string) {
 	)
 }
 
-func (b *Bot) getPlayerAvatar(username string) (url string, err error) {
+func (b *Bot) getPlayerAvatar(ctx context.Context, username string) (url string, err error) {
 	if !serverPlayerNameRe.MatchString(username) {
 		return "", errors.New("invalid name")
 	}
@@ -129,7 +131,10 @@ func (b *Bot) getPlayerAvatar(username string) (url string, err error) {
 	// not cached: grab it
 	requestUrl := fmt.Sprintf("https://playerdb.co/api/player/minecraft/%s", username)
 
-	req, err := http.NewRequest("GET", requestUrl, nil)
+	childCtx, cancel := context.WithTimeout(ctx, time.Second*10)
+	defer cancel()
+
+	req, err := http.NewRequestWithContext(childCtx, "GET", requestUrl, nil)
 	if err != nil {
 		return "", errors.New("failed to generate request")
 	}
@@ -138,16 +143,15 @@ func (b *Bot) getPlayerAvatar(username string) (url string, err error) {
 	client := &http.Client{}
 	response, err := client.Do(req)
 	if err != nil {
-		return "", errors.New("failed to complete avatar request")
+		return "", err
 	}
-
-	responseData, err := io.ReadAll(response.Body)
-	if err != nil {
-		return "", errors.New("failed to parse response body")
-	}
+	defer response.Body.Close()
 
 	var playerData PlayerDBResponse
-	json.Unmarshal(responseData, &playerData)
+	if errDecode :=
+		json.NewDecoder(response.Body).Decode(&playerData); errDecode != nil {
+		return "", errDecode
+	}
 
 	if playerData.Code != "player.found" {
 		return "", errors.New("player not found")
@@ -256,277 +260,190 @@ func (b *Bot) updateDate() {
 	}
 }
 
-func (b *Bot) pollStatusLoop() {
+func (b *Bot) pollStatusLoop(ctx context.Context) {
 	pollRate := time.Second * 10
 	ticker := time.NewTicker(pollRate)
 
-	for range ticker.C {
-		b.updateStatus()
+	for {
+		select {
+		case <-ticker.C:
+			b.updateStatus()
 
-		if b.config.RelayDates {
-			b.updateDate()
+			if b.config.RelayDates {
+				b.updateDate()
+			}
+		case <-ctx.Done():
+			return
 		}
 	}
 }
 
-func (b *Bot) pollMinecraftLogsLoop() {
-	var last_line []byte
-	var last_line_new []byte
-
-	pollRate := time.Second * time.Duration(b.config.PollRate)
-	ticker := time.NewTicker(pollRate)
-
-	// grab first line
-	for range ticker.C {
-		file, err := os.Open("logs/latest.log")
-		if err != nil {
-			log.Println("failed to open latest.log: ", err)
-			continue
-		}
-
-		fileStat, err := file.Stat()
-		if err != nil {
-			log.Println("failed to stat latest.log: ", err)
-			continue
-		}
-
-		scanner := backscanner.New(file, int(fileStat.Size()))
-		scanner.LineBytes() // discard first, otherwise byte array is empty (does logfile use CRLF??)
-		line, _, err := scanner.LineBytes()
-		if err != nil {
-			if err == io.EOF {
-				log.Println("retrying fetching first last_line: reached EOF?")
-				continue
-			} else {
-				log.Println("failed to read last line: ", err)
-				continue
-			}
-		}
-		last_line = line
-		break
-	}
-	ticker.Stop()
-
-	watcher, err := fsnotify.NewWatcher()
+func (b *Bot) pollMinecraftLogsLoop(ctx context.Context) {
+	t, err := tail.TailFile(
+		"logs/latest.log",
+		tail.Config{
+			Follow: true,
+			ReOpen: true,
+			Location: &tail.SeekInfo{
+				Offset: 0,
+				Whence: io.SeekEnd,
+			},
+		})
 	if err != nil {
-		panic("failed to create watcher: " + err.Error())
-	}
-	err = watcher.Add("logs/latest.log")
-	if err != nil {
-		panic("failed to watch logs/latest.log: " + err.Error())
+		panic("could not tail logfile: " + err.Error())
 	}
 
 	for {
 		select {
-		case _, ok := <-watcher.Events:
-			if !ok {
+		case line := <-t.Lines:
+			raw := line.Text
+
+			if !serverInfoRe.MatchString(raw) {
 				continue
 			}
 
-			file, err := os.Open("logs/latest.log")
-			if err != nil {
-				log.Println("failed to open latest.log: ", err)
+			if results := serverSystemMessageRe.FindStringSubmatch(raw); results != nil {
+				msg := results[1]
+				b.systemMessage(msg)
 				continue
 			}
 
-			fileStat, err := file.Stat()
-			if err != nil {
-				log.Println("failed to stat latest.log: ", err)
-				continue
-			}
+			if b.config.RelayMessages {
+				if results := serverMessageRe.FindStringSubmatch(raw); results != nil {
+					user := results[1]
+					msg := results[2]
+					avatar, _ := b.getPlayerAvatar(ctx, user)
 
-			scanner := backscanner.New(file, int(fileStat.Size()))
-			lines := make([]string, 0, 10)
-			i := 0
-			for {
-				line, _, err := scanner.LineBytes()
-				if err != nil {
-					if err == io.EOF {
-						log.Println("reached EOF while reading logs")
-						break
-					} else {
-						log.Println("failed to read last line: ", err)
-						break
-					}
-				}
+					// is this enugh? it should stop @ing...
+					msg = strings.ReplaceAll(msg, "@", "＠")
+					msg = strings.ReplaceAll(msg, "\"", "'")
 
-				if i == 1 {
-					last_line_new = line
-				}
-
-				if string(line) == string(last_line) {
-					break
-				}
-
-				// grow slice if we're at capacity
-				i += 1
-				if i == cap(lines) {
-					lines = slices.Grow(lines, int(cap(lines)/2))
-				}
-
-				lines = append(lines, string(line))
-			}
-
-			// nothing new, sit and wait
-			if len(lines) == 0 {
-				continue
-			}
-
-			last_line = last_line_new
-			slices.Reverse(lines)
-
-			for i := range lines {
-				raw := lines[i]
-
-				if !serverInfoRe.MatchString(raw) {
+					b.session.WebhookExecute(
+						b.state.Webhook.ID,
+						b.state.Webhook.Token,
+						false,
+						&discordgo.WebhookParams{
+							Username:  user,
+							Content:   msg,
+							AvatarURL: avatar,
+						},
+					)
 					continue
 				}
 
-				if results := serverSystemMessageRe.FindStringSubmatch(raw); results != nil {
-					msg := results[1]
-					b.systemMessage(msg)
+				if results := serverActionRe.FindStringSubmatch(raw); results != nil {
+					user := results[1]
+					avatar, _ := b.getPlayerAvatar(ctx, user)
+
+					// is this enugh? it should stop @ing...
+					msg := strings.ReplaceAll(results[0], "@", "＠")
+					msg = strings.ReplaceAll(msg, "\"", "'")
+
+					b.session.ChannelMessageSendEmbed(
+						b.config.Channel,
+						&discordgo.MessageEmbed{
+							Author: &discordgo.MessageEmbedAuthor{
+								Name:    msg,
+								IconURL: avatar,
+							},
+							Color: 0x444444,
+						},
+					)
+					continue
+				}
+			}
+
+			if b.config.RelayConnections {
+				if results := serverJoinRe.FindStringSubmatch(raw); results != nil {
+					avatar, _ := b.getPlayerAvatar(ctx, results[1])
+
+					b.session.ChannelMessageSendEmbed(
+						b.config.Channel,
+						&discordgo.MessageEmbed{
+							Author: &discordgo.MessageEmbedAuthor{
+								Name:    fmt.Sprintf("📥 %s", results[0]),
+								IconURL: avatar,
+							},
+							Color: 0x00FF00,
+						},
+					)
 					continue
 				}
 
-				if b.config.RelayMessages {
-					if results := serverMessageRe.FindStringSubmatch(raw); results != nil {
+				if results := serverLeaveRe.FindStringSubmatch(raw); results != nil {
+					avatar, _ := b.getPlayerAvatar(ctx, results[1])
+
+					b.session.ChannelMessageSendEmbed(
+						b.config.Channel,
+						&discordgo.MessageEmbed{
+							Author: &discordgo.MessageEmbedAuthor{
+								Name:    fmt.Sprintf("📤 %s", results[0]),
+								IconURL: avatar,
+							},
+							Color: 0xFF0000,
+						},
+					)
+					continue
+				}
+			}
+
+			if b.config.RelayAdvancements {
+				if results := serverAdvancementRe.FindStringSubmatch(raw); results != nil {
+					avatar, _ := b.getPlayerAvatar(ctx, results[1])
+
+					b.session.ChannelMessageSendEmbed(
+						b.config.Channel,
+						&discordgo.MessageEmbed{
+							Author: &discordgo.MessageEmbedAuthor{
+								Name:    fmt.Sprintf("📖 %s", results[0]),
+								IconURL: avatar,
+							},
+							Color: 0x8888FF,
+						},
+					)
+					continue
+				}
+
+				if results := serverChallengeRe.FindStringSubmatch(raw); results != nil {
+					avatar, _ := b.getPlayerAvatar(ctx, results[1])
+
+					b.session.ChannelMessageSendEmbed(
+						b.config.Channel,
+						&discordgo.MessageEmbed{
+							Author: &discordgo.MessageEmbedAuthor{
+								Name:    fmt.Sprintf("🏆 %s", results[0]),
+								IconURL: avatar,
+							},
+							Color: 0xF1C40F,
+						},
+					)
+					continue
+				}
+			}
+
+			if b.config.RelayDeaths {
+				for i := range deathMessagesRe {
+					if results := deathMessagesRe[i].FindStringSubmatch(raw); results != nil {
 						user := results[1]
-						msg := results[2]
-						avatar, _ := b.getPlayerAvatar(user)
-
-						// is this enugh? it should stop @ing...
-						msg = strings.ReplaceAll(msg, "@", "＠")
-						msg = strings.ReplaceAll(msg, "\"", "'")
-
-						b.session.WebhookExecute(
-							b.state.Webhook.ID,
-							b.state.Webhook.Token,
-							false,
-							&discordgo.WebhookParams{
-								Username:  user,
-								Content:   msg,
-								AvatarURL: avatar,
-							},
-						)
-						continue
-					}
-
-					if results := serverActionRe.FindStringSubmatch(raw); results != nil {
-						user := results[1]
-						avatar, _ := b.getPlayerAvatar(user)
-
-						// is this enugh? it should stop @ing...
-						msg := strings.ReplaceAll(results[0], "@", "＠")
-						msg = strings.ReplaceAll(msg, "\"", "'")
+						avatar, _ := b.getPlayerAvatar(ctx, user)
 
 						b.session.ChannelMessageSendEmbed(
 							b.config.Channel,
 							&discordgo.MessageEmbed{
 								Author: &discordgo.MessageEmbedAuthor{
-									Name:    msg,
+									Name:    fmt.Sprintf("💀 %s", results[0]),
 									IconURL: avatar,
 								},
-								Color: 0x444444,
+								Color: 0xAA0000,
 							},
 						)
-						continue
-					}
-				}
-
-				if b.config.RelayConnections {
-					if results := serverJoinRe.FindStringSubmatch(raw); results != nil {
-						avatar, _ := b.getPlayerAvatar(results[1])
-
-						b.session.ChannelMessageSendEmbed(
-							b.config.Channel,
-							&discordgo.MessageEmbed{
-								Author: &discordgo.MessageEmbedAuthor{
-									Name:    fmt.Sprintf("📥 %s", results[0]),
-									IconURL: avatar,
-								},
-								Color: 0x00FF00,
-							},
-						)
-						continue
-					}
-
-					if results := serverLeaveRe.FindStringSubmatch(raw); results != nil {
-						avatar, _ := b.getPlayerAvatar(results[1])
-
-						b.session.ChannelMessageSendEmbed(
-							b.config.Channel,
-							&discordgo.MessageEmbed{
-								Author: &discordgo.MessageEmbedAuthor{
-									Name:    fmt.Sprintf("📤 %s", results[0]),
-									IconURL: avatar,
-								},
-								Color: 0xFF0000,
-							},
-						)
-						continue
-					}
-				}
-
-				if b.config.RelayAdvancements {
-					if results := serverAdvancementRe.FindStringSubmatch(raw); results != nil {
-						avatar, _ := b.getPlayerAvatar(results[1])
-
-						b.session.ChannelMessageSendEmbed(
-							b.config.Channel,
-							&discordgo.MessageEmbed{
-								Author: &discordgo.MessageEmbedAuthor{
-									Name:    fmt.Sprintf("📖 %s", results[0]),
-									IconURL: avatar,
-								},
-								Color: 0x8888FF,
-							},
-						)
-						continue
-					}
-
-					if results := serverChallengeRe.FindStringSubmatch(raw); results != nil {
-						avatar, _ := b.getPlayerAvatar(results[1])
-
-						b.session.ChannelMessageSendEmbed(
-							b.config.Channel,
-							&discordgo.MessageEmbed{
-								Author: &discordgo.MessageEmbedAuthor{
-									Name:    fmt.Sprintf("🏆 %s", results[0]),
-									IconURL: avatar,
-								},
-								Color: 0xF1C40F,
-							},
-						)
-						continue
-					}
-				}
-
-				if b.config.RelayDeaths {
-					for i := range deathMessagesRe {
-						if results := deathMessagesRe[i].FindStringSubmatch(raw); results != nil {
-							user := results[1]
-							avatar, _ := b.getPlayerAvatar(user)
-
-							b.session.ChannelMessageSendEmbed(
-								b.config.Channel,
-								&discordgo.MessageEmbed{
-									Author: &discordgo.MessageEmbedAuthor{
-										Name:    fmt.Sprintf("💀 %s", results[0]),
-										IconURL: avatar,
-									},
-									Color: 0xAA0000,
-								},
-							)
-							break
-						}
+						break
 					}
 				}
 			}
-		case err, ok := <-watcher.Errors:
-			if !ok {
-				continue
-			}
-			log.Println("fsnotify error: ", err)
+		case <-ctx.Done():
+			t.Cleanup()
+			return
 		}
 	}
 }
