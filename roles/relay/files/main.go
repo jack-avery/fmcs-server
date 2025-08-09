@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	ctx := context.Context(context.Background())
+	ctx := context.Background()
 
 	config, err := ParseConfig("config.yml")
 	if err != nil {
