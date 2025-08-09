@@ -15,5 +15,6 @@ pkgs.mkShellNoCC {
     
     # discord bot
     go
+    golangci-lint
   ];
 }

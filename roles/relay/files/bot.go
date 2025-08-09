@@ -43,7 +43,10 @@ func NewBot(config *Config) (bot *Bot, err error) {
 }
 
 func (b *Bot) Start(ctx context.Context) {
-	b.Manager.Start()
+	err := b.Manager.Start()
+	if err != nil {
+		panic(err)
+	}
 
 	go b.pollStatusLoop(ctx)
 	go b.pollMinecraftLogsLoop(ctx)
@@ -449,14 +452,14 @@ func (b *Bot) pollMinecraftLogsLoop(ctx context.Context) {
 }
 
 func (b *Bot) onMessage(s *discordgo.Session, m *discordgo.MessageCreate) {
-	if m.Message.Author.ID == s.State.User.ID ||
+	if m.Author.ID == s.State.User.ID ||
 		!b.config.RelayMessages ||
 		m.ChannelID != b.config.Channel ||
-		m.Message.Author.Bot {
+		m.Author.Bot {
 		return
 	}
 
-	msg := m.Message.Content
+	msg := m.Content
 
 	// prettify user/emote/channel mentions
 	mentions := discordMentionRe.FindAllStringSubmatch(msg, -1)
