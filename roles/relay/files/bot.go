@@ -118,7 +118,7 @@ func (b *Bot) sendSystemMessage(message string) {
 				IconURL: b.session.State.User.AvatarURL(""),
 			},
 			Description: message,
-			Color:       0xFF00FF,
+			Color:       colorSystem,
 		},
 	)
 	if err != nil {
@@ -269,7 +269,7 @@ func (b *Bot) updateDate() {
 			b.config.Channel,
 			&discordgo.MessageEmbed{
 				Title: fmt.Sprintf(":sunrise_over_mountains: Dawn of the %s day", date_text),
-				Color: 0xF1C40F,
+				Color: colorNewDay,
 			},
 		)
 		if err != nil {
@@ -367,7 +367,7 @@ func (b *Bot) pollMinecraftLogsLoop(ctx context.Context) {
 								Name:    msg,
 								IconURL: avatar,
 							},
-							Color: 0x444444,
+							Color: colorAction,
 						},
 					)
 					if err != nil {
@@ -388,7 +388,7 @@ func (b *Bot) pollMinecraftLogsLoop(ctx context.Context) {
 								Name:    fmt.Sprintf("📥 %s", results[0]),
 								IconURL: avatar,
 							},
-							Color: 0x00FF00,
+							Color: colorJoin,
 						},
 					)
 					if err != nil {
@@ -407,7 +407,7 @@ func (b *Bot) pollMinecraftLogsLoop(ctx context.Context) {
 								Name:    fmt.Sprintf("📤 %s", results[0]),
 								IconURL: avatar,
 							},
-							Color: 0xFF0000,
+							Color: colorLeave,
 						},
 					)
 					if err != nil {
@@ -428,7 +428,7 @@ func (b *Bot) pollMinecraftLogsLoop(ctx context.Context) {
 								Name:    fmt.Sprintf("📖 %s", results[0]),
 								IconURL: avatar,
 							},
-							Color: 0x8888FF,
+							Color: colorAdvancement,
 						},
 					)
 					if err != nil {
@@ -447,7 +447,7 @@ func (b *Bot) pollMinecraftLogsLoop(ctx context.Context) {
 								Name:    fmt.Sprintf("🏆 %s", results[0]),
 								IconURL: avatar,
 							},
-							Color: 0xF1C40F,
+							Color: colorChallenge,
 						},
 					)
 					if err != nil {
@@ -470,7 +470,7 @@ func (b *Bot) pollMinecraftLogsLoop(ctx context.Context) {
 									Name:    fmt.Sprintf("💀 %s", results[0]),
 									IconURL: avatar,
 								},
-								Color: 0xAA0000,
+								Color: colorDeath,
 							},
 						)
 						if err != nil {
