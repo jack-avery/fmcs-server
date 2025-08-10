@@ -20,7 +20,7 @@ func sendError(b *Bot, i *discordgo.InteractionCreate, context string, e error) 
 				{
 					Title:       "Error",
 					Description: fmt.Sprintf("Context: %s, Error: %s", context, e.Error()),
-					Color:       0xFF0000,
+					Color:       colorError,
 				},
 			},
 		},
@@ -32,6 +32,17 @@ func sendError(b *Bot, i *discordgo.InteractionCreate, context string, e error) 
 
 var (
 	colorBlurple = 0x7289da
+	colorSystem  = 0xAD1456
+	colorError   = 0xFF0000
+
+	colorNewDay = 0xF1C40F
+
+	colorAction      = 0x444444
+	colorJoin        = 0x2ECC70
+	colorLeave       = 0xE74D3C
+	colorAdvancement = 0x1ABC9C
+	colorChallenge   = 0xF1C40F
+	colorDeath       = 0x992E22
 
 	commands = []*discordgo.ApplicationCommand{
 		{
